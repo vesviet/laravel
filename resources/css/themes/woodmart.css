@@ -1,0 +1,121 @@
+/* ============================================
+   Woodmart Electronics Theme
+   Modern, Technology, eCommerce Focused
+   Primary Color: Tech Blue (#005bbc)
+   ============================================ */
+
+:root {
+    --color-navy: #222222;
+    --color-blue: #005bbc; /* Woodmart Blue */
+    --color-blue-dark: #004a99;
+    --color-red: #e63946;
+    --color-white: #ffffff;
+    --color-gray-50: #f4f5f7; /* Woodmart Light Background */
+    --color-gray-100: #eeeeee;
+    --color-gray-200: #e5e7eb;
+    --color-gray-500: #777777;
+    
+    --font-family: 'Inter', sans-serif;
+    --radius-md: 4px; /* Sharper corners for tech look */
+    
+    --header-top-height: 40px;
+    --header-main-height: 90px;
+    --header-bottom-height: 50px;
+    --header-height: calc(var(--header-top-height) + var(--header-main-height) + var(--header-bottom-height));
+}
+
+body {
+    background-color: var(--color-gray-50);
+    font-family: var(--font-family);
+    color: #333;
+}
+
+/* --- Woodmart Header 3-Layers --- */
+.woodmart-header {
+    background: var(--color-white);
+}
+
+.header-top {
+    height: var(--header-top-height);
+    background: #f8f8f8;
+    border-bottom: 1px solid var(--color-gray-100);
+    font-size: 12px;
+}
+
+.header-main {
+    height: var(--header-main-height);
+    display: flex;
+    align-items: center;
+}
+
+.header-bottom {
+    height: var(--header-bottom-height);
+    background: var(--color-blue);
+    color: var(--color-white);
+}
+
+/* --- Search Bar (Large) --- */
+.search-wrapper {
+    flex: 1;
+    max-width: 600px;
+    margin: 0 2rem;
+}
+
+.woodmart-search {
+    display: flex;
+    border: 2px solid var(--color-blue);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.woodmart-search input {
+    flex: 1;
+    border: none;
+    padding: 0.75rem 1rem;
+    outline: none;
+}
+
+.woodmart-search button {
+    background: var(--color-blue);
+    color: white;
+    border: none;
+    padding: 0 1.5rem;
+    cursor: pointer;
+}
+
+/* --- Product Cards (Woodmart Style) --- */
+.product-card {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-100);
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    border-color: var(--color-blue);
+}
+
+.btn-primary {
+    background-color: var(--color-blue);
+    border-radius: var(--radius-md);
+}
+
+/* --- Vertical Menu (Sidebar Categories) --- */
+.vertical-menu-wrapper {
+    width: 280px;
+    background: white;
+    border: 1px solid var(--color-gray-100);
+    position: relative;
+    z-index: 10;
+}
+
+.vertical-menu-title {
+    background: var(--color-blue-dark);
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}

@@ -6,6 +6,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/themes/elomus.css',
+                'resources/css/themes/woodmart.css',
                 'resources/js/app.js',
             ],
             refresh: true,
