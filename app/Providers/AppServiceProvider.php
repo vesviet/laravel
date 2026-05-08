@@ -16,6 +16,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Force HTTPS to prevent Mixed Content errors behind proxies
+        if (config('app.env') === 'production' || request()->header('x-forwarded-proto') === 'https' || str_contains(config('app.url'), 'https://')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         View::composer(['layouts.app', 'themes.woodmart.layouts.app'], function ($view) {
             $footerPages = Cache::rememberForever('footer_pages', function () {
                 return Page::published()
