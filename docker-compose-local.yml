@@ -1,0 +1,25 @@
+services:
+  maydiengiai-app:
+    image: webdevops/php-apache:8.2
+    container_name: maydiengiai_app
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/app
+      - ./public:/app/public
+    environment:
+      - WEB_DOCUMENT_ROOT=/app/public
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres # Sẽ nối tới service postgres từ core
+      - DB_PORT=5432
+      - DB_DATABASE=maydiengiaisaigon
+      - DB_USERNAME=admin 
+      - DB_PASSWORD=Qaz123456
+    networks:
+      - local-laravel
+
+networks:
+  local-laravel:
+    name: local-laravel
