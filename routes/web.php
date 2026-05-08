@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+// Fallback login route for Laravel AuthenticateSession middleware
+Route::get('/login', function () {
+    return redirect()->route('filament.admin.auth.login');
+})->name('login');
+
 // Home
 Route::get('/', [PageController::class, 'home'])->name('home');
 
