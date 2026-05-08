@@ -16,9 +16,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Force HTTPS to prevent Mixed Content errors behind proxies
+        // Force HTTPS and Root URL to prevent Signed Route mismatch (401) behind Cloudflare
         if (config('app.env') === 'production' || request()->header('x-forwarded-proto') === 'https' || str_contains(config('app.url'), 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
+            \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
         }
 
         View::composer(['layouts.app', 'themes.woodmart.layouts.app'], function ($view) {
