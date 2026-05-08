@@ -20,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production' || request()->header('x-forwarded-proto') === 'https' || str_contains(config('app.url'), 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
             \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
+            request()->server->set('HTTPS', 'on');
         }
 
         View::composer(['layouts.app', 'themes.woodmart.layouts.app'], function ($view) {
