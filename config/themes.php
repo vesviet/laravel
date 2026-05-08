@@ -22,5 +22,10 @@ return [
             'description' => 'Phong cách Lễ hội truyền thống, ngập tràn sắc đỏ và hoa đào.',
             'preview_image' => 'https://images.unsplash.com/photo-1549428581-2292f39c279c?auto=format&fit=crop&q=80&w=600',
         ],
+        'woodmart' => [
+            'name' => 'Giao diện Woodmart Electronics',
+            'description' => 'Phong cách công nghệ hiện đại, Header 3 tầng, tối ưu eCommerce.',
+            'preview_image' => 'https://woodmart.xtemos.com/wp-content/uploads/2018/08/woodmart-electronics-demo.jpg',
+        ],
     ],
 ];
