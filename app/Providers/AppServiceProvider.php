@@ -16,7 +16,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        View::composer('layouts.app', function ($view) {
+        View::composer(['layouts.app', 'themes.woodmart.layouts.app'], function ($view) {
             $footerPages = Cache::rememberForever('footer_pages', function () {
                 return Page::published()
                     ->ordered()
@@ -24,7 +24,24 @@ class AppServiceProvider extends ServiceProvider
                     ->groupBy('group');
             });
 
-            $view->with('footerPages', $footerPages);
+            // SRE Requirement: Fallback and Cache parsing
+            $mainMenuRaw = \App\Models\Setting::getCached('main_menu');
+            $mainMenu = [];
+            
+            try {
+                if (is_string($mainMenuRaw)) {
+                    $mainMenu = json_decode($mainMenuRaw, true) ?? [];
+                } elseif (is_array($mainMenuRaw)) {
+                    $mainMenu = $mainMenuRaw;
+                }
+            } catch (\Exception $e) {
+                // Fallback to empty array if parsing fails (SRE requirement)
+                $mainMenu = [];
+                \Illuminate\Support\Facades\Log::error('Failed to parse main_menu JSON: ' . $e->getMessage());
+            }
+
+            $view->with('footerPages', $footerPages)
+                 ->with('mainMenu', $mainMenu);
         });
     }
 }

@@ -15,6 +15,38 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     @livewireStyles
+    <style>
+        /* UI/UX Micro-interactions for Woodmart MegaMenu */
+        .woodmart-nav-item { position: relative; display: flex; align-items: center; height: 100%; }
+        .woodmart-nav-item.has-mega { position: relative; }
+        .mega-bridge { position: absolute; height: 20px; width: 100%; top: 100%; left: 0; background: transparent; z-index: 99; }
+        .woodmart-mega-menu {
+            position: absolute;
+            top: calc(100% + 20px);
+            left: 0;
+            width: 800px;
+            background: #fff;
+            border: 1px solid #eee;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            pointer-events: none;
+            z-index: 100;
+            color: #333;
+        }
+        .woodmart-mega-grid { display: grid; grid-template-columns: repeat(4, 1fr); padding: 2rem; gap: 2rem; }
+        .woodmart-mega-column h4 { font-weight: 700; border-bottom: 2px solid var(--color-blue); padding-bottom: 0.5rem; margin-bottom: 1rem; text-transform: uppercase; font-size: 13px; }
+        .woodmart-mega-column a { display: block; padding: 0.5rem 0; color: #555; text-transform: none; font-weight: 400; transition: color 0.2s; }
+        .woodmart-mega-column a:hover { color: var(--color-blue); }
+        .woodmart-nav-item.has-mega:hover .woodmart-mega-menu {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+    </style>
 </head>
 <body class="theme-woodmart">
     <header class="woodmart-header">
@@ -64,11 +96,43 @@
                         DANH MỤC SẢN PHẨM
                     </div>
                 </div>
-                <nav style="display: flex; gap: 2rem; margin-left: 2rem; font-weight: 600; font-size: 14px;">
-                    <a href="{{ route('home') }}">TRANG CHỦ</a>
-                    <a href="{{ route('products.index') }}">MÁY ĐIỆN GIẢI</a>
-                    <a href="{{ route('articles.index') }}">TIN TỨC</a>
-                    <a href="#">LIÊN HỆ</a>
+                <nav style="display: flex; gap: 2rem; margin-left: 2rem; font-weight: 600; font-size: 14px; height: 100%;">
+                    @foreach($mainMenu as $menu)
+                        <div class="woodmart-nav-item {{ !empty($menu['is_mega']) ? 'has-mega' : '' }}" {!! !empty($menu['is_mega']) ? 'aria-haspopup="true" aria-expanded="false"' : '' !!}>
+                            <a href="{{ url($menu['url'] ?? '#') }}" style="color: inherit;">{{ mb_strtoupper($menu['label'] ?? '') }}</a>
+                            
+                            @if(!empty($menu['is_mega']))
+                                {{-- UX: Invisible bridge to prevent Diagonal Problem --}}
+                                <div class="mega-bridge"></div>
+                                
+                                <div class="woodmart-mega-menu">
+                                    <div class="woodmart-mega-grid">
+                                        @foreach(($menu['columns'] ?? []) as $col)
+                                            @if(($col['type'] ?? 'links') === 'links')
+                                                <div class="woodmart-mega-column">
+                                                    <h4>{{ $col['title'] ?? '' }}</h4>
+                                                    @foreach(($col['links'] ?? []) as $link)
+                                                        <a href="{{ url($link['url'] ?? '#') }}">{{ $link['label'] ?? '' }}</a>
+                                                    @endforeach
+                                                </div>
+                                            @elseif(($col['type'] ?? '') === 'promo_banner')
+                                                <div class="woodmart-mega-column" style="text-align: center;">
+                                                    @if(!empty($col['image_path']))
+                                                        <a href="{{ url($col['promo_url'] ?? '#') }}" style="padding: 0;">
+                                                            <img src="{{ asset('storage/' . $col['image_path']) }}" alt="Promo" style="border-radius: 4px; width: 100%; height: auto;">
+                                                        </a>
+                                                    @endif
+                                                    @if(!empty($col['promo_text']))
+                                                        <div style="margin-top: 1rem; font-weight: 700; color: var(--color-blue);">{{ $col['promo_text'] }}</div>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
                 </nav>
             </div>
         </div>

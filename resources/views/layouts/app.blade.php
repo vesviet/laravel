@@ -15,6 +15,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     @livewireStyles
+    <style>
+        /* UI/UX Micro-interactions for MegaMenu */
+        .nav-item.has-mega { position: relative; }
+        .mega-bridge { position: absolute; height: 20px; width: 100%; top: 100%; left: 0; background: transparent; z-index: 99; }
+        .mega-menu {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            pointer-events: none;
+        }
+        .nav-item.has-mega:hover .mega-menu {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+    </style>
 </head>
 <body>
     {{-- Announcement Bar --}}
@@ -32,39 +50,44 @@
             </div>
 
             <nav class="main-nav" id="main-nav">
-                <a href="{{ route('home') }}" @class(['active' => request()->routeIs('home')])>Trang chủ</a>
-                <div class="nav-item has-mega">
-                    <a href="{{ route('products.index') }}" @class(['active' => request()->routeIs('products.*')])>Sản phẩm</a>
-                    <div class="mega-menu">
-                        <div class="container mega-grid">
-                            <div class="mega-column">
-                                <h4 class="mega-title">Thương hiệu</h4>
-                                <a href="#">Panasonic</a>
-                                <a href="#">Enagic Kangen</a>
-                                <a href="#">Fuji Smart</a>
-                                <a href="#">Trim Ion</a>
-                            </div>
-                            <div class="mega-column">
-                                <h4 class="mega-title">Loại máy</h4>
-                                <a href="#">Máy gia đình</a>
-                                <a href="#">Máy y tế</a>
-                                <a href="#">Máy mini</a>
-                            </div>
-                            <div class="mega-column">
-                                <h4 class="mega-title">Phụ kiện</h4>
-                                <a href="#">Lõi lọc tinh</a>
-                                <a href="#">Bộ tiền lọc</a>
-                                <a href="#">Bình chứa nước</a>
-                            </div>
-                            <div class="mega-column mega-promo">
-                                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=400" alt="Promo">
-                                <div class="promo-text">Ưu đãi hè - Giảm 20%</div>
+                @foreach($mainMenu as $menu)
+                    @if(empty($menu['is_mega']))
+                        <a href="{{ url($menu['url'] ?? '#') }}" @class(['active' => request()->is(ltrim($menu['url'] ?? '', '/').'*') || request()->is(ltrim($menu['url'] ?? '', '/'))])>{{ $menu['label'] ?? '' }}</a>
+                    @else
+                        <div class="nav-item has-mega" aria-haspopup="true" aria-expanded="false">
+                            <a href="{{ url($menu['url'] ?? '#') }}" @class(['active' => request()->is(ltrim($menu['url'] ?? '', '/').'*') || request()->is(ltrim($menu['url'] ?? '', '/'))])>{{ $menu['label'] ?? '' }}</a>
+                            
+                            {{-- UX: Invisible bridge to prevent Diagonal Problem --}}
+                            <div class="mega-bridge"></div>
+                            
+                            <div class="mega-menu">
+                                <div class="container mega-grid">
+                                    @foreach(($menu['columns'] ?? []) as $col)
+                                        @if(($col['type'] ?? 'links') === 'links')
+                                            <div class="mega-column">
+                                                <h4 class="mega-title">{{ $col['title'] ?? '' }}</h4>
+                                                @foreach(($col['links'] ?? []) as $link)
+                                                    <a href="{{ url($link['url'] ?? '#') }}">{{ $link['label'] ?? '' }}</a>
+                                                @endforeach
+                                            </div>
+                                        @elseif(($col['type'] ?? '') === 'promo_banner')
+                                            <div class="mega-column mega-promo">
+                                                @if(!empty($col['image_path']))
+                                                    <a href="{{ url($col['promo_url'] ?? '#') }}">
+                                                        <img src="{{ asset('storage/' . $col['image_path']) }}" alt="Promo" style="border-radius: 8px; width: 100%; height: auto;">
+                                                    </a>
+                                                @endif
+                                                @if(!empty($col['promo_text']))
+                                                    <div class="promo-text" style="margin-top: 0.5rem; font-weight: 600;">{{ $col['promo_text'] }}</div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <a href="{{ route('articles.index') }}" @class(['active' => request()->routeIs('articles.*')])>Tin tức</a>
-                <a href="{{ route('pages.show', 'gioi-thieu') }}" @class(['active' => request()->is('page/gioi-thieu')])>Giới thiệu</a>
+                    @endif
+                @endforeach
             </nav>
 
             <div class="header-actions">
