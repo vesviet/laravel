@@ -17,7 +17,6 @@
     @livewireStyles
     <style>
         /* UI/UX Micro-interactions for MegaMenu */
-        .nav-item.has-mega { position: relative; }
         .mega-bridge { position: absolute; height: 20px; width: 100%; top: 100%; left: 0; background: transparent; z-index: 99; }
         .mega-menu {
             display: none;
