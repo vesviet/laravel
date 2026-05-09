@@ -6,6 +6,7 @@ use App\Filament\Resources\ArticleResource\Pages;
 use App\Models\Article;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -13,6 +14,8 @@ use Illuminate\Support\Str;
 
 class ArticleResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Article::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -46,9 +49,7 @@ class ArticleResource extends Resource
 
                     Forms\Components\Select::make('category_id')
                         ->label('Chuyên mục')
-                        ->relationship('category', 'name', fn($query) =>
-                            $query->where('type', 'article')
-                        )
+                        ->options(fn() => \App\Models\Category::where('type', 'article')->get()->pluck('name', 'id'))
                         ->searchable()
                         ->preload(),
 
@@ -132,7 +133,7 @@ class ArticleResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('category_id')
                     ->label('Chuyên mục')
-                    ->relationship('category', 'name'),
+                    ->options(fn() => \App\Models\Category::where('type', 'article')->get()->pluck('name', 'id')),
 
                 Tables\Filters\TernaryFilter::make('is_published')
                     ->label('Xuất bản'),

@@ -6,6 +6,7 @@ use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -13,6 +14,8 @@ use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cube';
@@ -53,9 +56,7 @@ class ProductResource extends Resource
 
                     Forms\Components\Select::make('category_id')
                         ->label('Danh mục')
-                        ->relationship('category', 'name', fn($query) =>
-                            $query->where('type', 'product')
-                        )
+                        ->options(fn() => \App\Models\Category::where('type', 'product')->get()->pluck('name', 'id'))
                         ->searchable()
                         ->preload(),
 
@@ -192,7 +193,7 @@ class ProductResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('category_id')
                     ->label('Danh mục')
-                    ->relationship('category', 'name'),
+                    ->options(fn() => \App\Models\Category::where('type', 'product')->get()->pluck('name', 'id')),
 
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Hiển thị'),

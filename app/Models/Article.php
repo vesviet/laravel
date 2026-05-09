@@ -7,10 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Translatable\HasTranslations;
 
 class Article extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia, HasTranslations;
+
+    public $translatable = [
+        'title',
+        'slug',
+        'excerpt',
+        'content',
+        'meta_title',
+        'meta_description',
+    ];
 
     protected $fillable = [
         'category_id',

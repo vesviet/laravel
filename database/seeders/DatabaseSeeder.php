@@ -20,14 +20,12 @@ class DatabaseSeeder extends Seeder
         );
 
         // Create Categories
-        $productCat = \App\Models\Category::firstOrCreate(
-            ['slug' => 'may-dien-giai-ion-kiem'],
-            ['name' => 'Máy Điện Giải Ion Kiềm', 'type' => 'product']
+        $productCat = \App\Models\Category::create(
+            ['slug' => 'may-dien-giai-ion-kiem', 'name' => 'Máy Điện Giải Ion Kiềm', 'type' => 'product']
         );
 
-        $articleCat = \App\Models\Category::firstOrCreate(
-            ['slug' => 'kien-thuc-suc-khoe'],
-            ['name' => 'Kiến Thức Sức Khỏe', 'type' => 'article']
+        $articleCat = \App\Models\Category::create(
+            ['slug' => 'kien-thuc-suc-khoe', 'name' => 'Kiến Thức Sức Khỏe', 'type' => 'article']
         );
 
         // Create Products (4 SKUs)
@@ -255,8 +253,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($products as $p) {
-            \App\Models\Product::firstOrCreate(
-                ['slug' => $p['slug']],
+            \App\Models\Product::create(
                 array_merge($p, ['category_id' => $productCat->id])
             );
         }

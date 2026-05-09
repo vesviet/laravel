@@ -6,6 +6,7 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Models\Category;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Concerns\Translatable;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -13,6 +14,8 @@ use Illuminate\Support\Str;
 
 class CategoryResource extends Resource
 {
+    use Translatable;
+
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-folder';
@@ -55,7 +58,7 @@ class CategoryResource extends Resource
 
                 Forms\Components\Select::make('parent_id')
                     ->label('Danh mục cha')
-                    ->relationship('parent', 'name')
+                    ->options(fn() => \App\Models\Category::all()->pluck('name', 'id'))
                     ->searchable()
                     ->nullable(),
 
