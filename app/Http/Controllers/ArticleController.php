@@ -13,7 +13,7 @@ class ArticleController extends Controller
         $query = Article::published()->with('category');
 
         if ($categorySlug = $request->query('category')) {
-            $query->whereHas('category', fn($q) => $q->where('slug', $categorySlug));
+            $query->whereHas('category', fn($q) => $q->where('slug->' . app()->getLocale(), $categorySlug));
         }
 
         $articles = $query->latest('published_at')->paginate(9);
@@ -28,7 +28,7 @@ class ArticleController extends Controller
 
     public function show(string $slug)
     {
-        $article = Article::where('slug', $slug)
+        $article = Article::where('slug->' . app()->getLocale(), $slug)
             ->published()
             ->with('category')
             ->firstOrFail();

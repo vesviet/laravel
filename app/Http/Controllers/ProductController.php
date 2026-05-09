@@ -13,7 +13,7 @@ class ProductController extends Controller
         $query = Product::active()->with('category');
 
         if ($categorySlug = $request->query('category')) {
-            $query->whereHas('category', fn($q) => $q->where('slug', $categorySlug));
+            $query->whereHas('category', fn($q) => $q->where('slug->' . app()->getLocale(), $categorySlug));
         }
 
         $products = $query->orderBy('sort_order')->paginate(12);
@@ -28,7 +28,7 @@ class ProductController extends Controller
 
     public function show(string $slug)
     {
-        $product = Product::where('slug', $slug)
+        $product = Product::where('slug->' . app()->getLocale(), $slug)
             ->active()
             ->with('category')
             ->firstOrFail();

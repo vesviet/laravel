@@ -47,7 +47,7 @@ class PageController extends Controller
     public function showPage(string $slug)
     {
         $page = Page::published()
-            ->where('slug', $slug)
+            ->where('slug->' . app()->getLocale(), $slug)
             ->firstOrFail();
 
         $viewName = match ($page->template) {
