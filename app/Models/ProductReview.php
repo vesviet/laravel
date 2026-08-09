@@ -15,6 +15,10 @@ class ProductReview extends Model
         'status',
     ];
 
+    protected $casts = [
+        'rating' => 'integer',
+    ];
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

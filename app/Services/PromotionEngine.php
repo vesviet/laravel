@@ -2,44 +2,66 @@
 
 namespace App\Services;
 
+use App\Models\Coupon;
+
 class PromotionEngine
 {
     /**
-     * Calculate discount amount based on subtotal, cart items, combo rules, and coupons.
-     * This is a simplified engine for MVP.
+     * Calculate total discount for the cart.
+     *
+     * Rules applied in order:
+     *  1. Combo discount — buy 2+ non-flash-sale items: 5% off eligible subtotal.
+     *  2. Coupon discount — DB-backed coupon lookup (percentage or fixed).
+     *
+     * @param  float  $subtotal  Total cart value before discounts.
+     * @param  array  $cartItems  Enriched items from CartService::getCartItemsDetails().
+     * @param  string|null  $couponCode  Coupon code string from session (nullable).
+     * @return float Total discount amount (capped at subtotal).
      */
     public function calculateDiscount(float $subtotal, array $cartItems, ?string $couponCode = null): float
     {
         $discount = 0.0;
 
-        // Calculate eligible subtotal and items for promotion
-        $eligibleSubtotal = 0;
+        // Calculate eligible subtotal: exclude flash sale items from promotions.
+        $eligibleSubtotal = 0.0;
         $eligibleItemsCount = 0;
         foreach ($cartItems as $item) {
             if (empty($item['is_flash_sale'])) {
-                $eligibleSubtotal += $item['subtotal'] ?? ($item['price'] * $item['quantity']);
-                $eligibleItemsCount += $item['quantity'];
+                $eligibleSubtotal += (float) ($item['subtotal'] ?? ($item['price'] * $item['quantity']));
+                $eligibleItemsCount += (int) $item['quantity'];
             }
         }
 
-        // Example: Apply combo rule
-        // e.g., buy 2 or more items, get 5% off
+        // Combo rule: buy 2 or more eligible items → 5% off eligible subtotal.
         if ($eligibleItemsCount >= 2) {
-            $comboDiscount = $eligibleSubtotal * 0.05; // 5% discount
-            $discount += $comboDiscount;
+            $discount += $eligibleSubtotal * 0.05;
         }
 
-        // Example: Apply coupon code
-        if ($couponCode === 'WELCOME10') {
-            $couponDiscount = $eligibleSubtotal * 0.10; // 10% discount
-            $discount += $couponDiscount;
+        // Coupon rule: DB-backed lookup with applicability checks.
+        if ($couponCode) {
+            $coupon = Coupon::where('code', strtoupper(trim($couponCode)))->first();
+
+            if ($coupon && $coupon->isApplicable($eligibleSubtotal)) {
+                $discount += $coupon->calculateDiscount($eligibleSubtotal);
+            }
         }
 
-        // Ensure discount does not exceed subtotal
-        if ($discount > $subtotal) {
-            $discount = $subtotal;
+        // Discount is capped at full subtotal to prevent negative totals.
+        return min($discount, $subtotal);
+    }
+
+    /**
+     * Resolve a valid Coupon model by code, or return null.
+     * Used by ProcessCheckoutAction to increment usage count after order creation.
+     */
+    public function resolveCoupon(?string $couponCode, float $eligibleSubtotal): ?Coupon
+    {
+        if (! $couponCode) {
+            return null;
         }
 
-        return $discount;
+        $coupon = Coupon::where('code', strtoupper(trim($couponCode)))->first();
+
+        return ($coupon && $coupon->isApplicable($eligibleSubtotal)) ? $coupon : null;
     }
 }

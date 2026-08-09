@@ -9,19 +9,16 @@ it('allows a guest to checkout successfully with COD', function () {
         'slug' => 'test-product',
         'price' => 100,
         'stock' => 10,
-        'status' => 'published'
+        'status' => 'published',
     ]);
 
-    // Simulate cart in session
+    // Cart session format matches CartService schema (product_variant_id, not variant_id).
     Session::put('cart', [
-        $product->id . '_0' => [
+        "{$product->id}_0" => [
             'product_id' => $product->id,
             'product_variant_id' => null,
             'quantity' => 1,
-            'name' => 'Test Product',
-            'price' => 100,
-            'variant_name' => null,
-        ]
+        ],
     ]);
 
     $response = $this->post('/checkout', [
@@ -40,6 +37,6 @@ it('allows a guest to checkout successfully with COD', function () {
         'status' => 'pending',
     ]);
 
-    // Cart should be cleared
-    expect(Session::get('cart'))->toBeEmpty();
+    // Cart should be cleared after successful checkout.
+    expect(Session::get('cart'))->toBeNull();
 });

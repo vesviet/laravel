@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
             // This prevents RuntimeException on hosts without the intl extension.
             Number::macro('format', function (int|float $number, ?int $precision = null, ?int $maxPrecision = null, ?string $locale = null): string|false {
                 $decimals = $precision ?? ($maxPrecision ?? 0);
+
                 return number_format((float) $number, $decimals, '.', ',');
             });
         }

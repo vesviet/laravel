@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Http;
-use App\Services\GoshipService;
 use App\Models\Order;
+use App\Services\GoshipService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -14,11 +14,11 @@ it('fetches shipping rates from Goship API', function () {
                 ['carrier' => 'GHN', 'fee' => 30000],
                 ['carrier' => 'GHTK', 'fee' => 35000],
                 ['carrier' => 'ViettelPost', 'fee' => 32000],
-            ]
+            ],
         ], 200),
     ]);
 
-    $service = new GoshipService();
+    $service = new GoshipService;
     $rates = $service->getShippingRates([
         'city' => 'Hanoi',
         'district' => 'Ba Dinh',
@@ -27,7 +27,7 @@ it('fetches shipping rates from Goship API', function () {
 
     expect($rates)->toHaveCount(3);
     expect($rates[0]['fee'])->toBe(30000);
-             
+
     Http::assertSent(function ($request) {
         return str_contains($request->url(), 'goship.io/api/v2/rates');
     });
@@ -38,13 +38,13 @@ it('creates a waybill via Goship API', function () {
         'goship.io/api/v2/shipments' => Http::response([
             'data' => [
                 'id' => 'WAYBILL123',
-                'status' => 'created'
-            ]
+                'status' => 'created',
+            ],
         ], 200),
     ]);
 
     $order = Order::create([
-        'order_number' => 'ORD-' . time(),
+        'order_number' => 'ORD-'.time(),
         'customer_name' => 'John',
         'phone' => '0901234567',
         'address' => '123 Main St',
@@ -52,12 +52,12 @@ it('creates a waybill via Goship API', function () {
         'total_amount' => 100,
         'status' => 'pending',
     ]);
-    
-    $service = new GoshipService();
+
+    $service = new GoshipService;
     $waybill = $service->createWaybill($order);
-    
+
     expect($waybill['id'])->toBe('WAYBILL123');
-    
+
     Http::assertSent(function ($request) {
         return str_contains($request->url(), 'goship.io/api/v2/shipments');
     });

@@ -10,10 +10,25 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'category_id',
+        'name',
+        'slug',
+        'sku',
+        'description',
+        'image_path',
+        'price',
+        'stock',
+        'status',
+        'attributes_json',
+        'seo_title',
+        'seo_description',
+    ];
 
     protected $casts = [
         'attributes_json' => 'array',
+        'price' => 'decimal:2',
+        'stock' => 'integer',
     ];
 
     public function category()
@@ -24,5 +39,10 @@ class Product extends Model
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
     }
 }

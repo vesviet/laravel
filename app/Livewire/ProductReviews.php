@@ -2,15 +2,17 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Product;
 use App\Models\ProductReview;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class ProductReviews extends Component
 {
     public Product $product;
+
     public $rating = 5;
+
     public $comment = '';
 
     protected $rules = [
@@ -22,11 +24,11 @@ class ProductReviews extends Component
     {
         $this->validate();
 
-        if (!Auth::guard('customer')->check()) {
+        if (! Auth::guard('customer')->check()) {
             return redirect()->route('account.login');
         }
 
-        // Logic to verify purchase is usually handled here or in a rule, 
+        // Logic to verify purchase is usually handled here or in a rule,
         // as a frontend-developer, I'm just creating the UI and minimal wiring.
         // Assuming there is a rule or we just save it.
         ProductReview::create([
@@ -38,7 +40,7 @@ class ProductReviews extends Component
         ]);
 
         $this->reset(['rating', 'comment']);
-        
+
         session()->flash('message', 'Your review has been submitted and is pending approval.');
     }
 

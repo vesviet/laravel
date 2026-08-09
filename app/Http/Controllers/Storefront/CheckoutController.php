@@ -2,99 +2,89 @@
 
 namespace App\Http\Controllers\Storefront;
 
+use App\Actions\ProcessCheckoutAction;
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Models\OrderItem;
+use App\Http\Requests\CheckoutRequest;
 use App\Mail\OrderConfirmationMail;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
+use App\Models\Order;
+use App\Models\Province;
+use App\Services\CartService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
+    public function __construct(
+        protected CartService $cartService,
+        protected ProcessCheckoutAction $processCheckout
+    ) {}
+
     public function index()
     {
-        $cart = session()->get('cart', []);
-        
-        if (empty($cart)) {
+        $rawCart = $this->cartService->getCart();
+
+        if (empty($rawCart)) {
             return redirect()->route('products.index')->with('error', 'Your cart is empty.');
         }
-        
-        $cartService = app(\App\Services\CartService::class);
-        $cartDetails = $cartService->getCartItemsDetails();
-        $subtotal = $cartService->calculateTotal();
 
-        // Determine if logged in customer
+        // Enriched items: contains name, price, variant_name, subtotal
+        $cart     = $this->cartService->getCartItemsDetails();
+        $subtotal = $this->cartService->calculateTotal();
         $customer = auth('customer')->user();
 
-        return view('storefront.checkout.index', compact('cart', 'subtotal', 'customer'));
+        // Cache provinces for 24 hours — data changes rarely
+        $provinces = Cache::remember('provinces_list', 86400, fn() =>
+            Province::orderBy('name')->get()
+        );
+
+        $appliedCoupon = session()->get('coupon');
+
+        return view('storefront.checkout.index', compact('cart', 'subtotal', 'customer', 'provinces', 'appliedCoupon'));
     }
 
-    public function store(Request $request)
+    /**
+     * Process checkout — delegates entirely to ProcessCheckoutAction.
+     * The outer DB::transaction is removed; ProcessCheckoutAction owns the transaction boundary.
+     */
+    public function store(CheckoutRequest $request)
     {
-        $cart = session()->get('cart', []);
-        
+        $cart = $this->cartService->getCart();
+
         if (empty($cart)) {
             return redirect()->route('products.index');
         }
 
-        $cartService = app(\App\Services\CartService::class);
-        $cartDetails = $cartService->getCartItemsDetails();
-        $subtotal = $cartService->calculateTotal();
-
-        $validated = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => ['required', 'string', 'max:20', new \App\Rules\ValidPhoneVN],
-            'address' => 'required|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
-            'payment_method' => 'required|in:cod',
-        ]);
-
-        DB::beginTransaction();
         try {
-            $promotionEngine = app(\App\Services\PromotionEngine::class);
-            $couponCode = session()->get('coupon');
-            $discountAmount = $promotionEngine->calculateDiscount($subtotal, $cartDetails, $couponCode);
+            $customerData = $request->validated();
 
-            $orderService = app(\App\Services\OrderService::class);
-            
-            // Add customer_id if logged in
+            // Attach logged-in customer ID if available.
             if (auth('customer')->check()) {
-                $validated['customer_id'] = auth('customer')->id();
+                $customerData['customer_id'] = auth('customer')->id();
             }
 
-            $order = $orderService->createOrder($validated, $cartDetails, $subtotal, $discountAmount, 0);
+            $couponCode = session()->get('coupon');
+            $order = $this->processCheckout->execute($customerData, $couponCode);
 
-            DB::commit();
-            
-            // Clear cart
-            session()->forget('cart');
+            // Clear coupon from session after use.
             session()->forget('coupon');
 
-            // Send order confirmation email
-            if (!empty($order->email)) {
+            // Send order confirmation email if provided.
+            if (! empty($order->email)) {
                 Mail::to($order->email)->send(new OrderConfirmationMail($order));
             }
 
             return redirect()->route('checkout.success', ['order_number' => $order->order_number]);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'There was an error processing your order. Please try again. ' . $e->getMessage())->withInput();
+            return back()
+                ->with('error', 'There was an error processing your order. Please try again. '.$e->getMessage())
+                ->withInput();
         }
     }
 
-    public function success($order_number)
+    public function success(string $order_number)
     {
         $order = Order::where('order_number', $order_number)->firstOrFail();
-        
-        // Basic security check: if it belongs to customer, make sure it's them
-        if ($order->customer_id && !auth('customer')->check()) {
-            // Depending on requirements, we can allow guest view of success page right after checkout
-        }
-        
+
         return view('storefront.checkout.success', compact('order'));
     }
 }

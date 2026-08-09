@@ -8,8 +8,9 @@ use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Arr;
+use Illuminate\Translation\PotentiallyTranslatedString;
 
-class StockAvailable implements ValidationRule, DataAwareRule
+class StockAvailable implements DataAwareRule, ValidationRule
 {
     /**
      * All of the data under validation.
@@ -33,7 +34,7 @@ class StockAvailable implements ValidationRule, DataAwareRule
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string): PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -42,7 +43,7 @@ class StockAvailable implements ValidationRule, DataAwareRule
         preg_match('/items\.(\d+)\.quantity/', $attribute, $matches);
         if (isset($matches[1])) {
             $index = $matches[1];
-            
+
             $productId = Arr::get($this->data, "items.{$index}.product_id");
             $variantId = Arr::get($this->data, "items.{$index}.product_variant_id");
             $quantity = (int) $value;

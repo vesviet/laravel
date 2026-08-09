@@ -19,7 +19,7 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         if (Auth::guard('customer')->attempt($credentials, $request->boolean('remember'))) {
@@ -77,6 +77,7 @@ class AuthController extends Controller
     public function orders()
     {
         $orders = Auth::guard('customer')->user()->orders()->orderBy('created_at', 'desc')->get();
+
         return view('storefront.account.orders', compact('orders'));
     }
 }

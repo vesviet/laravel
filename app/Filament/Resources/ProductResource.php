@@ -14,7 +14,9 @@ use Illuminate\Support\Str;
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-cube';
+
     protected static ?string $navigationGroup = 'Shop';
 
     public static function form(Form $form): Form
@@ -62,7 +64,7 @@ class ProductResource extends Resource
                                 Forms\Components\KeyValue::make('attributes_json')->label('Attributes'),
                             ])
                             ->columns(2)
-                            ->defaultItems(0)
+                            ->defaultItems(0),
                     ]),
                 ])->columnSpan(['lg' => 2]),
 
@@ -110,7 +112,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('sku')->searchable(),
                 Tables\Columns\TextColumn::make('price')
-                    ->formatStateUsing(fn ($state) => '$' . number_format((float)$state, 2))
+                    ->formatStateUsing(fn ($state) => '$'.number_format((float) $state, 2))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('status')->badge()->color(fn (string $state): string => match ($state) {

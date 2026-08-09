@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\OrderItem;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -22,7 +21,7 @@ class OrderService
     public function createOrder(array $customerData, array $cartItems, float $subtotal, float $discountAmount = 0, float $shippingFee = 0): Order
     {
         return DB::transaction(function () use ($customerData, $cartItems, $subtotal, $discountAmount, $shippingFee) {
-            
+
             $totalAmount = $subtotal - $discountAmount + $shippingFee;
 
             $order = Order::create([
@@ -70,6 +69,7 @@ class OrderService
     {
         $date = now()->format('Ymd');
         $random = strtoupper(Str::random(5));
+
         return "ORD-{$date}-{$random}";
     }
 }

@@ -2,20 +2,21 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Wishlist;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class WishlistButton extends Component
 {
     public Product $product;
+
     public bool $isWishlisted = false;
 
     public function mount(Product $product)
     {
         $this->product = $product;
-        
+
         if (Auth::guard('customer')->check()) {
             $this->isWishlisted = Wishlist::where('customer_id', Auth::guard('customer')->id())
                 ->where('product_id', $this->product->id)
@@ -25,7 +26,7 @@ class WishlistButton extends Component
 
     public function toggleWishlist()
     {
-        if (!Auth::guard('customer')->check()) {
+        if (! Auth::guard('customer')->check()) {
             return redirect()->route('account.login');
         }
 

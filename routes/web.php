@@ -1,13 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\OrderPdfController;
+use App\Http\Controllers\ProductReviewController;
+use App\Http\Controllers\Storefront\AuthController;
 use App\Http\Controllers\Storefront\CatalogController;
 use App\Http\Controllers\Storefront\CheckoutController;
-use App\Http\Controllers\Storefront\OrderTrackingController;
-use App\Http\Controllers\Storefront\AuthController;
 use App\Http\Controllers\Storefront\LandingPageController;
-use App\Http\Controllers\ProductReviewController;
-use App\Http\Controllers\Admin\OrderPdfController;
+use App\Http\Controllers\Storefront\OrderTrackingController;
+use App\Livewire\WishlistPage;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('products.index');
@@ -34,20 +35,21 @@ Route::prefix('account')->name('account.')->group(function () {
         Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
         Route::post('/register', [AuthController::class, 'register']);
         Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
-        // We'll skip complex password reset for now or implement a simple one if needed
     });
 
     Route::middleware('auth:customer')->group(function () {
         Route::get('/orders', [AuthController::class, 'orders'])->name('orders');
-        Route::get('/wishlist', \App\Livewire\WishlistPage::class)->name('wishlist');
+        Route::get('/wishlist', WishlistPage::class)->name('wishlist');
         Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store'])->name('products.reviews.store');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     });
 });
 
-// Admin Route for PDF (Can be protected by auth middleware later)
-Route::get('/admin/orders/{id}/pdf', [OrderPdfController::class, 'download'])->name('admin.orders.pdf');
+// Admin Route for PDF — protected by web (Filament) auth guard.
+// Only authenticated admin users (App\Models\User) may download order invoices.
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/orders/{id}/pdf', [OrderPdfController::class, 'download'])->name('admin.orders.pdf');
+});
 
 // Dynamic Landing Page Route (Must be at the very end to avoid conflicts)
 Route::get('/{slug}', [LandingPageController::class, 'show'])->name('landing.show');
-

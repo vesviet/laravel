@@ -13,8 +13,10 @@ use Filament\Tables\Table;
 class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
-    protected static ?string $navigationGroup = 'Shop';
+
+    protected static ?string $navigationGroup = 'Orders';
 
     public static function form(Form $form): Form
     {
@@ -88,7 +90,7 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('customer_name')->searchable(),
                 Tables\Columns\TextColumn::make('phone')->searchable(),
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->formatStateUsing(fn ($state) => '$' . number_format((float)$state, 2))
+                    ->formatStateUsing(fn ($state) => '$'.number_format((float) $state, 2))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()

@@ -10,6 +10,8 @@ class ProductReviewController extends Controller
 {
     /**
      * Store a new product review.
+     * Requires verified purchase: customer must have at least one 'delivered' order
+     * containing this product.
      */
     public function store(Request $request, $productId)
     {
@@ -20,29 +22,30 @@ class ProductReviewController extends Controller
 
         $customerId = auth('customer')->id();
 
-        if (!$customerId) {
+        if (! $customerId) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // Verified Purchase Logic: Customer must have at least one completed order containing this product
+        // Verified Purchase: customer must have a 'delivered' order containing this product.
+        // 'delivered' is the final success state in the order enum
+        // ['pending','confirmed','shipping','delivered','cancelled'].
         $hasPurchased = Order::where('customer_id', $customerId)
-            ->where('status', 'completed')
+            ->where('status', 'delivered')
             ->whereHas('items', function ($query) use ($productId) {
-                // If order item stores product_variant_id, we need to join or relate to product.
-                // Assuming OrderItem belongsTo ProductVariant and ProductVariant belongsTo Product
-                $query->whereHas('productVariant', function ($q) use ($productId) {
-                    $q->where('product_id', $productId);
-                })->orWhere('product_id', $productId); // Fallback if order item directly has product_id
+                $query->where('product_id', $productId)
+                    ->orWhereHas('productVariant', function ($q) use ($productId) {
+                        $q->where('product_id', $productId);
+                    });
             })
             ->exists();
 
-        if (!$hasPurchased) {
+        if (! $hasPurchased) {
             return response()->json([
-                'message' => 'You must purchase and receive this product before reviewing.'
+                'message' => 'You must purchase and receive this product before reviewing.',
             ], 403);
         }
 
-        // Check if already reviewed (optional but good practice)
+        // Prevent duplicate reviews per product per customer.
         $existingReview = ProductReview::where('product_id', $productId)
             ->where('customer_id', $customerId)
             ->first();
@@ -56,12 +59,12 @@ class ProductReviewController extends Controller
             'customer_id' => $customerId,
             'rating' => $request->rating,
             'comment' => $request->comment,
-            'status' => 'pending', // Requires admin approval based on rules
+            'status' => 'pending', // Requires admin approval.
         ]);
 
         return response()->json([
             'message' => 'Review submitted successfully and is pending approval.',
-            'review' => $review
+            'review' => $review,
         ], 201);
     }
 }

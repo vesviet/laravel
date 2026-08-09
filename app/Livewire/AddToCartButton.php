@@ -2,16 +2,19 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Product;
+use App\Services\CartService;
+use Livewire\Component;
 
 class AddToCartButton extends Component
 {
     public Product $product;
-    public $quantity = 1;
-    public $variantId = null;
 
-    public function mount(Product $product)
+    public int $quantity = 1;
+
+    public ?int $variantId = null;
+
+    public function mount(Product $product): void
     {
         $this->product = $product;
         if ($this->product->variants->count() > 0) {
@@ -19,43 +22,23 @@ class AddToCartButton extends Component
         }
     }
 
-    public function increment()
+    public function increment(): void
     {
         $this->quantity++;
     }
 
-    public function decrement()
+    public function decrement(): void
     {
         if ($this->quantity > 1) {
             $this->quantity--;
         }
     }
 
-    public function addToCart()
+    public function addToCart(CartService $cartService): void
     {
-        // Simple session-based cart
-        $cart = session()->get('cart', []);
-        
-        $key = $this->product->id . ($this->variantId ? '_' . $this->variantId : '');
-        
-        if (isset($cart[$key])) {
-            $cart[$key]['quantity'] += $this->quantity;
-        } else {
-            $variant = $this->variantId ? $this->product->variants->where('id', $this->variantId)->first() : null;
-            
-            $cart[$key] = [
-                'product_id' => $this->product->id,
-                'variant_id' => $this->variantId,
-                'name' => $this->product->name,
-                'variant_name' => $variant ? $variant->name : null,
-                'price' => $variant ? $variant->price : $this->product->price,
-                'quantity' => $this->quantity,
-                'image_path' => $this->product->image_path,
-            ];
-        }
-        
-        session()->put('cart', $cart);
-        
+        // Delegate all cart logic to CartService — single source of truth for cart state.
+        $cartService->add($this->product->id, $this->variantId, $this->quantity);
+
         $this->dispatch('cart-updated');
         $this->dispatch('open-cart');
     }

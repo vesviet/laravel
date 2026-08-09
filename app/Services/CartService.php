@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\FlashSaleItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Session;
@@ -64,105 +65,119 @@ class CartService
         Session::forget($this->sessionKey);
     }
 
+    /**
+     * Calculate cart total applying flash sale prices where applicable.
+     * Batch-loads products, variants, and flash sale items to avoid N+1 queries.
+     */
     public function calculateTotal(): float
     {
-        $cart = $this->getCart();
-        $total = 0;
+        $items = $this->getCartItemsDetails();
 
-        foreach ($cart as $item) {
-            $isFlashSale = false;
-            
-            // Check Flash Sale
-            $flashSaleItem = \App\Models\FlashSaleItem::where('product_id', $item['product_id'])
-                ->whereHas('flashSale', function ($q) {
-                    $q->where('status', 'active')
-                      ->where('start_time', '<=', now())
-                      ->where('end_time', '>=', now());
-                })
-                ->whereColumn('sold_quantity', '<', 'quantity')
-                ->first();
-
-            if ($flashSaleItem) {
-                $price = $flashSaleItem->price;
-            } elseif ($item['product_variant_id']) {
-                $variant = ProductVariant::find($item['product_variant_id']);
-                if ($variant) {
-                    $price = $variant->price;
-                }
-            } else {
-                $product = Product::find($item['product_id']);
-                if ($product) {
-                    $price = $product->price;
-                }
-            }
-            $total += $price * $item['quantity'];
-        }
-
-        return $total;
+        return (float) array_sum(array_column($items, 'subtotal'));
     }
 
+    /**
+     * Return enriched cart items with price, name, flash sale state, and subtotal.
+     * Uses batch queries to avoid N+1 — one query each for products, variants, and flash sale items.
+     */
     public function getCartItemsDetails(): array
     {
         $cart = $this->getCart();
-        $items = [];
 
+        if (empty($cart)) {
+            return [];
+        }
+
+        // Collect IDs for batch loading
+        $productIds = array_unique(array_filter(array_column($cart, 'product_id')));
+        $variantIds = array_unique(array_filter(array_column($cart, 'product_variant_id')));
+
+        // Batch load products and variants
+        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+        $variants = $variantIds
+            ? ProductVariant::with('product')->whereIn('id', $variantIds)->get()->keyBy('id')
+            : collect();
+
+        // Batch load active flash sale items for all products in cart
+        $flashSaleItems = $this->getActiveFlashSaleItems($productIds);
+
+        $items = [];
         foreach ($cart as $key => $item) {
-            $price = 0;
+            $productId = $item['product_id'];
+            $variantId = $item['product_variant_id'] ?? null;
+            $quantity = $item['quantity'];
+
+            $price = 0.0;
             $name = '';
             $sku = '';
             $variantName = null;
-
             $isFlashSale = false;
-            $flashSaleItem = \App\Models\FlashSaleItem::where('product_id', $item['product_id'])
-                ->whereHas('flashSale', function ($q) {
-                    $q->where('status', 'active')
-                      ->where('start_time', '<=', now())
-                      ->where('end_time', '>=', now());
-                })
-                ->whereColumn('sold_quantity', '<', 'quantity')
-                ->first();
+            $imagePath   = null;
 
-            if ($item['product_variant_id']) {
-                $variant = ProductVariant::with('product')->find($item['product_variant_id']);
-                if ($variant) {
-                    $price = $variant->price;
-                    $name = $variant->product->name ?? '';
-                    $variantName = $variant->name;
-                    $sku = $variant->sku;
-                }
-            } else {
-                $product = Product::find($item['product_id']);
-                if ($product) {
-                    $price = $product->price;
-                    $name = $product->name;
-                    $sku = $product->sku;
-                }
+            if ($variantId && $variants->has($variantId)) {
+                $variant = $variants->get($variantId);
+                $price = (float) $variant->price;
+                $name = $variant->product->name ?? '';
+                $variantName = $variant->name;
+                $sku = $variant->sku ?? '';
+                $imagePath = $variant->product->thumbnail ?? null;
+            } elseif ($products->has($productId)) {
+                $product = $products->get($productId);
+                $price = (float) $product->price;
+                $name = $product->name;
+                $sku = $product->sku ?? '';
+                $imagePath = $product->thumbnail ?? null;
             }
 
-            if ($flashSaleItem) {
-                $price = $flashSaleItem->price;
+            // Override price with flash sale price if applicable
+            if (isset($flashSaleItems[$productId])) {
+                $price = (float) $flashSaleItems[$productId]->price;
                 $isFlashSale = true;
             }
 
             $items[] = [
-                'product_id' => $item['product_id'],
-                'product_variant_id' => $item['product_variant_id'],
-                'product_name' => $name,
-                'variant_name' => $variantName,
-                'sku' => $sku,
-                'price' => $price,
-                'quantity' => $item['quantity'],
-                'subtotal' => $price * $item['quantity'],
-                'is_flash_sale' => $isFlashSale,
+                'product_id'         => $productId,
+                'product_variant_id' => $variantId,
+                'product_name'       => $name,
+                'variant_name'       => $variantName,
+                'sku'                => $sku,
+                'price'              => $price,
+                'quantity'           => $quantity,
+                'subtotal'           => $price * $quantity,
+                'is_flash_sale'      => $isFlashSale,
+                'image_path'         => $imagePath ?? null,
             ];
         }
 
         return $items;
     }
 
+    /**
+     * Batch-load active flash sale items for the given product IDs.
+     * Returns a keyed collection by product_id.
+     */
+    private function getActiveFlashSaleItems(array $productIds): array
+    {
+        if (empty($productIds)) {
+            return [];
+        }
+
+        $items = FlashSaleItem::whereIn('product_id', $productIds)
+            ->whereHas('flashSale', function ($q) {
+                $q->where('status', 'active')
+                    ->where('start_time', '<=', now())
+                    ->where('end_time', '>=', now());
+            })
+            ->whereColumn('sold_quantity', '<', 'quantity')
+            ->get()
+            ->keyBy('product_id');
+
+        return $items->all();
+    }
+
     protected function generateKey(int $productId, ?int $variantId): string
     {
-        return $productId . '_' . ($variantId ?? '0');
+        return $productId.'_'.($variantId ?? '0');
     }
 
     protected function saveCart(array $cart): void

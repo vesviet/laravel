@@ -66,6 +66,7 @@
 
     <livewire:cart-drawer />
 
+    @stack('scripts')
     @livewireScripts
 </body>
 </html>

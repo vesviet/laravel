@@ -42,13 +42,13 @@
 
                     <div class="mt-8">
                         <div class="flow-root">
-                            @if(count($cart) > 0)
+                            @if(!empty($cartItems))
                             <ul role="list" aria-live="polite" class="-my-6 divide-y divide-gray-200">
-                                @foreach($cart as $key => $item)
+                                @foreach($cartItems as $item)
                                 <li class="py-6 flex">
                                     <div class="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
-                                        @if($item['image_path'])
-                                            <img src="{{ Storage::url($item['image_path']) }}" alt="{{ $item['name'] }}" class="w-full h-full object-center object-cover">
+                                        @if($item['image_path'] ?? null)
+                                            <img src="{{ Storage::url($item['image_path']) }}" alt="{{ $item['product_name'] }}" class="w-full h-full object-center object-cover">
                                         @else
                                             <div class="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">No Image</div>
                                         @endif
@@ -57,8 +57,8 @@
                                     <div class="ml-4 flex-1 flex flex-col">
                                         <div>
                                             <div class="flex justify-between text-base font-medium text-gray-900">
-                                                <h3>{{ $item['name'] }}</h3>
-                                                <p class="ml-4">${{ number_format($item['price'], 2) }}</p>
+                                                <h3>{{ $item['product_name'] }}</h3>
+                                                <p class="ml-4">{{ number_format($item['price'], 0, ',', '.') }}₫</p>
                                             </div>
                                             @if($item['variant_name'])
                                             <p class="mt-1 text-sm text-gray-500">{{ $item['variant_name'] }}</p>
@@ -66,13 +66,22 @@
                                         </div>
                                         <div class="flex-1 flex items-end justify-between text-sm">
                                             <div class="flex items-center border border-gray-300 rounded">
-                                                <button type="button" wire:click="updateQuantity('{{ $key }}', {{ $item['quantity'] - 1 }})" aria-label="Decrease quantity" class="px-2 py-1 min-w-[32px] min-h-[32px] flex items-center justify-center text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-l">-</button>
+                                                <button type="button"
+                                                    wire:click="updateQuantity({{ $item['product_id'] }}, {{ $item['product_variant_id'] ?? 'null' }}, {{ max(1, $item['quantity'] - 1) }})"
+                                                    aria-label="Decrease quantity"
+                                                    class="px-2 py-1 min-w-[32px] min-h-[32px] flex items-center justify-center text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-l">-</button>
                                                 <span class="px-2 min-w-[32px] text-center" aria-live="polite">{{ $item['quantity'] }}</span>
-                                                <button type="button" wire:click="updateQuantity('{{ $key }}', {{ $item['quantity'] + 1 }})" aria-label="Increase quantity" class="px-2 py-1 min-w-[32px] min-h-[32px] flex items-center justify-center text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-r">+</button>
+                                                <button type="button"
+                                                    wire:click="updateQuantity({{ $item['product_id'] }}, {{ $item['product_variant_id'] ?? 'null' }}, {{ $item['quantity'] + 1 }})"
+                                                    aria-label="Increase quantity"
+                                                    class="px-2 py-1 min-w-[32px] min-h-[32px] flex items-center justify-center text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-r">+</button>
                                             </div>
 
                                             <div class="flex">
-                                                <button type="button" wire:click="removeItem('{{ $key }}')" aria-label="Remove {{ $item['name'] }}" class="font-medium text-blue-600 hover:text-blue-500 p-2 min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md">Remove</button>
+                                                <button type="button"
+                                                    wire:click="removeItem({{ $item['product_id'] }}, {{ $item['product_variant_id'] ?? 'null' }})"
+                                                    aria-label="Remove {{ $item['product_name'] }}"
+                                                    class="font-medium text-blue-600 hover:text-blue-500 p-2 min-w-[44px] min-h-[44px] focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md">Remove</button>
                                             </div>
                                         </div>
                                     </div>
@@ -92,7 +101,7 @@
                     </div>
                 </div>
 
-                @if(count($cart) > 0)
+                @if(!empty($cartItems))
                 <div class="border-t border-gray-200 py-6 px-4 sm:px-6">
                     <div class="flex justify-between text-base font-medium text-gray-900">
                         <p>Subtotal</p>

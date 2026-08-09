@@ -1,13 +1,10 @@
 <?php
 
-use App\Models\User;
-use App\Models\Customer;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
-use Livewire\Livewire;
 use App\Livewire\ProductReviews;
+use App\Models\Customer;
+use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 
 uses(RefreshDatabase::class);
 
@@ -15,17 +12,17 @@ it('allows customer to submit review if they have purchased the product', functi
     $customer = Customer::create([
         'name' => 'Jane Doe',
         'email' => 'jane@example.com',
-        'password' => bcrypt('password')
+        'password' => bcrypt('password'),
     ]);
-    
+
     $product = Product::create([
         'name' => 'Review Product',
-        'slug' => 'review-product-' . time(),
+        'slug' => 'review-product-'.time(),
         'price' => 100000,
         'stock' => 10,
-        'status' => 'published'
+        'status' => 'published',
     ]);
-    
+
     // Test that review can't be submitted if not logged in
     Livewire::test(ProductReviews::class, ['product' => $product])
         ->set('rating', 5)
@@ -40,11 +37,11 @@ it('allows customer to submit review if they have purchased the product', functi
         ->set('rating', 5)
         ->set('comment', 'Awesome product!')
         ->call('submitReview');
-        
+
     $this->assertDatabaseHas('product_reviews', [
         'customer_id' => $customer->id,
         'product_id' => $product->id,
         'rating' => 5,
-        'comment' => 'Awesome product!'
+        'comment' => 'Awesome product!',
     ]);
 });

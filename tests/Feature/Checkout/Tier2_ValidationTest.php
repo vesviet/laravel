@@ -9,19 +9,16 @@ beforeEach(function () {
         'slug' => 'test-product',
         'price' => 100,
         'stock' => 10,
-        'status' => 'published'
+        'status' => 'published',
     ]);
 
+    // Cart session uses CartService schema (product_variant_id, not variant_id).
     Session::put('cart', [
-        $this->product->id . '_0' => [
+        "{$this->product->id}_0" => [
             'product_id' => $this->product->id,
             'product_variant_id' => null,
-            'variant_id' => null,
             'quantity' => 1,
-            'price' => 100,
-            'name' => 'Test Product',
-            'variant_name' => null,
-        ]
+        ],
     ]);
 });
 

@@ -2,67 +2,62 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use App\Services\CartService;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
 class CartDrawer extends Component
 {
-    public $cart = [];
-    public $isOpen = false;
+    public bool $isOpen = false;
 
-    public function mount()
+    /** @var array Enriched cart items from CartService */
+    public array $cartItems = [];
+
+    public function mount(CartService $cartService): void
     {
-        $this->loadCart();
+        $this->loadCart($cartService);
     }
 
     #[On('cart-updated')]
-    public function loadCart()
+    public function loadCart(CartService $cartService): void
     {
-        $this->cart = session()->get('cart', []);
+        $this->cartItems = $cartService->getCartItemsDetails();
     }
 
     #[On('open-cart')]
-    public function openCart()
+    public function openCart(): void
     {
         $this->isOpen = true;
     }
 
-    public function closeCart()
+    public function closeCart(): void
     {
         $this->isOpen = false;
     }
 
-    public function updateQuantity($key, $qty)
+    public function updateQuantity(int $productId, ?int $variantId, int $qty, CartService $cartService): void
     {
         if ($qty < 1) {
             return;
         }
-        
-        $cart = session()->get('cart', []);
-        if (isset($cart[$key])) {
-            $cart[$key]['quantity'] = $qty;
-            session()->put('cart', $cart);
-            $this->loadCart();
-            $this->dispatch('cart-updated');
-        }
+
+        $cartService->update($productId, $variantId, $qty);
+        $this->loadCart($cartService);
+        $this->dispatch('cart-updated');
     }
 
-    public function removeItem($key)
+    public function removeItem(int $productId, ?int $variantId, CartService $cartService): void
     {
-        $cart = session()->get('cart', []);
-        if (isset($cart[$key])) {
-            unset($cart[$key]);
-            session()->put('cart', $cart);
-            $this->loadCart();
-            $this->dispatch('cart-updated');
-        }
+        $cartService->remove($productId, $variantId);
+        $this->loadCart($cartService);
+        $this->dispatch('cart-updated');
     }
 
-    public function getSubtotalProperty()
+    #[Computed]
+    public function subtotal(): float
     {
-        return collect($this->cart)->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
-        });
+        return (float) array_sum(array_column($this->cartItems, 'subtotal'));
     }
 
     public function render()

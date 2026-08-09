@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use App\Rules\ValidPhoneVN;
 use App\Rules\StockAvailable;
+use App\Rules\ValidPhoneVN;
 use App\Services\CartService;
+use Illuminate\Foundation\Http\FormRequest;
 
 class CheckoutRequest extends FormRequest
 {
@@ -14,14 +14,15 @@ class CheckoutRequest extends FormRequest
         return true;
     }
 
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
-        // Inject cart items into request data so we can validate stock and structure
+        // Resolve CartService from the container — FormRequest constructor cannot be
+        // easily overridden with custom DI without breaking the framework's request lifecycle.
         $cartService = app(CartService::class);
-        $cartItems = $cartService->getCartItemsDetails();
-        
+
+        // Inject cart items into request data so we can validate stock and structure.
         $this->merge([
-            'items' => $cartItems,
+            'items' => $cartService->getCartItemsDetails(),
         ]);
     }
 
@@ -37,7 +38,7 @@ class CheckoutRequest extends FormRequest
             'ward' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:1000'],
             'payment_method' => ['required', 'in:cod'],
-            
+
             // Validate cart items
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'integer', 'exists:products,id'],
@@ -45,8 +46,8 @@ class CheckoutRequest extends FormRequest
             'items.*.quantity' => ['required', 'integer', 'min:1', new StockAvailable],
         ];
     }
-    
-    public function messages()
+
+    public function messages(): array
     {
         return [
             'items.required' => 'Your cart is empty.',

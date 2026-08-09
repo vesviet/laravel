@@ -2,13 +2,14 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\FlashSale;
 use Carbon\Carbon;
+use Livewire\Component;
 
 class FlashSaleBanner extends Component
 {
     public $flashSale;
+
     public $endTime;
 
     public function mount()

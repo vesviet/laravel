@@ -3,7 +3,7 @@
 use App\Rules\ValidPhoneVN;
 
 it('validates correct Vietnamese phone numbers', function ($phone) {
-    $rule = new ValidPhoneVN();
+    $rule = new ValidPhoneVN;
     $failed = false;
     $rule->validate('phone', $phone, function ($message) use (&$failed) {
         $failed = true;
@@ -18,7 +18,7 @@ it('validates correct Vietnamese phone numbers', function ($phone) {
 ]);
 
 it('rejects incorrect Vietnamese phone numbers', function ($phone) {
-    $rule = new ValidPhoneVN();
+    $rule = new ValidPhoneVN;
     $failed = false;
     $rule->validate('phone', $phone, function ($message) use (&$failed) {
         $failed = true;

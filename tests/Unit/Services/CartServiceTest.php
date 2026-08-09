@@ -1,19 +1,18 @@
 <?php
 
-use App\Services\CartService;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Services\CartService;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 beforeEach(function () {
-    $this->cartService = new CartService();
+    $this->cartService = new CartService;
     Session::start();
 });
 
 it('can add item to cart', function () {
     $this->cartService->add(1, null, 2);
-    
+
     $cart = $this->cartService->getCart();
     expect($cart)->toHaveKey('1_0')
         ->and($cart['1_0']['quantity'])->toBe(2);

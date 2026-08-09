@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
-            
+
             $table->unique(['customer_id', 'product_id']);
         });
 
@@ -48,7 +48,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->integer('sold_quantity')->default(0);
             $table->timestamps();
-            
+
             $table->unique(['flash_sale_id', 'product_id']);
         });
     }
@@ -59,7 +59,7 @@ return new class extends Migration
         Schema::dropIfExists('flash_sales');
         Schema::dropIfExists('wishlists');
         Schema::dropIfExists('product_reviews');
-        
+
         Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn('waybill_id');
         });
