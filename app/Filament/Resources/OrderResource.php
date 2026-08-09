@@ -87,7 +87,9 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('order_number')->searchable(),
                 Tables\Columns\TextColumn::make('customer_name')->searchable(),
                 Tables\Columns\TextColumn::make('phone')->searchable(),
-                Tables\Columns\TextColumn::make('total_amount')->money()->sortable(),
+                Tables\Columns\TextColumn::make('total_amount')
+                    ->formatStateUsing(fn ($state) => '$' . number_format((float)$state, 2))
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {

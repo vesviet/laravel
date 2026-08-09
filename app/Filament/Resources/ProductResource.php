@@ -109,7 +109,9 @@ class ProductResource extends Resource
                 Tables\Columns\ImageColumn::make('image_path')->label('Image'),
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('sku')->searchable(),
-                Tables\Columns\TextColumn::make('price')->money()->sortable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->formatStateUsing(fn ($state) => '$' . number_format((float)$state, 2))
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('stock')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('status')->badge()->color(fn (string $state): string => match ($state) {
                     'draft' => 'warning',
