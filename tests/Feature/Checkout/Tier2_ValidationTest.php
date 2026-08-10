@@ -46,6 +46,7 @@ it('requires cart to have items to checkout', function () {
         'customer_name' => 'John Doe',
         'phone' => '0901234567',
         'address' => '123 Main St',
+        'payment_method' => 'cod',
     ]);
 
     $response->assertRedirect('/products');

@@ -40,7 +40,6 @@ class CheckoutRequest extends FormRequest
             'payment_method' => ['required', 'in:cod'],
 
             // Validate cart items
-            'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'integer', 'exists:products,id'],
             'items.*.product_variant_id' => ['nullable', 'integer', 'exists:product_variants,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1', new StockAvailable],
@@ -49,9 +48,6 @@ class CheckoutRequest extends FormRequest
 
     public function messages(): array
     {
-        return [
-            'items.required' => 'Your cart is empty.',
-            'items.min' => 'Your cart must have at least one item.',
-        ];
+        return [];
     }
 }
