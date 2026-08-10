@@ -73,11 +73,4 @@ class AuthController extends Controller
 
         return redirect()->route('products.index');
     }
-
-    public function orders()
-    {
-        $orders = Auth::guard('customer')->user()->orders()->orderBy('created_at', 'desc')->get();
-
-        return view('storefront.account.orders', compact('orders'));
-    }
 }

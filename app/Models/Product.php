@@ -45,4 +45,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductReview::class);
     }
+
+    public function scopeFilterByCategory($query, $categorySlug)
+    {
+        if ($categorySlug) {
+            return $query->whereHas('category', function ($q) use ($categorySlug) {
+                $q->where('slug', $categorySlug);
+            });
+        }
+        return $query;
+    }
 }

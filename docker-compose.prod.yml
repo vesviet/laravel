@@ -1,0 +1,59 @@
+services:
+  app:
+    image: ${GHCR_IMAGE:-ghcr.io/yourusername/laravel-app:latest}
+    restart: always
+    working_dir: /var/www/html
+    networks:
+      - laravel-net
+    environment:
+      - APP_ENV=production
+    volumes:
+      - public_data:/var/www/html/public
+
+  web:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      - public_data:/var/www/html/public
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - laravel-net
+
+  db:
+    image: mysql:8.0
+    command: --skip-name-resolve
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME:-laravel}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel-net
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - laravel-net
+
+networks:
+  laravel-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
+  public_data:

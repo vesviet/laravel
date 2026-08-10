@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\OrderPdfController;
 use App\Http\Controllers\ProductReviewController;
+use App\Http\Controllers\Storefront\AccountController;
 use App\Http\Controllers\Storefront\AuthController;
 use App\Http\Controllers\Storefront\CatalogController;
 use App\Http\Controllers\Storefront\CheckoutController;
@@ -38,7 +39,7 @@ Route::prefix('account')->name('account.')->group(function () {
     });
 
     Route::middleware('auth:customer')->group(function () {
-        Route::get('/orders', [AuthController::class, 'orders'])->name('orders');
+        Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
         Route::get('/wishlist', WishlistPage::class)->name('wishlist');
         Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store'])->name('products.reviews.store');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

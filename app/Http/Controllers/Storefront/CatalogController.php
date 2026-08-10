@@ -11,13 +11,9 @@ class CatalogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::where('status', 'published')->with('category');
-
-        if ($request->has('category')) {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
-        }
+        $query = Product::where('status', 'published')
+            ->with('category')
+            ->filterByCategory($request->query('category'));
 
         $products = $query->paginate(12);
         $categories = Category::all();
