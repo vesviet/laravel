@@ -5,6 +5,8 @@ services:
     working_dir: /var/www/html
     networks:
       - laravel-net
+    env_file:
+      - .env
     environment:
       - APP_ENV=production
     volumes:
