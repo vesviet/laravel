@@ -14,8 +14,8 @@
     
     <script type="application/ld+json">
     {
-      "@context": "https://schema.org/",
-      "@type": "Product",
+      "@@context": "https://schema.org/",
+      "@@type": "Product",
       "name": "{{ $product->name }}",
       @if($product->image_path)
       "image": [
