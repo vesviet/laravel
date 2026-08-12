@@ -13,6 +13,9 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Increase upload size
+RUN echo "upload_max_filesize = 100M\npost_max_size = 100M\nvariables_order = \"EGPCS\"" > /usr/local/etc/php/conf.d/uploads.ini
+
 # Install PHP extensions
 RUN pecl install redis \
     && docker-php-ext-enable redis \
