@@ -4,7 +4,7 @@
         <label for="variant" class="block text-sm font-medium text-gray-700 mb-2">Options</label>
         <select wire:model.live="variantId" id="variant" class="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
             @foreach($product->variants as $variant)
-                <option value="{{ $variant->id }}">{{ $variant->name }} - ${{ number_format($variant->price, 2) }}</option>
+                <option value="{{ $variant->id }}">{{ $variant->name }} - {{ number_format($variant->price, 0, ',', '.') }}₫</option>
             @endforeach
         </select>
     </div>

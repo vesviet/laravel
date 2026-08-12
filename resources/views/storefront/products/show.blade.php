@@ -70,7 +70,7 @@
                     <h1 class="text-3xl font-bold text-gray-900">{{ $product->name }}</h1>
                     <livewire:wishlist-button :product="$product" />
                 </div>
-                <p class="text-2xl font-semibold text-blue-600 mb-6">${{ number_format($product->price, 2) }}</p>
+                <p class="text-2xl font-semibold text-blue-600 mb-6">{{ number_format($product->price, 0, ',', '.') }}₫</p>
 
                 <div class="prose prose-sm text-gray-600 mb-8">
                     {!! nl2br(e($product->description)) !!}

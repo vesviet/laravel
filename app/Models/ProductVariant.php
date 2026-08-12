@@ -22,7 +22,7 @@ class ProductVariant extends Model
     protected $casts = [
         'attributes_json' => 'array',
         'is_active' => 'boolean',
-        'price' => 'decimal:2',
+        'price' => 'integer',
         'stock' => 'integer',
     ];
 

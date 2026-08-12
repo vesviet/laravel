@@ -27,7 +27,7 @@ class Product extends Model
 
     protected $casts = [
         'attributes_json' => 'array',
-        'price' => 'decimal:2',
+        'price' => 'integer',
         'stock' => 'integer',
     ];
 

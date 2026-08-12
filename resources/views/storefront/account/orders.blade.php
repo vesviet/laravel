@@ -56,7 +56,7 @@
                                                 Placed on <time datetime="{{ $order->created_at->format('Y-m-d') }}">{{ $order->created_at->format('M d, Y') }}</time>
                                             </p>
                                             <p class="ml-4 font-bold text-gray-900">
-                                                ${{ number_format($order->total_amount, 2) }}
+                                                {{ number_format($order->total_amount, 0, ',', '.') }}₫
                                             </p>
                                         </div>
                                     </div>

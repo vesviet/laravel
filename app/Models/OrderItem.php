@@ -22,7 +22,7 @@ class OrderItem extends Model
     ];
 
     protected $casts = [
-        'price_at_purchase' => 'decimal:2',
+        'price_at_purchase' => 'integer',
         'quantity' => 'integer',
         'is_flash_sale' => 'boolean',
     ];

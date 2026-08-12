@@ -32,10 +32,10 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'subtotal' => 'decimal:2',
-        'discount_amount' => 'decimal:2',
-        'shipping_fee' => 'decimal:2',
-        'total_amount' => 'decimal:2',
+        'subtotal' => 'integer',
+        'discount_amount' => 'integer',
+        'shipping_fee' => 'integer',
+        'total_amount' => 'integer',
     ];
 
     public function customer()

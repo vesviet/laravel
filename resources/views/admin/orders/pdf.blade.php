@@ -57,9 +57,9 @@
             @foreach($order->items as $item)
             <tr>
                 <td>{{ $item->product_name }} {{ $item->variant_name ? '('.$item->variant_name.')' : '' }}</td>
-                <td>${{ number_format($item->price_at_purchase, 2) }}</td>
+                <td>{{ number_format($item->price_at_purchase, 0, ',', '.') }}₫</td>
                 <td>{{ $item->quantity }}</td>
-                <td>${{ number_format($item->price_at_purchase * $item->quantity, 2) }}</td>
+                <td>{{ number_format($item->price_at_purchase * $item->quantity, 0, ',', '.') }}₫</td>
             </tr>
             @endforeach
         </tbody>
@@ -68,19 +68,19 @@
     <table class="totals">
         <tr>
             <td class="label">Subtotal:</td>
-            <td>${{ number_format($order->subtotal, 2) }}</td>
+            <td>{{ number_format($order->subtotal, 0, ',', '.') }}₫</td>
         </tr>
         <tr>
             <td class="label">Shipping:</td>
-            <td>${{ number_format($order->shipping_fee, 2) }}</td>
+            <td>{{ number_format($order->shipping_fee, 0, ',', '.') }}₫</td>
         </tr>
         <tr>
             <td class="label">Discount:</td>
-            <td>-${{ number_format($order->discount_amount, 2) }}</td>
+            <td>-{{ number_format($order->discount_amount, 0, ',', '.') }}₫</td>
         </tr>
         <tr>
             <td class="label">Total Amount:</td>
-            <td><strong>${{ number_format($order->total_amount, 2) }}</strong></td>
+            <td><strong>{{ number_format($order->total_amount, 0, ',', '.') }}₫</strong></td>
         </tr>
     </table>
 

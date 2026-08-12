@@ -28,7 +28,7 @@
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Total Amount</dt>
-                    <dd class="mt-1 text-sm text-gray-900 font-bold">${{ number_format($order->total_amount, 2) }}</dd>
+                    <dd class="mt-1 text-sm text-gray-900 font-bold">{{ number_format($order->total_amount, 0, ',', '.') }}₫</dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Payment Method</dt>

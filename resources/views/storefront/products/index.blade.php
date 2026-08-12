@@ -44,7 +44,7 @@
                             </a>
                         </h4>
                         <div class="flex items-center justify-between">
-                            <span class="text-lg font-bold text-gray-900">${{ number_format($product->price, 2) }}</span>
+                            <span class="text-lg font-bold text-gray-900">{{ number_format($product->price, 0, ',', '.') }}₫</span>
                             <a href="{{ route('products.show', $product->slug) }}" class="text-sm text-blue-600 hover:text-blue-800 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md" aria-hidden="true" tabindex="-1">View Details</a>
                         </div>
                     </div>

@@ -47,7 +47,7 @@
                             @endif
                             <p class="text-sm text-gray-500">Qty: {{ $item->quantity }}</p>
                         </div>
-                        <p class="text-sm font-medium text-gray-900">${{ number_format($item->price_at_purchase * $item->quantity, 2) }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ number_format($item->price_at_purchase * $item->quantity, 0, ',', '.') }}₫</p>
                     </li>
                     @endforeach
                 </ul>
@@ -55,7 +55,7 @@
                 <div class="border-t border-gray-200 pt-6">
                     <dl class="flex justify-between items-center text-sm">
                         <dt class="font-medium text-gray-900">Total Amount</dt>
-                        <dd class="font-bold text-gray-900 text-lg">${{ number_format($order->total_amount, 2) }}</dd>
+                        <dd class="font-bold text-gray-900 text-lg">{{ number_format($order->total_amount, 0, ',', '.') }}₫</dd>
                     </dl>
                 </div>
             </div>

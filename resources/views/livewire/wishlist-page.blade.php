@@ -13,7 +13,7 @@
                         <img src="{{ $wishlist->product->image_path ?: 'https://placehold.co/400x400' }}" alt="{{ $wishlist->product->name }}" class="w-full h-48 object-cover">
                         <div class="p-4 flex flex-col flex-grow">
                             <h3 class="text-lg font-medium text-gray-900">{{ $wishlist->product->name }}</h3>
-                            <p class="text-gray-500 mt-1">${{ number_format($wishlist->product->price, 2) }}</p>
+                            <p class="text-gray-500 mt-1">{{ number_format($wishlist->product->price, 0, ',', '.') }}₫</p>
                             
                             <div class="mt-4 flex justify-between items-center mt-auto">
                                 <button wire:click="removeFromWishlist({{ $wishlist->id }})" class="text-sm text-red-500 hover:text-red-700">
