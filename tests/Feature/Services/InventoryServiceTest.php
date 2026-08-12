@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\InventoryService;
 use Illuminate\Support\Str;
+use Exception;
 
 beforeEach(function () {
     $this->inventoryService = new InventoryService;
