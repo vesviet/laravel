@@ -24,9 +24,14 @@ class OrderService
 
             $totalAmount = $subtotal - $discountAmount + $shippingFee;
 
+            $orderNumber = $this->generateOrderNumber();
+            while (Order::where('order_number', $orderNumber)->exists()) {
+                $orderNumber = $this->generateOrderNumber();
+            }
+
             $order = Order::create([
                 'customer_id' => $customerData['customer_id'] ?? null,
-                'order_number' => $this->generateOrderNumber(),
+                'order_number' => $orderNumber,
                 'status' => 'pending',
                 'payment_method' => $customerData['payment_method'] ?? 'cod',
                 'customer_name' => $customerData['customer_name'],
@@ -53,13 +58,14 @@ class OrderService
                     'sku' => $item['sku'] ?? null,
                     'price_at_purchase' => $item['price'],
                     'quantity' => $item['quantity'],
+                    'is_flash_sale' => !empty($item['is_flash_sale']),
                 ]);
             }
 
             // Deduct stock after order and items are created
             // We pass the fresh order to inventory service
             $order->load('items');
-            $this->inventoryService->deductStock($order);
+            $this->inventoryService->deductStock($order, $cartItems);
 
             return $order;
         });

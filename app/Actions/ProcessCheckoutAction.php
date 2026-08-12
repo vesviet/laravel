@@ -50,8 +50,21 @@ class ProcessCheckoutAction
 
         $discountAmount = $this->promotionEngine->calculateDiscount($subtotal, $cartItems, $couponCode);
         $coupon = $this->promotionEngine->resolveCoupon($couponCode, $eligibleSubtotal);
-        $shippingFee = 0; // TODO: integrate GoshipService for dynamic shipping rates
-
+        $shippingFee = 0;
+        try {
+            $goshipService = app(\App\Services\GoshipService::class);
+            $rates = $goshipService->getShippingRates([
+                'city' => $customerData['city'] ?? '',
+                'district' => $customerData['district'] ?? '',
+                'ward' => $customerData['ward'] ?? '',
+            ], ['weight' => 1000]);
+            
+            if (!empty($rates) && isset($rates[0]['total_amount'])) {
+                $shippingFee = (float) $rates[0]['total_amount'];
+            }
+        } catch (Exception $e) {
+            // fallback to 0
+        }
         // DB transaction: order creation + stock deduction + coupon usage tracking.
         // Session cart clear happens AFTER commit — session is not part of the DB transaction.
         $order = DB::transaction(function () use ($customerData, $cartItems, $subtotal, $discountAmount, $shippingFee, $coupon) {

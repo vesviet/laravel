@@ -82,3 +82,30 @@ it('throws exception when stock is insufficient', function () {
 
     $this->inventoryService->deductStock($order);
 })->throws(Exception::class);
+
+it('deducts and restores flash sale stock correctly', function () {
+    $product = Product::create(['name' => 'Flash P', 'slug' => Str::random(10), 'price' => 10, 'stock' => 10]);
+    $flashSale = \App\Models\FlashSale::create(['name' => 'FS', 'status' => 'active', 'start_time' => now()->subDay(), 'end_time' => now()->addDay()]);
+    $flashSaleItem = \App\Models\FlashSaleItem::create(['flash_sale_id' => $flashSale->id, 'product_id' => $product->id, 'price' => 5, 'quantity' => 5, 'sold_quantity' => 0]);
+
+    $order = Order::create(['customer_name' => 'Test', 'phone' => '123', 'address' => 'Addr', 'order_number' => Str::random(10), 'payment_method' => 'cod', 'subtotal' => 10, 'total_amount' => 10]);
+    OrderItem::create([
+        'order_id' => $order->id,
+        'product_id' => $product->id,
+        'product_name' => $product->name,
+        'product_variant_id' => null,
+        'quantity' => 2,
+        'price_at_purchase' => 5,
+        'is_flash_sale' => true,
+    ]);
+
+    $this->inventoryService->deductStock($order);
+
+    expect($product->fresh()->stock)->toBe(8)
+        ->and($flashSaleItem->fresh()->sold_quantity)->toBe(2);
+
+    $this->inventoryService->restoreStock($order);
+
+    expect($product->fresh()->stock)->toBe(10)
+        ->and($flashSaleItem->fresh()->sold_quantity)->toBe(0);
+});

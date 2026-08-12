@@ -18,11 +18,13 @@ class OrderItem extends Model
         'sku',
         'price_at_purchase',
         'quantity',
+        'is_flash_sale',
     ];
 
     protected $casts = [
         'price_at_purchase' => 'decimal:2',
         'quantity' => 'integer',
+        'is_flash_sale' => 'boolean',
     ];
 
     public function order()
