@@ -1,40 +1,78 @@
 <div>
+    {{-- Variant selector --}}
     @if($product->variants->count() > 0)
-    <div class="mb-6">
-        <label for="variant" class="block text-sm font-medium text-gray-700 mb-2">Options</label>
-        <select wire:model.live="variantId" id="variant" class="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
-            @foreach($product->variants as $variant)
-                <option value="{{ $variant->id }}">{{ $variant->name }} - {{ number_format($variant->price, 0, ',', '.') }}₫</option>
-            @endforeach
-        </select>
-    </div>
+        <div class="mb-6">
+            <label for="variant" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-3">
+                Lựa Chọn
+            </label>
+            <div class="flex flex-wrap gap-2">
+                @foreach($product->variants as $variant)
+                    <label class="cursor-pointer">
+                        <input type="radio"
+                               wire:model.live="variantId"
+                               value="{{ $variant->id }}"
+                               class="sr-only peer">
+                        <span class="inline-block border border-[#E5E5E5] text-xs px-4 py-2 peer-checked:border-[#1a1a1a] peer-checked:bg-[#1a1a1a] peer-checked:text-white transition-all cursor-pointer hover:border-[#1a1a1a]">
+                            {{ $variant->name }} — {{ number_format($variant->price, 0, ',', '.') }}₫
+                        </span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
     @endif
 
-    <div class="flex items-center gap-4 mb-6">
-        <label for="quantity" class="block text-sm font-medium text-gray-700 sr-only">Quantity</label>
-        <div class="flex items-center border border-gray-300 rounded-md">
-            <button type="button" wire:click="decrement" aria-label="Decrease quantity" class="px-4 py-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[44px] min-h-[44px] rounded-l-md">-</button>
-            <input type="number" wire:model="quantity" id="quantity" min="1" class="w-16 border-0 text-center py-2 focus:ring-0 sm:text-sm" readonly aria-live="polite">
-            <button type="button" wire:click="increment" aria-label="Increase quantity" class="px-4 py-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[44px] min-h-[44px] rounded-r-md">+</button>
+    {{-- Quantity + Stock --}}
+    <div class="flex items-center gap-6 mb-6">
+        <div class="flex items-center border border-[#E5E5E5]" role="group" aria-label="Số lượng">
+            <button
+                type="button"
+                wire:click="decrement"
+                aria-label="Giảm số lượng"
+                class="w-10 h-10 flex items-center justify-center text-[#888888] hover:text-[#1a1a1a] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1a1a1a]"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
+                </svg>
+            </button>
+            <span class="w-10 text-center text-sm border-l border-r border-[#E5E5E5] py-2 select-none"
+                  aria-live="polite"
+                  aria-label="Số lượng: {{ $quantity }}">
+                {{ $quantity }}
+            </span>
+            <button
+                type="button"
+                wire:click="increment"
+                aria-label="Tăng số lượng"
+                class="w-10 h-10 flex items-center justify-center text-[#888888] hover:text-[#1a1a1a] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1a1a1a]"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
         </div>
-        <div class="text-sm text-gray-500">
-            @if($product->stock > 0)
-                <span class="text-green-600">{{ $product->stock }} in stock</span>
-            @else
-                <span class="text-red-600">Out of stock</span>
-            @endif
-        </div>
+
+        <span class="text-xs {{ $product->stock > 0 ? 'text-green-700' : 'text-[#E84444]' }}"
+              aria-live="polite">
+            {{ $product->stock > 0 ? 'Còn ' . $product->stock . ' sản phẩm' : 'Hết hàng' }}
+        </span>
     </div>
 
-    <button type="button" wire:click="addToCart" @if($product->stock <= 0) disabled @endif
-        class="relative w-full bg-blue-600 border border-transparent rounded-md shadow-sm py-3 px-4 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[44px]">
-        <span wire:loading.remove wire:target="addToCart">Add to Cart</span>
-        <span wire:loading wire:target="addToCart" class="flex items-center justify-center">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+    {{-- Add to cart button --}}
+    <button
+        type="button"
+        wire:click="addToCart"
+        @if($product->stock <= 0) disabled @endif
+        wire:loading.attr="disabled"
+        wire:loading.class="opacity-50"
+        class="btn-dark w-full disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+    >
+        <span wire:loading.remove wire:target="addToCart">Thêm Vào Giỏ Hàng</span>
+        <span wire:loading wire:target="addToCart" class="flex items-center justify-center gap-3">
+            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
             </svg>
-            Adding...
+            Đang thêm...
         </span>
     </button>
 </div>

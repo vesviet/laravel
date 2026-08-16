@@ -1,54 +1,59 @@
 <div>
-    {{-- Coupon applied state --}}
     @if($couponApplied)
-        <div class="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
-            <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {{-- Applied state --}}
+        <div class="flex items-center justify-between border border-[#1a1a1a] px-4 py-3">
+            <div class="flex items-center gap-3">
+                <svg class="w-4 h-4 text-green-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <div>
-                    <p class="text-sm font-medium text-green-800">Mã <span class="font-bold">{{ $couponApplied }}</span> đã áp dụng!</p>
-                    <p class="text-xs text-green-700">Giảm: <span class="font-semibold">-{{ number_format($discount, 0, ',', '.') }}₫</span></p>
+                    <p class="text-sm">
+                        Mã <span class="font-medium">{{ $couponApplied }}</span> đã áp dụng
+                    </p>
+                    <p class="text-xs text-green-700 font-light">
+                        Tiết kiệm: -{{ number_format($discount, 0, ',', '.') }}₫
+                    </p>
                 </div>
             </div>
             <button
                 type="button"
                 wire:click="removeCoupon"
-                class="text-green-600 hover:text-green-800 text-sm font-medium ml-4 flex-shrink-0"
+                class="text-[10px] tracking-[0.12em] uppercase text-[#888888] hover:text-[#E84444] transition-colors ml-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1a1a1a]"
             >
-                Xóa
+                Xoá
             </button>
         </div>
     @else
-        {{-- Input form --}}
-        <div class="flex gap-2">
+        {{-- Input state --}}
+        <div class="flex items-center border-b border-[#1a1a1a]">
             <input
                 type="text"
                 wire:model="couponCode"
                 placeholder="Nhập mã giảm giá"
-                class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border text-sm uppercase"
+                class="flex-1 bg-transparent py-2 text-sm outline-none uppercase placeholder:normal-case placeholder:text-[#888888] font-light tracking-wider"
+                aria-label="Mã giảm giá"
             >
             <button
                 type="button"
                 wire:click="applyCoupon"
                 wire:loading.attr="disabled"
-                class="px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+                class="shrink-0 text-[10px] tracking-[0.2em] uppercase py-2 pl-4 hover:opacity-60 transition-opacity disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1a1a1a]"
             >
-                <span wire:loading.remove wire:target="applyCoupon">Áp dụng</span>
-                <span wire:loading wire:target="applyCoupon" class="flex items-center gap-1">
-                    <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <span wire:loading.remove wire:target="applyCoupon">Áp Dụng</span>
+                <span wire:loading wire:target="applyCoupon" class="flex items-center gap-2">
+                    <svg class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                     </svg>
-                    Đang kiểm tra...
+                    Kiểm tra...
                 </span>
             </button>
         </div>
 
         {{-- Error message --}}
         @if($errorMessage)
-            <p class="mt-2 text-sm text-red-600 flex items-center gap-1">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <p class="mt-2 text-xs text-[#E84444] flex items-center gap-1.5" role="alert">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 {{ $errorMessage }}

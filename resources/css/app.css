@@ -3,7 +3,197 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/* ─────────────────────────────────────────────
+   Design Tokens — Sober Furniture Monochrome
+   ───────────────────────────────────────────── */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* ─────────────────────────────────────────────
+   Base Reset
+   ───────────────────────────────────────────── */
+body {
+    background-color: #F0F0F0;
+    color: #1a1a1a;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ─────────────────────────────────────────────
+   Buttons
+   ───────────────────────────────────────────── */
+
+/* Dark filled button — "Tiến Hành Thanh Toán", "Thêm vào giỏ" */
+.btn-dark {
+    display: inline-block;
+    background-color: #2c2c2c;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    transition: background-color 0.2s ease;
+    text-align: center;
+}
+.btn-dark:hover {
+    background-color: #000000;
+}
+
+/* Outline button — secondary actions */
+.btn-outline {
+    display: inline-block;
+    border: 1px solid #1a1a1a;
+    color: #1a1a1a;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 13px 32px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    text-align: center;
+}
+.btn-outline:hover {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────
+   Typography Utilities
+   ───────────────────────────────────────────── */
+
+/* "SEE ALL", "SHOP NOW" underline links */
+.link-underline {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 1px;
+    transition: opacity 0.2s ease;
+}
+.link-underline:hover {
+    opacity: 0.6;
+}
+
+/* Nav link style */
+.nav-link {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: opacity 0.2s ease;
+}
+.nav-link:hover {
+    opacity: 0.6;
+}
+
+/* ─────────────────────────────────────────────
+   Section Layouts
+   ───────────────────────────────────────────── */
+.section-wrapper {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+/* ─────────────────────────────────────────────
+   Product Grid
+   ───────────────────────────────────────────── */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+@media (min-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ─────────────────────────────────────────────
+   Filter Bar (Listing page)
+   ───────────────────────────────────────────── */
+.filter-pill {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid #E5E5E5;
+    background-color: #ffffff;
+    color: #888888;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.filter-pill:hover,
+.filter-pill.active {
+    border-color: #1a1a1a;
+    color: #1a1a1a;
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────
+   HOT Badge
+   ───────────────────────────────────────────── */
+.badge-hot {
+    display: inline-block;
+    background-color: #E84444;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+}
+
+/* ─────────────────────────────────────────────
+   Form Controls — Checkout / Newsletter
+   ───────────────────────────────────────────── */
+.input-underline {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #1a1a1a;
+    border-radius: 0;
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 300;
+    color: #1a1a1a;
+    width: 100%;
+    outline: none;
+}
+.input-underline::placeholder {
+    color: #888888;
+}
+.input-underline:focus {
+    border-bottom-color: #000000;
+}
+
+/* ─────────────────────────────────────────────
+   Cart Drawer Overlay
+   ───────────────────────────────────────────── */
+.cart-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 90;
 }

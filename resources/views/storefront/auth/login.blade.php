@@ -1,46 +1,87 @@
 @extends('layouts.storefront')
 
-@section('title', 'Login')
+@pushonce('page_title')Đăng Nhập — @endpushonce
+@pushonce('meta_description')Đăng nhập vào tài khoản MYSHOP của bạn.@endpushonce
 
 @section('content')
-<div class="max-w-md mx-auto py-16 px-4 sm:px-6 lg:px-8">
-    <div class="bg-white rounded-lg shadow-sm p-8">
-        <h1 class="text-2xl font-bold text-gray-900 text-center mb-8">Login to Your Account</h1>
-        
-        <form action="{{ route('account.login') }}" method="POST">
-            @csrf
-            
-            <div class="mb-4">
-                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border">
-                @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-            </div>
-            
-            <div class="mb-6">
-                <div class="flex items-center justify-between">
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                    <a href="{{ route('account.password.request') }}" class="text-sm font-medium text-blue-600 hover:text-blue-500">Forgot password?</a>
+<div class="py-16 md:py-24">
+    <div class="section-wrapper">
+        <div class="max-w-sm mx-auto">
+
+            <h1 class="text-2xl font-medium tracking-wide text-center mb-10">Đăng Nhập</h1>
+
+            @if(session('status'))
+                <div class="border border-green-600 text-green-700 px-4 py-3 text-sm mb-6" role="alert">
+                    {{ session('status') }}
                 </div>
-                <input type="password" name="password" id="password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2 px-3 border">
+            @endif
+
+            <form action="{{ route('account.login') }}" method="POST" class="space-y-6">
+                @csrf
+
+                {{-- Email --}}
+                <div>
+                    <label for="email" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
+                        Địa chỉ email
+                    </label>
+                    <input type="email"
+                           name="email"
+                           id="email"
+                           value="{{ old('email') }}"
+                           required
+                           autofocus
+                           autocomplete="email"
+                           class="input-underline w-full @error('email') border-[#E84444] @enderror">
+                    @error('email')
+                        <span class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- Password --}}
+                <div>
+                    <div class="flex items-baseline justify-between mb-2">
+                        <label for="password" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888]">
+                            Mật khẩu
+                        </label>
+                        <a href="{{ route('account.password.request') }}"
+                           class="text-[10px] tracking-[0.1em] text-[#888888] hover:text-[#1a1a1a] transition-colors">
+                            Quên mật khẩu?
+                        </a>
+                    </div>
+                    <input type="password"
+                           name="password"
+                           id="password"
+                           required
+                           autocomplete="current-password"
+                           class="input-underline w-full">
+                </div>
+
+                {{-- Remember me --}}
+                <div class="flex items-center gap-3">
+                    <input id="remember"
+                           name="remember"
+                           type="checkbox"
+                           class="h-4 w-4 accent-[#1a1a1a] cursor-pointer">
+                    <label for="remember" class="text-sm text-[#888888] cursor-pointer font-light">
+                        Ghi nhớ đăng nhập
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-dark w-full">
+                    Đăng Nhập
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-sm text-[#888888] font-light">
+                    Chưa có tài khoản?
+                    <a href="{{ route('register') }}"
+                       class="text-[#1a1a1a] hover:opacity-60 transition-opacity ml-1 underline underline-offset-2">
+                        Đăng ký ngay
+                    </a>
+                </p>
             </div>
-            
-            <div class="flex items-center mb-6">
-                <input id="remember" name="remember" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                <label for="remember" class="ml-2 block text-sm text-gray-900">
-                    Remember me
-                </label>
-            </div>
-            
-            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Sign in
-            </button>
-        </form>
-        
-        <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600">
-                Don't have an account? 
-                <a href="{{ route('account.register') }}" class="font-medium text-blue-600 hover:text-blue-500">Sign up</a>
-            </p>
+
         </div>
     </div>
 </div>
