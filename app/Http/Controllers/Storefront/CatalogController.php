@@ -11,14 +11,23 @@ class CatalogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::where('status', 'published')
+        $allowedSorts = ['newest', 'price_asc', 'price_desc'];
+        $sort = in_array($request->query('sort'), $allowedSorts) ? $request->query('sort') : 'newest';
+
+        $query = Product::active()
             ->with('category')
             ->filterByCategory($request->query('category'));
 
-        $products = $query->paginate(12);
+        $query = match ($sort) {
+            'price_asc'  => $query->orderBy('price', 'asc'),
+            'price_desc' => $query->orderBy('price', 'desc'),
+            default      => $query->latest(),
+        };
+
+        $products   = $query->paginate(12)->withQueryString();
         $categories = Category::all();
 
-        return view('storefront.products.index', compact('products', 'categories'));
+        return view('storefront.products.index', compact('products', 'categories', 'sort'));
     }
 
     public function show($slug)

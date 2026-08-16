@@ -12,10 +12,23 @@ class GoshipService
 
     protected string $token;
 
+    /** Default timeout in seconds for all Goship API calls. */
+    protected int $timeout = 8;
+
     public function __construct()
     {
         $this->baseUrl = config('services.goship.base_url', 'https://api.goship.io/api/v2');
         $this->token = config('services.goship.token', '');
+    }
+
+    /**
+     * Pre-configured HTTP client with auth token, timeout, and retry.
+     */
+    protected function http(): \Illuminate\Http\Client\PendingRequest
+    {
+        return Http::withToken($this->token)
+            ->timeout($this->timeout)
+            ->retry(2, 200, throw: false);
     }
 
     /**
@@ -46,7 +59,7 @@ class GoshipService
         ];
 
         try {
-            $response = Http::withToken($this->token)->post("{$this->baseUrl}/rates", $payload);
+            $response = $this->http()->post("{$this->baseUrl}/rates", $payload);
 
             if ($response->successful()) {
                 return $response->json('data') ?? [];
@@ -81,7 +94,7 @@ class GoshipService
         ];
 
         try {
-            $response = Http::withToken($this->token)->post("{$this->baseUrl}/shipments", $payload);
+            $response = $this->http()->post("{$this->baseUrl}/shipments", $payload);
 
             if ($response->successful()) {
                 return $response->json('data');

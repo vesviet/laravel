@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Storefront;
 
 use App\Actions\ProcessCheckoutAction;
+use App\Exceptions\CommerceException;
+use App\Exceptions\EmptyCartException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckoutRequest;
-use App\Mail\OrderConfirmationMail;
 use App\Models\Order;
 use App\Models\Province;
 use App\Services\CartService;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -24,7 +25,7 @@ class CheckoutController extends Controller
         $rawCart = $this->cartService->getCart();
 
         if (empty($rawCart)) {
-            return redirect()->route('products.index')->with('error', 'Your cart is empty.');
+            return redirect()->route('products.index')->with('error', 'Giỏ hàng của bạn đang trống.');
         }
 
         // Enriched items: contains name, price, variant_name, subtotal
@@ -68,15 +69,27 @@ class CheckoutController extends Controller
             // Clear coupon from session after use.
             session()->forget('coupon');
 
-            // Send order confirmation email if provided.
-            if (! empty($order->email)) {
-                Mail::to($order->email)->send(new OrderConfirmationMail($order));
-            }
+            // A1: OrderPlaced event dispatched inside ProcessCheckoutAction.
+            // SendOrderConfirmationEmail queued listener handles email async — no inline Mail here.
 
             return redirect()->route('checkout.success', ['order_number' => $order->order_number]);
-        } catch (\Exception $e) {
+        } catch (CommerceException $e) {
+            // P1-02: CommerceException messages are user-safe — they come from our domain layer
+            // (InsufficientStockException, EmptyCartException, InvalidCouponException, etc.)
             return back()
-                ->with('error', 'There was an error processing your order. Please try again. '.$e->getMessage())
+                ->with('error', $e->getMessage())
+                ->withInput();
+        } catch (\Throwable $e) {
+            // P1-02: Generic/system exceptions MUST NOT expose $e->getMessage() to the user
+            // (could contain DB errors, stack traces, internal class names — OWASP A05)
+            Log::error('Checkout failed', [
+                'exception' => $e->getMessage(),
+                'trace'     => $e->getTraceAsString(),
+                'cart'      => session()->get('cart'),
+            ]);
+
+            return back()
+                ->with('error', 'Lỗi xử lý đơn hàng. Vui lòng thử lại hoặc liên hệ hỗ trợ.')
                 ->withInput();
         }
     }

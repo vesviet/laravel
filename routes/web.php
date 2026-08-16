@@ -6,14 +6,14 @@ use App\Http\Controllers\Storefront\AccountController;
 use App\Http\Controllers\Storefront\AuthController;
 use App\Http\Controllers\Storefront\CatalogController;
 use App\Http\Controllers\Storefront\CheckoutController;
+use App\Http\Controllers\Storefront\HomepageController;
 use App\Http\Controllers\Storefront\LandingPageController;
+use App\Http\Controllers\Storefront\NewsletterController;
 use App\Http\Controllers\Storefront\OrderTrackingController;
 use App\Livewire\WishlistPage;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect()->route('products.index');
-});
+Route::get('/', [HomepageController::class, 'index'])->name('home');
 
 // Catalog
 Route::get('/products', [CatalogController::class, 'index'])->name('products.index');
@@ -21,21 +21,28 @@ Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('produc
 
 // Checkout
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store')->middleware('throttle:checkout');
 Route::get('/checkout/success/{order_number}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Order Tracking
 Route::get('/track-order', [OrderTrackingController::class, 'index'])->name('track-order.index');
-Route::post('/track-order', [OrderTrackingController::class, 'track'])->name('track-order.track');
+Route::post('/track-order', [OrderTrackingController::class, 'track'])->name('track-order.track')->middleware('throttle:20,1');
+
+// Newsletter
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])->name('newsletter.subscribe')->middleware('throttle:newsletter');
 
 // Auth (Customer)
 Route::prefix('account')->name('account.')->group(function () {
     Route::middleware('guest:customer')->group(function () {
         Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
         Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
+        // B1: Forgot password flow
         Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+        Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:5,1');
+        Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+        Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
     });
 
     Route::middleware('auth:customer')->group(function () {

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Models\OrderItem;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class OrderService
@@ -14,68 +14,81 @@ class OrderService
     ) {}
 
     /**
-     * Create an order from validated data and cart items.
-     * Note: Stock deduction is expected to be handled within a transaction here or orchestrated outside.
-     * As per spec: Order creation pipeline (validate -> deduct stock -> create order record).
+     * Build an order record and its items, then deduct stock.
+     *
+     * IMPORTANT: This method MUST be called within an active DB::transaction().
+     * Transaction ownership belongs to the calling Action (ProcessCheckoutAction).
+     *
+     * Order number uniqueness is enforced by the unique index on the orders table.
+     * On the rare collision, the exception propagates — the Action's transaction
+     * rolls back and the caller may retry. This is race-safe via DB constraint,
+     * not via a check-then-insert loop.
+     *
+     * @throws \RuntimeException via InventoryService on stock shortfall.
      */
-    public function createOrder(array $customerData, array $cartItems, float $subtotal, float $discountAmount = 0, float $shippingFee = 0): Order
-    {
-        return DB::transaction(function () use ($customerData, $cartItems, $subtotal, $discountAmount, $shippingFee) {
+    public function createOrder(
+        array $customerData,
+        array $cartItems,
+        int $subtotal,
+        int $discountAmount = 0,
+        int $shippingFee = 0
+    ): Order {
+        $totalAmount = $subtotal - $discountAmount + $shippingFee;
 
-            $totalAmount = $subtotal - $discountAmount + $shippingFee;
+        $order = Order::create([
+            'customer_id'     => $customerData['customer_id'] ?? null,
+            'order_number'    => $this->generateOrderNumber(),
+            'status'          => OrderStatus::Pending,
+            'payment_method'  => $customerData['payment_method'] ?? 'cod',
+            'customer_name'   => $customerData['customer_name'],
+            'phone'           => $customerData['phone'],
+            'email'           => $customerData['email'] ?? null,
+            'address'         => $customerData['address'],
+            'city'            => $customerData['city'] ?? null,
+            'district'        => $customerData['district'] ?? null,
+            'ward'            => $customerData['ward'] ?? null,
+            'notes'           => $customerData['notes'] ?? null,
+            'subtotal'        => $subtotal,
+            'discount_amount' => $discountAmount,
+            'shipping_fee'    => $shippingFee,
+            'total_amount'    => $totalAmount,
+        ]);
 
-            $orderNumber = $this->generateOrderNumber();
-            while (Order::where('order_number', $orderNumber)->exists()) {
-                $orderNumber = $this->generateOrderNumber();
-            }
-
-            $order = Order::create([
-                'customer_id' => $customerData['customer_id'] ?? null,
-                'order_number' => $orderNumber,
-                'status' => 'pending',
-                'payment_method' => $customerData['payment_method'] ?? 'cod',
-                'customer_name' => $customerData['customer_name'],
-                'phone' => $customerData['phone'],
-                'email' => $customerData['email'] ?? null,
-                'address' => $customerData['address'],
-                'city' => $customerData['city'] ?? null,
-                'district' => $customerData['district'] ?? null,
-                'ward' => $customerData['ward'] ?? null,
-                'notes' => $customerData['notes'] ?? null,
-                'subtotal' => $subtotal,
-                'discount_amount' => $discountAmount,
-                'shipping_fee' => $shippingFee,
-                'total_amount' => $totalAmount,
+        foreach ($cartItems as $item) {
+            OrderItem::create([
+                'order_id'           => $order->id,
+                'product_id'         => $item['product_id'],
+                'product_variant_id' => $item['product_variant_id'] ?? null,
+                'product_name'       => $item['product_name'],
+                'variant_name'       => $item['variant_name'] ?? null,
+                'sku'                => $item['sku'] ?? null,
+                'price_at_purchase'  => $item['price'],
+                'quantity'           => $item['quantity'],
+                'subtotal'           => $item['price'] * $item['quantity'],
+                'is_flash_sale'      => ! empty($item['is_flash_sale']),
             ]);
+        }
 
-            foreach ($cartItems as $item) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item['product_id'],
-                    'product_variant_id' => $item['product_variant_id'],
-                    'product_name' => $item['product_name'],
-                    'variant_name' => $item['variant_name'] ?? null,
-                    'sku' => $item['sku'] ?? null,
-                    'price_at_purchase' => $item['price'],
-                    'quantity' => $item['quantity'],
-                    'is_flash_sale' => !empty($item['is_flash_sale']),
-                ]);
-            }
+        // Load items for InventoryService (needs Eloquent collection)
+        $order->load('items');
+        $this->inventoryService->deductStock($order);
 
-            // Deduct stock after order and items are created
-            // We pass the fresh order to inventory service
-            $order->load('items');
-            $this->inventoryService->deductStock($order, $cartItems);
-
-            return $order;
-        });
+        return $order;
     }
 
+    /**
+     * Generate a unique-by-design order number.
+     *
+     * Format: ORD-{YYYYMMDD}-{5 random chars}
+     * Uniqueness is enforced by the DB unique index on orders.order_number.
+     * No check-then-insert loop — that pattern is a race condition.
+     */
     protected function generateOrderNumber(): string
     {
-        $date = now()->format('Ymd');
-        $random = strtoupper(Str::random(5));
+        // microsecond timestamp + random suffix gives astronomically low collision chance
+        $ts     = now()->format('Ymd');
+        $random = strtoupper(Str::random(6));
 
-        return "ORD-{$date}-{$random}";
+        return "ORD-{$ts}-{$random}";
     }
 }

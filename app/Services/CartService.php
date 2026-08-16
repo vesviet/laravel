@@ -114,6 +114,7 @@ class CartService
             $isFlashSale = false;
             $imagePath   = null;
 
+            $slug = null;
             if ($variantId && $variants->has($variantId)) {
                 $variant = $variants->get($variantId);
                 $price = (float) $variant->price;
@@ -121,12 +122,14 @@ class CartService
                 $variantName = $variant->name;
                 $sku = $variant->sku ?? '';
                 $imagePath = $variant->product->thumbnail ?? null;
+                $slug = $variant->product->slug ?? null;
             } elseif ($products->has($productId)) {
                 $product = $products->get($productId);
                 $price = (float) $product->price;
                 $name = $product->name;
                 $sku = $product->sku ?? '';
                 $imagePath = $product->thumbnail ?? null;
+                $slug = $product->slug ?? null;
             }
 
             // Override price with flash sale price if applicable
@@ -146,6 +149,7 @@ class CartService
                 'subtotal'           => $price * $quantity,
                 'is_flash_sale'      => $isFlashSale,
                 'image_path'         => $imagePath ?? null,
+                'slug'               => $slug,
             ];
         }
 

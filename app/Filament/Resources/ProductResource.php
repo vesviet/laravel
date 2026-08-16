@@ -72,12 +72,15 @@ class ProductResource extends Resource
                     Forms\Components\Section::make('Status & Category')->schema([
                         Forms\Components\Select::make('status')
                             ->options([
-                                'draft' => 'Draft',
-                                'published' => 'Published',
-                                'archived' => 'Archived',
+                                'active'   => 'Active',
+                                'inactive' => 'Inactive',
                             ])
                             ->required()
-                            ->default('draft'),
+                            ->default('active'),
+                        Forms\Components\Toggle::make('is_featured')
+                            ->label('Sản phẩm nổi bật')
+                            ->helperText('Hiển thị trên trang chủ')
+                            ->default(false),
                         Forms\Components\Select::make('category_id')
                             ->relationship('category', 'name')
                             ->searchable()

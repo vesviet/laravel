@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\OrderStatus;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Models\Order;
 use Filament\Forms;
@@ -26,13 +27,7 @@ class OrderResource extends Resource
                     Forms\Components\Section::make('Order Information')->schema([
                         Forms\Components\TextInput::make('order_number')->disabled(),
                         Forms\Components\Select::make('status')
-                            ->options([
-                                'pending' => 'Pending',
-                                'confirmed' => 'Confirmed',
-                                'shipping' => 'Shipping',
-                                'delivered' => 'Delivered',
-                                'cancelled' => 'Cancelled',
-                            ])
+                            ->options(OrderStatus::class)
                             ->required(),
                         Forms\Components\Select::make('payment_method')
                             ->options([
@@ -90,29 +85,17 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('customer_name')->searchable(),
                 Tables\Columns\TextColumn::make('phone')->searchable(),
                 Tables\Columns\TextColumn::make('total_amount')
-                    ->formatStateUsing(fn ($state) => '$'.number_format((float) $state, 2))
+                    ->formatStateUsing(fn ($state) => number_format((int) $state, 0, ',', '.') . '₫')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'confirmed' => 'info',
-                        'shipping' => 'primary',
-                        'delivered' => 'success',
-                        'cancelled' => 'danger',
-                        default => 'gray',
-                    }),
+                    ->formatStateUsing(fn (OrderStatus $state): string => $state->label())
+                    ->color(fn (OrderStatus $state): string => $state->color()),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'confirmed' => 'Confirmed',
-                        'shipping' => 'Shipping',
-                        'delivered' => 'Delivered',
-                        'cancelled' => 'Cancelled',
-                    ]),
+                    ->options(OrderStatus::class),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

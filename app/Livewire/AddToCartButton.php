@@ -36,9 +36,16 @@ class AddToCartButton extends Component
 
     public function addToCart(CartService $cartService): void
     {
+        if ($this->product->stock <= 0) {
+            $this->dispatch('toast', message: 'Sản phẩm đã hết hàng.', type: 'error');
+            return;
+        }
+
         // Delegate all cart logic to CartService — single source of truth for cart state.
         $cartService->add($this->product->id, $this->variantId, $this->quantity);
 
+        // U1: Toast notification feedback
+        $this->dispatch('toast', message: 'Đã thêm vào giỏ hàng!', type: 'success');
         $this->dispatch('cart-updated');
         $this->dispatch('open-cart');
     }

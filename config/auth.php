@@ -108,6 +108,13 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+        // B1: Customer password reset broker — uses same password_reset_tokens table
+        'customers' => [
+            'provider' => 'customers',
+            'table'    => 'password_reset_tokens',
+            'expire'   => 60,
+            'throttle' => 60,
+        ],
     ],
 
     /*

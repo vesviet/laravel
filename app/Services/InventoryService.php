@@ -2,93 +2,107 @@
 
 namespace App\Services;
 
+use App\Exceptions\InsufficientStockException;
+use App\Models\FlashSaleItem;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use Exception;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InventoryService
 {
     /**
-     * Deduct stock for a given order using lockForUpdate to prevent overselling.
+     * Deduct stock for all items in the given order.
      *
-     * @throws Exception
+     * IMPORTANT: This method MUST be called within an active DB::transaction().
+     * It uses lockForUpdate() on rows — these locks are only effective inside a transaction.
+     * The transaction is owned by the calling Action (ProcessCheckoutAction, etc.).
+     *
+     * Items are sorted by product/variant ID to enforce consistent lock ordering
+     * and prevent deadlocks when multiple orders process concurrently.
+     *
+     * @throws RuntimeException on insufficient stock — caller transaction will roll back.
      */
-    public function deductStock(Order $order, array $cartItems = []): void
+    public function deductStock(Order $order): void
     {
-        DB::transaction(function () use ($order) {
-            // Sort items by product/variant ID to enforce consistent lock ordering and prevent deadlocks
-            $items = $order->items->sortBy(function ($item) {
-                return $item->product_id . '-' . ($item->product_variant_id ?? '0');
-            });
+        // Sort items by composite key to guarantee lock ordering (deadlock prevention)
+        $items = $order->items->sortBy(function ($item) {
+            return $item->product_id . '-' . ($item->product_variant_id ?? '0');
+        });
 
-            foreach ($items as $item) {
-                // Deduct Flash Sale stock if applicable
-                if ($item->is_flash_sale) {
-                    $flashSaleItem = \App\Models\FlashSaleItem::where('product_id', $item->product_id)
-                        ->whereHas('flashSale', function ($q) {
-                            $q->where('status', 'active');
-                        })->lockForUpdate()->first();
+        foreach ($items as $item) {
+            // Deduct Flash Sale stock if applicable
+            if ($item->is_flash_sale) {
+                $flashSaleItem = FlashSaleItem::where('product_id', $item->product_id)
+                    ->whereHas('flashSale', function ($q) {
+                        $q->where('status', 'active');
+                    })
+                    ->lockForUpdate()
+                    ->first();
 
-                    if ($flashSaleItem) {
-                        if ($flashSaleItem->sold_quantity + $item->quantity > $flashSaleItem->quantity) {
-                            throw new Exception("Flash sale stock exceeded for: {$item->product_name}");
-                        }
-                        $flashSaleItem->increment('sold_quantity', $item->quantity);
+                if ($flashSaleItem) {
+                    if ($flashSaleItem->sold_quantity + $item->quantity > $flashSaleItem->quantity) {
+                        throw new InsufficientStockException("Hết hàng flash sale: {$item->product_name}");
                     }
-                }
-
-                if ($item->product_variant_id) {
-                    // Variant stock
-                    $variant = ProductVariant::lockForUpdate()->find($item->product_variant_id);
-                    if (! $variant || $variant->stock < $item->quantity) {
-                        throw new Exception("Insufficient stock for variant: {$item->product_name}");
-                    }
-                    $variant->decrement('stock', $item->quantity);
-                } else {
-                    // Simple product stock
-                    $product = Product::lockForUpdate()->find($item->product_id);
-                    if (! $product || $product->stock < $item->quantity) {
-                        throw new Exception("Insufficient stock for product: {$item->product_name}");
-                    }
-                    $product->decrement('stock', $item->quantity);
+                    $flashSaleItem->increment('sold_quantity', $item->quantity);
                 }
             }
-        });
+
+            if ($item->product_variant_id) {
+                $variant = ProductVariant::lockForUpdate()->find($item->product_variant_id);
+
+                if (! $variant || $variant->stock < $item->quantity) {
+                    throw new InsufficientStockException("Không đủ tồn kho cho sản phẩm: {$item->product_name}");
+                }
+                $variant->decrement('stock', $item->quantity);
+            } else {
+                $product = Product::lockForUpdate()->find($item->product_id);
+
+                if (! $product || $product->stock < $item->quantity) {
+                    throw new InsufficientStockException("Không đủ tồn kho cho sản phẩm: {$item->product_name}");
+                }
+                $product->decrement('stock', $item->quantity);
+            }
+        }
     }
 
     /**
-     * Restore stock for a given order (e.g. when cancelled)
+     * Restore stock for all items in the given order (e.g. when order is cancelled).
+     *
+     * IMPORTANT: This method MUST be called within an active DB::transaction().
+     * The transaction is owned by the calling Action (CancelOrderAction, etc.).
      */
     public function restoreStock(Order $order): void
     {
-        DB::transaction(function () use ($order) {
-            $items = $order->items->sortBy(function ($item) {
-                return $item->product_id . '-' . ($item->product_variant_id ?? '0');
-            });
+        $items = $order->items->sortBy(function ($item) {
+            return $item->product_id . '-' . ($item->product_variant_id ?? '0');
+        });
 
-            foreach ($items as $item) {
-                if ($item->is_flash_sale) {
-                    $flashSaleItem = \App\Models\FlashSaleItem::where('product_id', $item->product_id)
-                        ->orderBy('id', 'desc')->lockForUpdate()->first();
-                    if ($flashSaleItem) {
-                        $flashSaleItem->decrement('sold_quantity', $item->quantity);
-                    }
-                }
+        foreach ($items as $item) {
+            if ($item->is_flash_sale) {
+                $flashSaleItem = FlashSaleItem::where('product_id', $item->product_id)
+                    ->orderBy('id', 'desc')
+                    ->lockForUpdate()
+                    ->first();
 
-                if ($item->product_variant_id) {
-                    $variant = ProductVariant::lockForUpdate()->find($item->product_variant_id);
-                    if ($variant) {
-                        $variant->increment('stock', $item->quantity);
-                    }
-                } else {
-                    $product = Product::lockForUpdate()->find($item->product_id);
-                    if ($product) {
-                        $product->increment('stock', $item->quantity);
-                    }
+                if ($flashSaleItem) {
+                    $flashSaleItem->decrement('sold_quantity', $item->quantity);
                 }
             }
-        });
+
+            if ($item->product_variant_id) {
+                $variant = ProductVariant::lockForUpdate()->find($item->product_variant_id);
+                if ($variant) {
+                    $variant->increment('stock', $item->quantity);
+                }
+            } else {
+                $product = Product::lockForUpdate()->find($item->product_id);
+                if ($product) {
+                    $product->increment('stock', $item->quantity);
+                }
+            }
+        }
+
+        Log::info('Stock restored for order', ['order_id' => $order->id, 'order_number' => $order->order_number]);
     }
 }

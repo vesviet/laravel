@@ -19,7 +19,9 @@ class Product extends Model
         'image_path',
         'price',
         'stock',
+        'weight',
         'status',
+        'is_featured',
         'attributes_json',
         'seo_title',
         'seo_description',
@@ -27,8 +29,10 @@ class Product extends Model
 
     protected $casts = [
         'attributes_json' => 'array',
-        'price' => 'integer',
-        'stock' => 'integer',
+        'price'           => 'integer',
+        'stock'           => 'integer',
+        'weight'          => 'integer',
+        'is_featured'     => 'boolean',
     ];
 
     public function category()
@@ -54,5 +58,27 @@ class Product extends Model
             });
         }
         return $query;
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
+     * Scope: featured AND active products for homepage display.
+     */
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true)->where('status', 'active');
+    }
+
+    /**
+     * Thumbnail accessor — maps ->thumbnail to image_path column.
+     * CartService and views reference ->thumbnail; the DB column is image_path.
+     */
+    public function getThumbnailAttribute(): ?string
+    {
+        return $this->image_path;
     }
 }

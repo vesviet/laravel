@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,10 +33,11 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'subtotal' => 'integer',
+        'status'          => OrderStatus::class,
+        'subtotal'        => 'integer',
         'discount_amount' => 'integer',
-        'shipping_fee' => 'integer',
-        'total_amount' => 'integer',
+        'shipping_fee'    => 'integer',
+        'total_amount'    => 'integer',
     ];
 
     public function customer()

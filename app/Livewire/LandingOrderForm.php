@@ -2,10 +2,10 @@
 
 namespace App\Livewire;
 
+use App\Actions\ProcessLandingOrderAction;
+use App\Exceptions\CommerceException;
 use App\Models\LandingPage;
-use App\Models\Order;
-use App\Models\OrderItem;
-use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Throttle;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -29,11 +29,8 @@ class LandingOrderForm extends Component
     #[Validate('nullable|string|max:100')]
     public string $selectedComboId = '';
 
-    #[Validate('nullable|string|max:100')]
-    public string $selectedVariantId = '';
-
-    // Honeypot
-    public string $website = ''; // must stay empty
+    // Honeypot — must stay empty
+    public string $website = '';
 
     // Result state
     public bool $isSubmitting = false;
@@ -46,81 +43,52 @@ class LandingOrderForm extends Component
 
         // Pre-select first combo if available
         $combos = $landingPage->comboRules();
-        if (!empty($combos)) {
+        if (! empty($combos)) {
             $this->selectedComboId = $combos[0]['id'] ?? '';
         }
     }
 
-    public function submitOrder(): void
+    /**
+     * P0-04: Rate limit to 5 submissions per 60s per IP.
+     * Prevents bot spam on landing pages (honeypot alone is insufficient).
+     */
+    #[Throttle(5, 60)]
+    public function submitOrder(ProcessLandingOrderAction $action): void
     {
-        // Honeypot check — bots fill this
-        if (!empty($this->website)) {
+        // Honeypot check — bots fill this field
+        if (! empty($this->website)) {
             $this->errorMsg = 'Có lỗi xảy ra, vui lòng thử lại.';
             return;
         }
 
         $this->validate();
 
-        if (!$this->landingPage->isInStock()) {
-            $this->errorMsg = 'Sản phẩm hiện tạm hết hàng.';
-            return;
-        }
-
         $this->isSubmitting = true;
         $this->errorMsg = '';
 
         try {
-            // Find selected combo
+            $order = $action->execute($this->landingPage, [
+                'name'            => $this->name,
+                'phone'           => $this->phone,
+                'address'         => $this->address,
+                'note'            => $this->note,
+                'selectedComboId' => $this->selectedComboId,
+            ]);
+
             $combo = collect($this->landingPage->comboRules())
                 ->firstWhere('id', $this->selectedComboId);
 
-            // Determine total amount
-            $totalAmount = $combo
-                ? (float) $combo['price']
-                : (float) ($this->landingPage->product?->price ?? 0);
+            $this->successData = [
+                'order_reference'    => $order->order_number,
+                'payment_method'     => 'cod',
+                'estimated_delivery' => '2-3 ngày làm việc',
+                'total_amount'       => $order->total_amount,
+                'combo_name'         => $combo['name'] ?? null,
+            ];
 
-            DB::transaction(function () use ($combo, $totalAmount) {
-                $order = Order::create([
-                    'landing_page_id' => $this->landingPage->id,
-                    'order_number'    => 'LP-' . strtoupper(substr(uniqid(), -8)),
-                    'status'          => 'pending',
-                    'payment_method'  => 'cod',
-                    'customer_name'   => $this->name,
-                    'phone'           => $this->phone,
-                    'address'         => $this->address,
-                    'notes'           => $this->note ?: null,
-                    'subtotal'        => $totalAmount,
-                    'total'           => $totalAmount,
-                    'discount_amount' => 0,
-                ]);
-
-                // Create order item if product is linked
-                if ($this->landingPage->product_id) {
-                    OrderItem::create([
-                        'order_id'           => $order->id,
-                        'product_id'         => $this->landingPage->product_id,
-                        'product_variant_id' => null,
-                        'product_name'       => $combo['name'] ?? $this->landingPage->product->name,
-                        'variant_name'       => null,
-                        'sku'                => $this->landingPage->product->sku ?? null,
-                        'quantity'           => 1,
-                        'price_at_purchase'  => $totalAmount,
-                        'subtotal'           => $totalAmount,
-                    ]);
-                }
-
-                $this->successData = [
-                    'order_reference'   => $order->order_number,
-                    'payment_method'    => 'cod',
-                    'estimated_delivery' => '2-3 ngày làm việc',
-                    'total_amount'      => $totalAmount,
-                    'combo_name'        => $combo['name'] ?? null,
-                ];
-            });
-
-            // Fire tracking events to the view via browser event
+            // Fire tracking events to the browser for pixel integration
             $this->dispatch('order-placed', [
-                'value'             => $this->successData['total_amount'],
+                'value'             => $order->total_amount,
                 'currency'          => 'VND',
                 'facebook_pixel_id' => $this->landingPage->facebook_pixel_id,
                 'tiktok_pixel_id'   => $this->landingPage->tiktok_pixel_id,
@@ -132,6 +100,8 @@ class LandingOrderForm extends Component
             $this->address = '';
             $this->note    = '';
 
+        } catch (CommerceException | \RuntimeException $e) {
+            $this->errorMsg = $e->getMessage();
         } catch (\Throwable $e) {
             $this->errorMsg = 'Lỗi hệ thống, vui lòng thử lại hoặc liên hệ hỗ trợ.';
             report($e);
