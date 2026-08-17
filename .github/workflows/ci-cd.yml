@@ -122,6 +122,17 @@ jobs:
       - name: Run Database Migrations
         run: docker compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
 
+      - name: Generate Filament Shield Permissions
+        run: docker compose -f docker-compose.prod.yml exec -T app php artisan shield:generate --all --panel=admin --ignore-existing-policies
+
+      - name: Create Storage Symlink
+        run: docker compose -f docker-compose.prod.yml exec -T app php artisan storage:link
+
+      - name: Optimize and Cache
+        run: |
+          docker compose -f docker-compose.prod.yml exec -T app php artisan optimize:clear
+          docker compose -f docker-compose.prod.yml exec -T app php artisan optimize
+
       - name: Verify Deployment (Health Check)
         run: |
           echo "Waiting for Nginx to be ready..."
