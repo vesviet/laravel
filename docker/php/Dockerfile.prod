@@ -25,6 +25,11 @@ RUN pecl install redis \
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set Composer environment variables to prevent CI/CD failures
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_MEMORY_LIMIT=-1 \
+    COMPOSER_IPRESOLVE=4
+
 # Set working directory
 WORKDIR /var/www/html
 
