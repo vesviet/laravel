@@ -121,7 +121,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 4500000,
                 'stock'            => 25,
                 'weight'           => 1800,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => true,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=700&auto=format&fit=crop&q=80',
@@ -148,7 +148,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 1250000,
                 'stock'            => 50,
                 'weight'           => 600,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => true,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1590736969955-71cc94801759?w=700&auto=format&fit=crop&q=80',
@@ -173,7 +173,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 2650000,
                 'stock'            => 30,
                 'weight'           => 800,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => true,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=700&auto=format&fit=crop&q=80',
@@ -199,7 +199,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 5800000,
                 'stock'            => 20,
                 'weight'           => 4500,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => true,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=700&auto=format&fit=crop&q=80',
@@ -226,7 +226,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 14200000,
                 'stock'            => 12,
                 'weight'           => 18000,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => true,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=700&auto=format&fit=crop&q=80',
@@ -252,7 +252,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 3200000,
                 'stock'            => 40,
                 'weight'           => 3200,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => true,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1503602642458-232111445657?w=900&auto=format&fit=crop&q=80',
@@ -306,7 +306,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 2150000,
                 'stock'            => 18,
                 'weight'           => 2400,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => true,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1517991104123-1d56a6e81ed9?w=700&auto=format&fit=crop&q=80',
@@ -332,7 +332,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 28500000,
                 'stock'            => 8,
                 'weight'           => 45000,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => true,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=700&auto=format&fit=crop&q=80',
@@ -360,7 +360,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 950000,
                 'stock'            => 35,
                 'weight'           => 500,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => false,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=700&auto=format&fit=crop&q=80',
@@ -385,7 +385,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 1980000,
                 'stock'            => 22,
                 'weight'           => 1500,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => false,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=700&auto=format&fit=crop&q=80',
@@ -411,7 +411,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 680000,
                 'stock'            => 60,
                 'weight'           => 350,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => false,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1534040385115-33dcb3acba5b?w=700&auto=format&fit=crop&q=80',
@@ -437,7 +437,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 8900000,
                 'stock'            => 15,
                 'weight'           => 9500,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => false,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1532372320572-cda25653a26d?w=700&auto=format&fit=crop&q=80',
@@ -463,7 +463,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 18500000,
                 'stock'            => 10,
                 'weight'           => 16000,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => false,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=700&auto=format&fit=crop&q=80',
@@ -489,7 +489,7 @@ class DatabaseSeeder extends Seeder
                 'price'            => 16800000,
                 'stock'            => 14,
                 'weight'           => 22000,
-                'status'           => 'active',
+                'status'           => 'published',
                 'is_featured'      => false,
                 'attributes_json'  => [
                     'secondary_image' => 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=700&auto=format&fit=crop&q=80',
