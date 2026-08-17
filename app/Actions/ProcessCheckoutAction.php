@@ -61,21 +61,27 @@ class ProcessCheckoutAction
         // Resolve shipping fee BEFORE the transaction — external HTTP call cannot be transactional.
         $shippingFee = $this->resolveShippingFee($customerData);
 
+        // Calculate total discount via PromotionEngine (combo + coupon stacked).
+        // Run BEFORE the transaction — PromotionEngine is read-only here (no DB writes).
+        $discountAmount = $this->promotionEngine->calculateDiscount($subtotal, $cartItems, $couponCode);
+
         // DB transaction: all writes (order, items, stock, coupon) are atomic.
         $order = DB::transaction(function () use (
-            $customerData, $cartItems, $subtotal, $eligibleSubtotal, $shippingFee, $couponCode
+            $customerData, $cartItems, $subtotal, $eligibleSubtotal, $shippingFee, $couponCode, $discountAmount
         ) {
-            $discountAmount = 0;
-            $coupon         = null;
+            $coupon = null;
 
             if ($couponCode) {
                 // Lock the coupon row inside the transaction — prevents concurrent over-redemption.
                 $coupon = Coupon::where('code', $couponCode)->lockForUpdate()->first();
 
-                if ($coupon && $coupon->isApplicable($eligibleSubtotal)) {
-                    $discountAmount = $coupon->calculateDiscount($eligibleSubtotal);
-                } else {
-                    // Coupon no longer valid (exhausted by concurrent request, expired, etc.)
+                // Re-validate inside the transaction; if now invalid (exhausted by concurrent request),
+                // zero out only the coupon portion. Combo discount is unaffected.
+                if (! ($coupon && $coupon->isApplicable($eligibleSubtotal))) {
+                    $discountAmount -= $coupon
+                        ? $coupon->calculateDiscount($eligibleSubtotal)
+                        : 0;
+                    $discountAmount = max(0, $discountAmount);
                     $coupon = null;
                 }
             }

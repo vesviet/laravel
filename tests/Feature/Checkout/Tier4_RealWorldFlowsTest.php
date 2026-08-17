@@ -47,7 +47,7 @@ it('guest checkout and order lookup flow', function () {
     $this->get(route('track-order.index', ['order_number' => $order->order_number]))
         ->assertOk()
         ->assertSee($order->order_number)
-        ->assertSee('pending');
+        ->assertSee('Chờ xác nhận');
 });
 
 it('applies combo discount and DB-backed coupon in checkout', function () {

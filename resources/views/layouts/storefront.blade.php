@@ -184,7 +184,7 @@
                     </form>
                 @else
                     <a href="{{ route('account.login') }}" class="nav-link" @click="mobileMenuOpen = false">Đăng nhập</a>
-                    <a href="{{ route('register') }}" class="nav-link" @click="mobileMenuOpen = false">Đăng ký</a>
+                    <a href="{{ route('account.register') }}" class="nav-link" @click="mobileMenuOpen = false">Đăng ký</a>
                 @endauth
             </div>
         </div>
