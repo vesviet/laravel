@@ -19,6 +19,14 @@ class ProductObserver
     public function updated(Product $product): void
     {
         $this->clearHomepageCache();
+
+        // Fix P1: Flash Sale Data Integrity
+        // If the product price is lowered below an active flash sale price, the flash sale becomes invalid.
+        if ($product->wasChanged('price')) {
+            \App\Models\FlashSaleItem::where('product_id', $product->id)
+                ->where('price', '>=', $product->price)
+                ->delete();
+        }
     }
 
     public function deleted(Product $product): void

@@ -33,7 +33,7 @@
             <ul role="list" class="divide-y divide-[#E5E5E5]" aria-label="Danh sách đơn hàng">
                 @foreach($orders as $order)
                     <li>
-                        <a href="{{ route('track-order.index', ['order_number' => $order->order_number]) }}"
+                        <a href="{{ route('track-order.index', ['order_number' => $order->order_number, 'contact_info' => $order->email ?? auth('customer')->user()->email]) }}"
                            class="block py-5 hover:opacity-70 transition-opacity group">
                             <div class="flex items-start sm:items-center justify-between gap-4">
 
@@ -75,7 +75,7 @@
             {{-- Pagination --}}
             @if($orders->hasPages())
                 <div class="mt-10">
-                    {{ $orders->links() }}
+                    {{ $orders->links('vendor.pagination.storefront') }}
                 </div>
             @endif
 

@@ -13,7 +13,7 @@ class EditProductReview extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()->label('Xóa đánh giá'),
+            Actions\DeleteAction::make(),
         ];
     }
 }

@@ -15,20 +15,30 @@
             </div>
 
             {{-- Search form --}}
-            <form action="{{ route('track-order.track') }}" method="POST"
-                  class="flex items-center border-b border-[#1a1a1a] mb-12">
+            <form action="{{ route('track-order.track') }}" method="POST" class="mb-12">
                 @csrf
-                <input type="text"
-                       name="order_number"
-                       value="{{ old('order_number', $order_number) }}"
-                       placeholder="Nhập mã đơn hàng (VD: ORD-XXXXXXXXXXXX)"
-                       required
-                       class="flex-1 bg-transparent py-3 text-sm outline-none placeholder:text-[#888888] font-light"
-                       aria-label="Mã đơn hàng">
-                <button type="submit"
-                        class="shrink-0 text-[10px] font-medium tracking-[0.2em] uppercase py-3 pl-6 hover:opacity-60 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1a1a1a]">
-                    Tra Cứu
-                </button>
+                <div class="flex flex-col sm:flex-row items-center gap-4 border-b border-[#1a1a1a] pb-2">
+                    <input type="text"
+                           name="order_number"
+                           value="{{ old('order_number', $order_number) }}"
+                           placeholder="Mã đơn hàng (VD: ORD-XXXXXX)"
+                           required
+                           class="flex-1 w-full bg-transparent py-3 text-sm outline-none placeholder:text-[#888888] font-light"
+                           aria-label="Mã đơn hàng">
+                           
+                    <input type="text"
+                           name="contact_info"
+                           value="{{ old('contact_info', request('contact_info')) }}"
+                           placeholder="Email hoặc SĐT đặt hàng"
+                           required
+                           class="flex-1 w-full bg-transparent py-3 text-sm outline-none placeholder:text-[#888888] font-light"
+                           aria-label="Email hoặc Số điện thoại">
+
+                    <button type="submit"
+                            class="shrink-0 text-[10px] font-medium tracking-[0.2em] uppercase py-3 px-6 hover:opacity-60 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1a1a1a]">
+                        Tra Cứu
+                    </button>
+                </div>
             </form>
 
             {{-- Results --}}

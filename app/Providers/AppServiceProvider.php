@@ -74,5 +74,12 @@ class AppServiceProvider extends ServiceProvider
                     'email' => 'Quá nhiều yêu cầu. Vui lòng thử lại sau.',
                 ]));
         });
+
+        // Expose settings to all views
+        try {
+            \Illuminate\Support\Facades\View::share('globalSettings', app(\App\Settings\GeneralSettings::class));
+        } catch (\Exception $e) {
+            // Settings might not be migrated yet
+        }
     }
 }

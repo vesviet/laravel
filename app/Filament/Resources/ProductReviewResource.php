@@ -3,64 +3,54 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductReviewResource\Pages;
+use App\Filament\Resources\ProductReviewResource\RelationManagers;
 use App\Models\ProductReview;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProductReviewResource extends Resource
 {
     protected static ?string $model = ProductReview::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-star';
-
-    protected static ?string $navigationGroup = 'Shop';
-
-    protected static ?string $navigationLabel = 'Đánh giá sản phẩm';
-
-    protected static ?string $modelLabel = 'Đánh giá';
-
-    protected static ?string $pluralModelLabel = 'Đánh giá sản phẩm';
-
-    protected static ?int $navigationSort = 5;
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Thông tin đánh giá')
-                    ->schema([
-                        Forms\Components\TextInput::make('product.name')
-                            ->label('Sản phẩm')
-                            ->disabled(),
-
-                        Forms\Components\TextInput::make('customer.name')
-                            ->label('Khách hàng')
-                            ->disabled(),
-
-                        Forms\Components\ViewField::make('rating')
-                            ->label('Đánh giá')
-                            ->view('filament.fields.star-rating'),
-
-                        Forms\Components\Textarea::make('comment')
-                            ->label('Nhận xét')
-                            ->disabled()
-                            ->rows(5)
-                            ->columnSpanFull(),
-
-                        Forms\Components\Select::make('status')
-                            ->label('Trạng thái')
-                            ->options([
-                                'pending'  => 'Chờ duyệt',
-                                'approved' => 'Đã duyệt',
-                                'hidden'   => 'Đã ẩn',
-                            ])
-                            ->required(),
+                Forms\Components\Select::make('product_id')
+                    ->relationship('product', 'name')
+                    ->required()
+                    ->searchable(),
+                Forms\Components\Select::make('customer_id')
+                    ->relationship('customer', 'id')
+                    ->required()
+                    ->searchable(),
+                Forms\Components\Select::make('rating')
+                    ->options([
+                        1 => '1 Star',
+                        2 => '2 Stars',
+                        3 => '3 Stars',
+                        4 => '4 Stars',
+                        5 => '5 Stars',
                     ])
-                    ->columns(2),
+                    ->required(),
+                Forms\Components\Textarea::make('comment')
+                    ->required()
+                    ->columnSpanFull(),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'hidden' => 'Hidden',
+                    ])
+                    ->required()
+                    ->default('pending'),
             ]);
     }
 
@@ -68,118 +58,62 @@ class ProductReviewResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
-                    ->label('Sản phẩm')
-                    ->searchable()
-                    ->sortable()
-                    ->limit(30),
-
-                Tables\Columns\TextColumn::make('customer.name')
-                    ->label('Khách hàng')
-                    ->searchable()
-                    ->default('Ẩn danh'),
-
-                Tables\Columns\ViewColumn::make('rating')
-                    ->label('Sao')
-                    ->view('filament.columns.star-rating'),
-
-                Tables\Columns\TextColumn::make('comment')
-                    ->label('Nhận xét')
-                    ->limit(60)
-                    ->default('—'),
-
-                Tables\Columns\BadgeColumn::make('status')
-                    ->label('Trạng thái')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'approved',
-                        'danger'  => 'hidden',
-                    ])
-                    ->formatStateUsing(fn($state) => match ($state) {
-                        'pending'  => 'Chờ duyệt',
-                        'approved' => 'Đã duyệt',
-                        'hidden'   => 'Đã ẩn',
-                        default    => $state,
+                Tables\Columns\TextColumn::make('product.name')->searchable(),
+                Tables\Columns\TextColumn::make('customer.id')->searchable(),
+                Tables\Columns\TextColumn::make('rating')->numeric()->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'hidden' => 'danger',
+                        default => 'gray',
                     }),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Ngày đăng')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
             ])
-            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('Trạng thái')
                     ->options([
-                        'pending'  => 'Chờ duyệt',
-                        'approved' => 'Đã duyệt',
-                        'hidden'   => 'Đã ẩn',
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'hidden' => 'Hidden',
                     ]),
-
-                Tables\Filters\SelectFilter::make('product')
-                    ->label('Sản phẩm')
-                    ->relationship('product', 'name'),
             ])
             ->actions([
-                Tables\Actions\Action::make('approve')
-                    ->label('Duyệt')
-                    ->icon('heroicon-o-check-circle')
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('Approve')
+                    ->action(fn (\App\Models\ProductReview $record) => $record->update(['status' => 'approved']))
+                    ->requiresConfirmation()
                     ->color('success')
-                    ->visible(fn(ProductReview $record) => $record->status !== 'approved')
-                    ->action(function (ProductReview $record) {
-                        $record->update(['status' => 'approved']);
-                        Notification::make()
-                            ->title('Đã duyệt đánh giá')
-                            ->success()
-                            ->send();
-                    }),
-
-                Tables\Actions\Action::make('hide')
-                    ->label('Ẩn')
-                    ->icon('heroicon-o-eye-slash')
+                    ->icon('heroicon-o-check-circle')
+                    ->visible(fn (\App\Models\ProductReview $record) => $record->status === 'pending'),
+                Tables\Actions\Action::make('Hide')
+                    ->action(fn (\App\Models\ProductReview $record) => $record->update(['status' => 'hidden']))
+                    ->requiresConfirmation()
                     ->color('danger')
-                    ->visible(fn(ProductReview $record) => $record->status !== 'hidden')
-                    ->action(function (ProductReview $record) {
-                        $record->update(['status' => 'hidden']);
-                        Notification::make()
-                            ->title('Đã ẩn đánh giá')
-                            ->success()
-                            ->send();
-                    }),
-
-                Tables\Actions\EditAction::make()->label('Chi tiết'),
-                Tables\Actions\DeleteAction::make()->label('Xóa'),
+                    ->icon('heroicon-o-eye-slash')
+                    ->visible(fn (\App\Models\ProductReview $record) => $record->status === 'pending'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkAction::make('approve_selected')
-                    ->label('Duyệt đã chọn')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->action(fn($records) => $records->each->update(['status' => 'approved']))
-                    ->deselectRecordsAfterCompletion(),
-
-                Tables\Actions\BulkAction::make('hide_selected')
-                    ->label('Ẩn đã chọn')
-                    ->icon('heroicon-o-eye-slash')
-                    ->color('danger')
-                    ->action(fn($records) => $records->each->update(['status' => 'hidden']))
-                    ->deselectRecordsAfterCompletion(),
-
-                Tables\Actions\DeleteBulkAction::make()->label('Xóa đã chọn'),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            //
+        ];
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListProductReviews::route('/'),
-            'edit'  => Pages\EditProductReview::route('/{record}/edit'),
+            'create' => Pages\CreateProductReview::route('/create'),
+            'edit' => Pages\EditProductReview::route('/{record}/edit'),
         ];
     }
 }
