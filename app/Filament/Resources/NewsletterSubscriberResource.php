@@ -16,8 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class NewsletterSubscriberResource extends Resource
 {
     protected static ?string $model = NewsletterSubscriber::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
+    protected static ?string $navigationGroup = 'Marketing';
+    protected static ?int $navigationSort = 5;
 
     public static function canCreate(): bool
     {

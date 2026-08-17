@@ -17,8 +17,9 @@ use Illuminate\Database\Eloquent\Model;
 class ProvinceResource extends Resource
 {
     protected static ?string $model = Province::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-map';
+    protected static ?string $navigationGroup = 'Orders';
+    protected static ?int $navigationSort = 3;
 
     public static function canCreate(): bool
     {

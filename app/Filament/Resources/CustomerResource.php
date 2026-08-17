@@ -13,10 +13,9 @@ use Filament\Tables\Table;
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-users';
-
     protected static ?string $navigationGroup = 'Orders';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
