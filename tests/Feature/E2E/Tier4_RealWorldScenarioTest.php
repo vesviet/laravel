@@ -333,11 +333,12 @@ it('executes scenario 4: footer brand engagement newsletter subscription and ord
     // 5. Visitor queries order number
     $trackPost = $this->post(route('track-order.track'), [
         'order_number' => 'ORD-JOURNEY-2026',
+        'contact_info' => '0977112233',
     ]);
-    $trackPost->assertRedirect(route('track-order.index', ['order_number' => 'ORD-JOURNEY-2026']));
+    $trackPost->assertRedirect(route('track-order.index', ['order_number' => 'ORD-JOURNEY-2026', 'contact_info' => '0977112233']));
 
     // 6. Tracking page reveals full order details and line items
-    $trackResult = $this->get(route('track-order.index', ['order_number' => 'ORD-JOURNEY-2026']));
+    $trackResult = $this->get(route('track-order.index', ['order_number' => 'ORD-JOURNEY-2026', 'contact_info' => '0977112233']));
     $trackResult->assertOk();
     $trackResult->assertSee('ORD-JOURNEY-2026');
     $trackResult->assertSee('Modular Lounge Chair');

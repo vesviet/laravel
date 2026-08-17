@@ -36,15 +36,15 @@ it('guest checkout and order lookup flow', function () {
     $order = Order::latest('id')->first();
     expect($order->customer_name)->toBe('Guest User');
 
-    // 2. Lookup order by order number + phone
+    // 2. Lookup order by order number + contact_info
     $lookupResponse = $this->post('/track-order', [
         'order_number' => $order->order_number,
-        'phone' => '0901234567',
+        'contact_info' => '0901234567',
     ]);
 
-    $lookupResponse->assertRedirect(route('track-order.index', ['order_number' => $order->order_number]));
+    $lookupResponse->assertRedirect(route('track-order.index', ['order_number' => $order->order_number, 'contact_info' => '0901234567']));
 
-    $this->get(route('track-order.index', ['order_number' => $order->order_number]))
+    $this->get(route('track-order.index', ['order_number' => $order->order_number, 'contact_info' => '0901234567']))
         ->assertOk()
         ->assertSee($order->order_number)
         ->assertSee('Chờ xác nhận');

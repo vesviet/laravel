@@ -560,6 +560,7 @@ it('verifies order tracking handles SQL characters, non-existent orders, and bou
     // 1. Non-existent order number
     $resp1 = $this->followingRedirects()->post(route('track-order.track'), [
         'order_number' => 'ORD-NON-EXISTENT-999999',
+        'contact_info' => '0912345678',
     ]);
     $resp1->assertOk();
     $resp1->assertSee('Không tìm thấy đơn hàng');
@@ -567,6 +568,7 @@ it('verifies order tracking handles SQL characters, non-existent orders, and bou
     // 2. SQL injection payload in tracking search
     $resp2 = $this->followingRedirects()->post(route('track-order.track'), [
         'order_number' => "' OR '1'='1' --",
+        'contact_info' => "' OR '1'='1' --",
     ]);
     $resp2->assertOk();
     $resp2->assertSee('Không tìm thấy đơn hàng');
@@ -589,6 +591,7 @@ it('verifies order tracking handles SQL characters, non-existent orders, and bou
 
     $resp3 = $this->followingRedirects()->post(route('track-order.track'), [
         'order_number' => 'ORD-TRACK-VALID-2026',
+        'contact_info' => '0912345678',
     ]);
     $resp3->assertOk();
     $resp3->assertSee('ORD-TRACK-VALID-2026');

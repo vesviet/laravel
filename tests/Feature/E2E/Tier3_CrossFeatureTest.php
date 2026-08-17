@@ -321,12 +321,13 @@ it('verifies footer customer service navigation to order tracking and lookup pip
     // 2. Submit order tracking query
     $postResponse = $this->post(route('track-order.track'), [
         'order_number' => 'ORD-CROSS-778899',
+        'contact_info' => '0933445566',
     ]);
 
-    $postResponse->assertRedirect(route('track-order.index', ['order_number' => 'ORD-CROSS-778899']));
+    $postResponse->assertRedirect(route('track-order.index', ['order_number' => 'ORD-CROSS-778899', 'contact_info' => '0933445566']));
 
     // 3. Verify lookup results
-    $resultPage = $this->get(route('track-order.index', ['order_number' => 'ORD-CROSS-778899']));
+    $resultPage = $this->get(route('track-order.index', ['order_number' => 'ORD-CROSS-778899', 'contact_info' => '0933445566']));
     $resultPage->assertOk();
     $resultPage->assertSee('ORD-CROSS-778899');
     $resultPage->assertSee('Minimalist Coffee Table');

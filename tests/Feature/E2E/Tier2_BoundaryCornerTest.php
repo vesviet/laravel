@@ -491,7 +491,7 @@ it('verifies order tracking displays complete order details for valid order', fu
         'status' => 'pending',
     ]);
 
-    $response = $this->get(route('track-order.index', ['order_number' => $order->order_number]));
+    $response = $this->get(route('track-order.index', ['order_number' => $order->order_number, 'contact_info' => '0908765432']));
     $response->assertOk();
 
     $response->assertSee('ORD-TRACK-12345');
@@ -502,6 +502,7 @@ it('verifies order tracking displays complete order details for valid order', fu
 it('verifies order tracking post endpoint validates required order number', function () {
     $response = $this->post(route('track-order.track'), [
         'order_number' => '',
+        'contact_info' => '0908765432',
     ]);
 
     $response->assertSessionHasErrors('order_number');
