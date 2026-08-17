@@ -29,7 +29,14 @@ return new class extends Migration
         // order_items table
         Schema::table('order_items', function (Blueprint $table) {
             $table->unsignedBigInteger('price_at_purchase')->default(0)->change();
-            $table->unsignedBigInteger('subtotal')->default(0)->change();
+
+            // subtotal was missing from the base migration but is written by OrderService.
+            // Add it if absent, then change() to bigint.
+            if (! Schema::hasColumn('order_items', 'subtotal')) {
+                $table->unsignedBigInteger('subtotal')->default(0)->after('price_at_purchase');
+            } else {
+                $table->unsignedBigInteger('subtotal')->default(0)->change();
+            }
         });
 
         // products table
@@ -63,7 +70,9 @@ return new class extends Migration
 
         Schema::table('order_items', function (Blueprint $table) {
             $table->decimal('price_at_purchase', 15, 2)->default(0)->change();
-            $table->decimal('subtotal', 15, 2)->default(0)->change();
+            if (Schema::hasColumn('order_items', 'subtotal')) {
+                $table->decimal('subtotal', 15, 2)->default(0)->change();
+            }
         });
 
         Schema::table('products', function (Blueprint $table) {

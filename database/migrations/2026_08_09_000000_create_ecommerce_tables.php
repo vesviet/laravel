@@ -100,6 +100,7 @@ return new class extends Migration
             $table->string('variant_name')->nullable();
             $table->string('sku')->nullable();
             $table->decimal('price_at_purchase', 15, 2);
+            $table->decimal('subtotal', 15, 2)->default(0);
             $table->integer('quantity');
             $table->timestamps();
         });
