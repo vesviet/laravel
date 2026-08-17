@@ -1,14 +1,45 @@
 @import 'tailwindcss';
 
+@source '../views/**/*.blade.php';
+@source '../js/**/*.js';
+@source '../../app/**/*.php';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 /* ─────────────────────────────────────────────
-   Design Tokens — Sober Furniture Monochrome
+   Design Tokens — Sober Furniture Monochrome (v12)
    ───────────────────────────────────────────── */
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-primary-dark: #23232C;
+    --color-surface-bg: #F0F0F0;
+    --color-surface-light: #F7F7F7;
+    --color-surface-white: #FFFFFF;
+    --color-border-subtle: #E5E5E5;
+    --color-muted-text: #888888;
+    --color-subtitle: #909097;
+    --color-badge-hot: #E84444;
+
+    --tracking-wide-15: 0.15em;
+    --tracking-wide-18: 0.18em;
+    --tracking-wide-20: 0.20em;
+    --tracking-wide-25: 0.25em;
+}
+
+/* ─────────────────────────────────────────────
+   CSS Variables
+   ───────────────────────────────────────────── */
+:root {
+    --color-primary-dark: #23232C;
+    --color-surface-bg: #F0F0F0;
+    --color-surface-light: #F7F7F7;
+    --color-surface-white: #FFFFFF;
+    --color-border-subtle: #E5E5E5;
+    --color-muted-text: #888888;
+    --color-subtitle: #909097;
+    --color-badge-hot: #E84444;
 }
 
 /* ─────────────────────────────────────────────
@@ -16,7 +47,7 @@
    ───────────────────────────────────────────── */
 body {
     background-color: #F0F0F0;
-    color: #1a1a1a;
+    color: #23232C;
     font-weight: 300;
     -webkit-font-smoothing: antialiased;
 }
@@ -25,18 +56,20 @@ body {
    Buttons
    ───────────────────────────────────────────── */
 
-/* Dark filled button — "Tiến Hành Thanh Toán", "Thêm vào giỏ" */
+/* Dark filled button — "SHOP NOW", "TIẾN HÀNH THANH TOÁN", "THÊM VÀO GIỎ" */
 .btn-dark {
     display: inline-block;
-    background-color: #2c2c2c;
-    color: #ffffff;
+    background-color: #23232C;
+    color: #FFFFFF;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     padding: 14px 32px;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
     text-align: center;
+    cursor: pointer;
+    line-height: 1.5;
 }
 .btn-dark:hover {
     background-color: #000000;
@@ -45,19 +78,22 @@ body {
 /* Outline button — secondary actions */
 .btn-outline {
     display: inline-block;
-    border: 1px solid #1a1a1a;
-    color: #1a1a1a;
+    border: 1px solid #23232C;
+    color: #23232C;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     padding: 13px 32px;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    background-color: transparent;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     text-align: center;
+    cursor: pointer;
+    line-height: 1.5;
 }
 .btn-outline:hover {
-    background-color: #1a1a1a;
-    color: #ffffff;
+    background-color: #23232C;
+    color: #FFFFFF;
 }
 
 /* ─────────────────────────────────────────────
@@ -66,6 +102,7 @@ body {
 
 /* "SEE ALL", "SHOP NOW" underline links */
 .link-underline {
+    display: inline-block;
     font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.18em;
@@ -73,9 +110,33 @@ body {
     border-bottom: 1px solid currentColor;
     padding-bottom: 1px;
     transition: opacity 0.2s ease;
+    cursor: pointer;
 }
 .link-underline:hover {
     opacity: 0.6;
+}
+
+/* "See all ->" arrow links */
+.link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #23232C;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+}
+.link-arrow:hover {
+    opacity: 0.6;
+}
+.link-arrow svg {
+    transition: transform 0.2s ease;
+}
+.link-arrow:hover svg {
+    transform: translateX(3px);
 }
 
 /* Nav link style */
@@ -84,6 +145,7 @@ body {
     font-weight: 400;
     letter-spacing: 0.15em;
     text-transform: uppercase;
+    color: #23232C;
     transition: opacity 0.2s ease;
 }
 .nav-link:hover {
@@ -139,17 +201,17 @@ body {
     text-transform: uppercase;
     padding: 6px 14px;
     border: 1px solid #E5E5E5;
-    background-color: #ffffff;
+    background-color: #FFFFFF;
     color: #888888;
     transition: all 0.2s ease;
     white-space: nowrap;
+    cursor: pointer;
 }
 .filter-pill:hover,
 .filter-pill.active {
-    border-color: #1a1a1a;
-    color: #1a1a1a;
-    background-color: #1a1a1a;
-    color: #ffffff;
+    border-color: #23232C;
+    color: #FFFFFF;
+    background-color: #23232C;
 }
 
 /* ─────────────────────────────────────────────
@@ -158,12 +220,13 @@ body {
 .badge-hot {
     display: inline-block;
     background-color: #E84444;
-    color: #ffffff;
+    color: #FFFFFF;
     font-size: 9px;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    padding: 3px 7px;
+    padding: 3px 8px;
+    line-height: 1.2;
 }
 
 /* ─────────────────────────────────────────────
@@ -172,14 +235,15 @@ body {
 .input-underline {
     background: transparent;
     border: none;
-    border-bottom: 1px solid #1a1a1a;
+    border-bottom: 1px solid #23232C;
     border-radius: 0;
-    padding: 8px 0;
+    padding: 10px 0;
     font-size: 14px;
     font-weight: 300;
-    color: #1a1a1a;
+    color: #23232C;
     width: 100%;
     outline: none;
+    transition: border-color 0.2s ease;
 }
 .input-underline::placeholder {
     color: #888888;
@@ -194,6 +258,7 @@ body {
 .cart-overlay {
     position: fixed;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.4);
     z-index: 90;
 }
+

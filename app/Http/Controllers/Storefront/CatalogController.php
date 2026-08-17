@@ -33,7 +33,7 @@ class CatalogController extends Controller
     public function show($slug)
     {
         $product = Product::where('slug', $slug)
-            ->where('status', 'published')
+            ->whereIn('status', ['active', 'published'])
             ->with(['variants', 'category'])
             ->firstOrFail();
 

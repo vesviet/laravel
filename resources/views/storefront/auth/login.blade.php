@@ -75,7 +75,7 @@
             <div class="mt-8 text-center">
                 <p class="text-sm text-[#888888] font-light">
                     Chưa có tài khoản?
-                    <a href="{{ route('register') }}"
+                    <a href="{{ route('account.register') }}"
                        class="text-[#1a1a1a] hover:opacity-60 transition-opacity ml-1 underline underline-offset-2">
                         Đăng ký ngay
                     </a>

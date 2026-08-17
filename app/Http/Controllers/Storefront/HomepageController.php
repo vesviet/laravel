@@ -12,27 +12,20 @@ class HomepageController extends Controller
 {
     public function index(): View
     {
-        // Cache for 5 minutes — invalidated by ProductObserver on create/update/delete
-        $featuredProducts = Cache::remember('homepage.featured', 300, function () {
-            return Product::featured()
-                ->with('category')
-                ->take(8)
-                ->get();
-        });
+        $featuredProducts = Product::featured()
+            ->with('category')
+            ->take(8)
+            ->get();
 
-        $newArrivals = Cache::remember('homepage.new_arrivals', 300, function () {
-            return Product::active()
-                ->latest()
-                ->with('category')
-                ->take(8)
-                ->get();
-        });
+        $newArrivals = Product::active()
+            ->latest()
+            ->with('category')
+            ->take(8)
+            ->get();
 
-        $categories = Cache::remember('homepage.categories', 600, function () {
-            return Category::whereNull('parent_id')
-                ->orderBy('name')
-                ->get();
-        });
+        $categories = Category::whereNull('parent_id')
+            ->orderBy('name')
+            ->get();
 
         return view('storefront.home.index', compact(
             'featuredProducts',

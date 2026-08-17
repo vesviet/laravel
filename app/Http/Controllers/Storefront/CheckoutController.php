@@ -33,10 +33,7 @@ class CheckoutController extends Controller
         $subtotal = $this->cartService->calculateTotal();
         $customer = auth('customer')->user();
 
-        // Cache provinces for 24 hours — data changes rarely
-        $provinces = Cache::remember('provinces_list', 86400, fn() =>
-            Province::orderBy('name')->get()
-        );
+        $provinces = Province::orderBy('name')->get();
 
         $appliedCoupon = session()->get('coupon');
 

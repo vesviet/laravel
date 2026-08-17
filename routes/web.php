@@ -14,6 +14,8 @@ use App\Livewire\WishlistPage;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomepageController::class, 'index'])->name('home');
+Route::view('/about', 'storefront.pages.about')->name('about');
+Route::view('/contact', 'storefront.pages.contact')->name('contact');
 
 // Catalog
 Route::get('/products', [CatalogController::class, 'index'])->name('products.index');

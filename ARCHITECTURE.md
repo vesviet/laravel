@@ -57,3 +57,6 @@ When reviewing a PR:
 - **R3 (2026-08-16):** Removed `DB::transaction()` from `OrderService::createOrder()`.
 - **R1 (2026-08-16):** Removed `DB::transaction()` from `LandingOrderForm` → moved to `ProcessLandingOrderAction`.
 - **R4 (2026-08-16):** `ProcessCheckoutAction` coupon lock moved inside its `DB::transaction()`.
+
+
+https://demo.uix.store/sober-furniture/home-v12/?header_layout=v2&header_wrapper=wrapped&footer_widgets_layout=2-columns&footer_content_enable=1&footer_instagram=1&utm_source=landing
