@@ -31,15 +31,6 @@
 
         @if($orders->count() > 0)
             <ul role="list" class="divide-y divide-[#E5E5E5]" aria-label="Danh sách đơn hàng">
-                @php
-                    $statusLabels = [
-                        'pending'   => 'Đang xử lý',
-                        'confirmed' => 'Đã xác nhận',
-                        'shipping'  => 'Đang giao',
-                        'delivered' => 'Đã giao',
-                        'cancelled' => 'Đã huỷ',
-                    ];
-                @endphp
                 @foreach($orders as $order)
                     <li>
                         <a href="{{ route('track-order.index', ['order_number' => $order->order_number]) }}"
@@ -60,13 +51,13 @@
                                 {{-- Status + amount --}}
                                 <div class="flex items-center gap-5 shrink-0">
                                     <span class="text-[9px] font-medium tracking-[0.15em] uppercase px-2.5 py-1 border
-                                        @if($order->status == 'pending') border-yellow-400 text-yellow-700
-                                        @elseif($order->status == 'confirmed') border-[#1a1a1a] text-[#1a1a1a]
-                                        @elseif($order->status == 'shipping') border-[#1a1a1a] text-[#1a1a1a]
-                                        @elseif($order->status == 'delivered') border-green-600 text-green-700
+                                        @if($order->status === \App\Enums\OrderStatus::Pending) border-yellow-400 text-yellow-700
+                                        @elseif($order->status === \App\Enums\OrderStatus::Confirmed || $order->status === \App\Enums\OrderStatus::Processing) border-[#1a1a1a] text-[#1a1a1a]
+                                        @elseif($order->status === \App\Enums\OrderStatus::Shipped) border-[#1a1a1a] text-[#1a1a1a]
+                                        @elseif($order->status === \App\Enums\OrderStatus::Delivered) border-green-600 text-green-700
                                         @else border-[#E84444] text-[#E84444] @endif
                                     ">
-                                        {{ $statusLabels[$order->status] ?? $order->status }}
+                                        {{ $order->status->label() }}
                                     </span>
                                     <p class="text-sm font-medium">
                                         {{ number_format($order->total_amount, 0, ',', '.') }}₫

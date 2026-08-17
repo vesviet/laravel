@@ -46,22 +46,13 @@
                             </div>
                             <div class="mt-4 sm:mt-0">
                                 <span class="text-[10px] font-medium tracking-[0.15em] uppercase px-3 py-1.5 border
-                                    @if($order->status == 'pending') border-yellow-500 text-yellow-700
-                                    @elseif($order->status == 'confirmed') border-[#1a1a1a] text-[#1a1a1a]
-                                    @elseif($order->status == 'shipping') border-[#1a1a1a] text-[#1a1a1a]
-                                    @elseif($order->status == 'delivered') border-green-600 text-green-700
+                                    @if($order->status === \App\Enums\OrderStatus::Pending) border-yellow-500 text-yellow-700
+                                    @elseif($order->status === \App\Enums\OrderStatus::Confirmed || $order->status === \App\Enums\OrderStatus::Processing) border-[#1a1a1a] text-[#1a1a1a]
+                                    @elseif($order->status === \App\Enums\OrderStatus::Shipped) border-[#1a1a1a] text-[#1a1a1a]
+                                    @elseif($order->status === \App\Enums\OrderStatus::Delivered) border-green-600 text-green-700
                                     @else border-[#E84444] text-[#E84444] @endif
                                 ">
-                                    @php
-                                        $statusLabels = [
-                                            'pending'   => 'Đang xử lý',
-                                            'confirmed' => 'Đã xác nhận',
-                                            'shipping'  => 'Đang giao',
-                                            'delivered' => 'Đã giao',
-                                            'cancelled' => 'Đã huỷ',
-                                        ];
-                                    @endphp
-                                    {{ $statusLabels[$order->status] ?? $order->status }}
+                                    {{ $order->status->label() }}
                                 </span>
                             </div>
                         </div>

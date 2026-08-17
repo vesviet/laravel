@@ -40,7 +40,7 @@ it('prevents overselling using DB locks during concurrent-like transactions', fu
 
     // Simulate order 2 trying to deduct stock — should throw Exception
     $inventoryService->deductStock($order2);
-})->throws(Exception::class, 'Insufficient stock for product');
+})->throws(Exception::class, 'Không đủ tồn kho cho sản phẩm');
 
 it('fails checkout if variant is out of stock', function () {
     $product = Product::create([
