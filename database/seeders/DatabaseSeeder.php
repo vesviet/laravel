@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\ProductVariant;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
@@ -23,14 +24,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // ── 1. ADMIN USER ───────────────────────────────────────────────────
-        User::firstOrCreate(
+        // ── 1. ADMIN USER & ROLES ───────────────────────────────────────────
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
+
+        $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name'     => 'Admin Sober',
                 'password' => Hash::make('password'),
             ]
         );
+        $admin->assignRole($superAdminRole);
 
         // ── 2. SAMPLE CUSTOMERS ─────────────────────────────────────────────
         $customer1 = Customer::firstOrCreate(

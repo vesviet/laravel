@@ -26,7 +26,17 @@ class BannerResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('title')->required()->maxLength(255),
                 Forms\Components\TextInput::make('link')->maxLength(255)->url(),
-                Forms\Components\FileUpload::make('image')->image()->required()->columnSpanFull(),
+                Forms\Components\FileUpload::make('image')
+                    ->label('Banner Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('banners')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->openable()
+                    ->previewable(true)
+                    ->required()
+                    ->columnSpanFull(),
                 Forms\Components\Select::make('status')
                     ->options([
                         'active' => 'Active',

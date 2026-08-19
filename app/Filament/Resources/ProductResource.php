@@ -44,12 +44,45 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('price')
                             ->numeric()
                             ->required()
-                            ->prefix('$'),
+                            ->prefix('₫'),
                         Forms\Components\TextInput::make('stock')
                             ->numeric()
                             ->required()
                             ->default(0),
                     ])->columns(2),
+
+                    Forms\Components\Section::make('Hình Ảnh Sản Phẩm (Thumbnail & Gallery)')->schema([
+                        Forms\Components\FileUpload::make('image_path')
+                            ->label('Ảnh đại diện (Thumbnail / Main Image)')
+                            ->image()
+                            ->disk('public')
+                            ->directory('products')
+                            ->visibility('public')
+                            ->imageEditor()
+                            ->openable()
+                            ->downloadable()
+                            ->previewable(true)
+                            ->maxSize(10240)
+                            ->columnSpanFull()
+                            ->helperText('Ảnh đại diện chính của sản phẩm.'),
+
+                        Forms\Components\FileUpload::make('attributes_json.gallery')
+                            ->label('Bộ sưu tập ảnh (Gallery Images)')
+                            ->multiple()
+                            ->reorderable()
+                            ->image()
+                            ->disk('public')
+                            ->directory('products/gallery')
+                            ->visibility('public')
+                            ->imageEditor()
+                            ->openable()
+                            ->downloadable()
+                            ->previewable(true)
+                            ->panelLayout('grid')
+                            ->maxSize(10240)
+                            ->columnSpanFull()
+                            ->helperText('Tải lên nhiều góc ảnh để hiển thị dải thumbnail trên trang chi tiết sản phẩm.'),
+                    ]),
 
                     Forms\Components\Section::make('Product Variants')->schema([
                         Forms\Components\Repeater::make('variants')
@@ -57,10 +90,27 @@ class ProductResource extends Resource
                             ->schema([
                                 Forms\Components\TextInput::make('name')->required(),
                                 Forms\Components\TextInput::make('sku')->label('SKU')->unique(ignoreRecord: true),
-                                Forms\Components\TextInput::make('price')->numeric()->required(),
+                                Forms\Components\TextInput::make('price')->numeric()->required()->prefix('₫'),
                                 Forms\Components\TextInput::make('stock')->numeric()->required()->default(0),
                                 Forms\Components\Toggle::make('is_active')->default(true),
-                                Forms\Components\KeyValue::make('attributes_json')->label('Attributes'),
+                                Forms\Components\KeyValue::make('attributes_json')
+                                    ->label('Attributes')
+                                    ->formatStateUsing(function ($state) {
+                                        if (!is_array($state)) return $state;
+                                        return array_map(fn ($val) => is_array($val) ? json_encode($val, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : (string) $val, $state);
+                                    })
+                                    ->mutateDehydratedStateUsing(function ($state) {
+                                        if (!is_array($state)) return $state;
+                                        return array_map(function ($val) {
+                                            if (is_string($val)) {
+                                                $decoded = json_decode($val, true);
+                                                if (json_last_error() === JSON_ERROR_NONE && (is_array($decoded) || is_object($decoded))) {
+                                                    return $decoded;
+                                                }
+                                            }
+                                            return $val;
+                                        }, $state);
+                                    }),
                             ])
                             ->columns(2)
                             ->defaultItems(0),
@@ -71,11 +121,12 @@ class ProductResource extends Resource
                     Forms\Components\Section::make('Status & Category')->schema([
                         Forms\Components\Select::make('status')
                             ->options([
-                                'active'   => 'Active',
-                                'inactive' => 'Inactive',
+                                'published' => 'Published (Đã xuất bản)',
+                                'draft'     => 'Draft (Bản nháp)',
+                                'archived'  => 'Archived (Lưu trữ)',
                             ])
                             ->required()
-                            ->default('active'),
+                            ->default('published'),
                         Forms\Components\Toggle::make('is_featured')
                             ->label('Sản phẩm nổi bật')
                             ->helperText('Hiển thị trên trang chủ')
@@ -86,20 +137,9 @@ class ProductResource extends Resource
                             ->preload(),
                     ]),
 
-                    Forms\Components\Section::make('Media')->schema([
-                        Forms\Components\FileUpload::make('image_path')
-                            ->label('Product Image')
-                            ->image()
-                            ->directory('products'),
-                    ]),
-
                     Forms\Components\Section::make('SEO')->schema([
                         Forms\Components\TextInput::make('seo_title')->maxLength(255),
                         Forms\Components\Textarea::make('seo_description')->rows(3),
-                    ]),
-
-                    Forms\Components\Section::make('Additional Attributes')->schema([
-                        Forms\Components\KeyValue::make('attributes_json')->label('Attributes'),
                     ]),
                 ])->columnSpan(['lg' => 1]),
             ])
@@ -114,7 +154,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('sku')->searchable(),
                 Tables\Columns\TextColumn::make('price')
-                    ->formatStateUsing(fn ($state) => '$'.number_format((float) $state, 2))
+                    ->formatStateUsing(fn ($state) => number_format((float) $state, 0, ',', '.') . '₫')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('stock')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('status')->badge()->color(fn (string $state): string => match ($state) {
