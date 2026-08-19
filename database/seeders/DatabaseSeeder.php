@@ -732,5 +732,8 @@ class DatabaseSeeder extends Seeder
 
         // ── 10. PROVINCES SEEDER ────────────────────────────────────────────
         $this->call(ProvinceSeeder::class);
+
+        // ── 11. CMS BLOG & PAGES SEEDER ─────────────────────────────────────
+        $this->call(CmsSeeder::class);
     }
 }

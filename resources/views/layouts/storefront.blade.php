@@ -47,6 +47,10 @@
                    class="nav-link {{ request()->routeIs('products.*') ? 'border-b border-[#1a1a1a]' : '' }}">
                     Sản Phẩm
                 </a>
+                <a href="{{ route('blog.index') }}"
+                   class="nav-link {{ request()->routeIs('blog.*') ? 'border-b border-[#1a1a1a]' : '' }}">
+                    Blog
+                </a>
                 <a href="/about"
                    class="nav-link {{ request()->is('about') ? 'border-b border-[#1a1a1a]' : '' }}">
                     Giới Thiệu
@@ -250,6 +254,7 @@
             <nav class="flex flex-col px-6 py-8 gap-6" role="navigation" aria-label="Menu mobile">
                 <a href="{{ route('home') }}" class="nav-link text-base" @click="mobileMenuOpen = false">Trang Chủ</a>
                 <a href="{{ route('products.index') }}" class="nav-link text-base" @click="mobileMenuOpen = false">Sản Phẩm</a>
+                <a href="{{ route('blog.index') }}" class="nav-link text-base" @click="mobileMenuOpen = false">Blog</a>
                 <a href="/about" class="nav-link text-base" @click="mobileMenuOpen = false">Giới Thiệu</a>
                 <a href="/contact" class="nav-link text-base" @click="mobileMenuOpen = false">Liên Hệ</a>
                 <a href="{{ route('track-order.index') }}" class="nav-link text-base" @click="mobileMenuOpen = false">Tra Cứu</a>
@@ -356,6 +361,7 @@
                     <p class="text-[10px] font-semibold tracking-[0.2em] uppercase mb-4 text-[#23232C]">LIÊN KẾT NHANH</p>
                     <nav class="flex flex-col gap-3 text-sm text-[#888888] font-light" aria-label="Customer services navigation">
                         <a href="{{ route('products.index') }}" class="hover:text-[#23232C] transition-colors">Sản Phẩm</a>
+                        <a href="{{ route('blog.index') }}" class="hover:text-[#23232C] transition-colors">Blog & Kiến Thức</a>
                         <a href="/about" class="hover:text-[#23232C] transition-colors">Giới Thiệu</a>
                         <a href="/contact" class="hover:text-[#23232C] transition-colors">Liên Hệ</a>
                         <a href="{{ route('track-order.index') }}" class="hover:text-[#23232C] transition-colors">Tra Cứu Đơn Hàng</a>

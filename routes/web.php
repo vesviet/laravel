@@ -4,18 +4,24 @@ use App\Http\Controllers\Admin\OrderPdfController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\Storefront\AccountController;
 use App\Http\Controllers\Storefront\AuthController;
+use App\Http\Controllers\Storefront\BlogController;
 use App\Http\Controllers\Storefront\CatalogController;
 use App\Http\Controllers\Storefront\CheckoutController;
 use App\Http\Controllers\Storefront\HomepageController;
 use App\Http\Controllers\Storefront\LandingPageController;
 use App\Http\Controllers\Storefront\NewsletterController;
 use App\Http\Controllers\Storefront\OrderTrackingController;
+use App\Http\Controllers\Storefront\PageController;
 use App\Livewire\WishlistPage;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomepageController::class, 'index'])->name('home');
 Route::view('/about', 'storefront.pages.about')->name('about');
 Route::view('/contact', 'storefront.pages.contact')->name('contact');
+
+// Blog & Knowledge Hub
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Catalog
 Route::get('/products', [CatalogController::class, 'index'])->name('products.index');
@@ -61,5 +67,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/orders/{id}/pdf', [OrderPdfController::class, 'download'])->name('admin.orders.pdf');
 });
 
-// Dynamic Landing Page Route (Must be at the very end to avoid conflicts)
-Route::get('/{slug}', [LandingPageController::class, 'show'])->name('landing.show');
+// Dynamic CMS & Landing Page Route (Must be at the very end to avoid conflicts)
+Route::get('/pages/{slug}', [PageController::class, 'show'])->name('pages.show');
+Route::get('/{slug}', [PageController::class, 'show'])->name('page.show');

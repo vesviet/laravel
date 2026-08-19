@@ -50,6 +50,16 @@ class Product extends Model
         return $this->hasMany(ProductReview::class);
     }
 
+    /**
+     * Blog posts referencing this product for contextual commerce.
+     */
+    public function posts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Post::class, 'post_product')
+            ->withPivot('sort_order')
+            ->withTimestamps();
+    }
+
     public function scopeFilterByCategory($query, $categorySlug)
     {
         if ($categorySlug) {
