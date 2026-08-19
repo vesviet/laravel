@@ -66,10 +66,10 @@ class OrderResource extends Resource
                     ]),
 
                     Forms\Components\Section::make('Financials')->schema([
-                        Forms\Components\TextInput::make('subtotal')->numeric()->disabled()->prefix('$'),
-                        Forms\Components\TextInput::make('discount_amount')->numeric()->disabled()->prefix('$'),
-                        Forms\Components\TextInput::make('shipping_fee')->numeric()->disabled()->prefix('$'),
-                        Forms\Components\TextInput::make('total_amount')->numeric()->disabled()->prefix('$'),
+                        Forms\Components\TextInput::make('subtotal')->numeric()->disabled()->suffix('₫'),
+                        Forms\Components\TextInput::make('discount_amount')->numeric()->disabled()->suffix('₫'),
+                        Forms\Components\TextInput::make('shipping_fee')->numeric()->disabled()->suffix('₫'),
+                        Forms\Components\TextInput::make('total_amount')->numeric()->disabled()->suffix('₫'),
                     ]),
                 ])->columnSpan(['lg' => 1]),
             ])
@@ -97,12 +97,35 @@ class OrderResource extends Resource
                     ->options(OrderStatus::class),
             ])
             ->actions([
+                Tables\Actions\Action::make('cancel_order')
+                    ->label('Huỷ đơn & hoàn kho')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Xác nhận huỷ đơn hàng')
+                    ->modalDescription('Bạn có chắc chắn muốn huỷ đơn hàng này? Hệ thống sẽ tự động hoàn trả số lượng tồn kho sản phẩm vào kho hàng.')
+                    ->modalSubmitActionLabel('Xác nhận huỷ')
+                    ->visible(fn (Order $record): bool => ! ($record->status instanceof OrderStatus ? $record->status : OrderStatus::tryFrom($record->status))?->isTerminal())
+                    ->action(function (Order $record) {
+                        try {
+                            app(\App\Actions\CancelOrderAction::class)->execute($record);
+                            \Filament\Notifications\Notification::make()
+                                ->title('Huỷ đơn hàng thành công')
+                                ->body('Đơn hàng đã được huỷ và tồn kho đã được hoàn lại.')
+                                ->success()
+                                ->send();
+                        } catch (\Throwable $e) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Không thể huỷ đơn hàng')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Direct bulk deleting is disabled to preserve financial data integrity
             ])
             ->defaultSort('created_at', 'desc');
     }

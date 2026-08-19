@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductReview;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +17,15 @@ class ProductReviews extends Component
     public $comment = '';
 
     protected $rules = [
-        'rating' => 'required|integer|min:1|max:5',
+        'rating'  => 'required|integer|min:1|max:5',
         'comment' => 'nullable|string|max:1000',
+    ];
+
+    protected $messages = [
+        'rating.required' => 'Vui lòng chọn số sao đánh giá.',
+        'rating.min'      => 'Đánh giá tối thiểu là 1 sao.',
+        'rating.max'      => 'Đánh giá tối đa là 5 sao.',
+        'comment.max'     => 'Nhận xét không được vượt quá 1000 ký tự.',
     ];
 
     public function submitReview()
@@ -28,20 +36,46 @@ class ProductReviews extends Component
             return redirect()->route('account.login');
         }
 
-        // Logic to verify purchase is usually handled here or in a rule,
-        // as a frontend-developer, I'm just creating the UI and minimal wiring.
-        // Assuming there is a rule or we just save it.
+        $customerId = Auth::guard('customer')->id();
+        $productId  = $this->product->id;
+
+        // 1. Verified Purchase: customer must have at least one 'delivered' order containing this product.
+        $hasPurchased = Order::where('customer_id', $customerId)
+            ->where('status', 'delivered')
+            ->whereHas('items', function ($query) use ($productId) {
+                $query->where('product_id', $productId)
+                    ->orWhereHas('productVariant', function ($q) use ($productId) {
+                        $q->where('product_id', $productId);
+                    });
+            })
+            ->exists();
+
+        if (! $hasPurchased) {
+            $this->addError('purchase_required', 'Bạn cần mua và nhận hàng thành công sản phẩm này trước khi gửi đánh giá.');
+            return;
+        }
+
+        // 2. Prevent duplicate reviews per product per customer.
+        $existingReview = ProductReview::where('product_id', $productId)
+            ->where('customer_id', $customerId)
+            ->exists();
+
+        if ($existingReview) {
+            $this->addError('duplicate_review', 'Bạn đã gửi đánh giá cho sản phẩm này rồi.');
+            return;
+        }
+
         ProductReview::create([
-            'product_id' => $this->product->id,
-            'customer_id' => Auth::guard('customer')->id(),
-            'rating' => $this->rating,
-            'comment' => $this->comment,
-            'status' => 'pending',
+            'product_id'  => $productId,
+            'customer_id' => $customerId,
+            'rating'      => $this->rating,
+            'comment'     => $this->comment,
+            'status'      => 'pending', // Requires admin approval.
         ]);
 
         $this->reset(['rating', 'comment']);
 
-        session()->flash('message', 'Your review has been submitted and is pending approval.');
+        session()->flash('message', 'Đánh giá của bạn đã được gửi thành công và đang chờ ban quản trị kiểm duyệt.');
     }
 
     public function render()

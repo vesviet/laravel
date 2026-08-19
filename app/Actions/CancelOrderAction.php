@@ -2,6 +2,8 @@
 
 namespace App\Actions;
 
+use App\Enums\OrderStatus;
+use App\Events\OrderCancelled;
 use App\Models\Order;
 use App\Services\InventoryService;
 use Exception;
@@ -20,21 +22,27 @@ class CancelOrderAction
      */
     public function execute(Order $order): bool
     {
-        if ($order->status === 'cancelled') {
-            throw new Exception('Order is already cancelled.');
+        $currentStatus = $order->status instanceof OrderStatus ? $order->status : OrderStatus::tryFrom($order->status);
+
+        if ($currentStatus === OrderStatus::Cancelled) {
+            throw new Exception('Đơn hàng đã ở trạng thái đã huỷ.');
         }
 
-        if (in_array($order->status, ['shipping', 'delivered'])) {
-            throw new Exception('Cannot cancel an order that is shipping or delivered.');
+        if (in_array($currentStatus, [OrderStatus::Shipped, OrderStatus::Delivered])) {
+            throw new Exception('Không thể huỷ đơn hàng đang giao hoặc đã giao.');
         }
 
-        return DB::transaction(function () use ($order) {
-            $order->update(['status' => 'cancelled']);
+        DB::transaction(function () use ($order) {
+            $order->update(['status' => OrderStatus::Cancelled]);
+
+            $order->loadMissing('items');
 
             // Restore inventory
             $this->inventoryService->restoreStock($order);
-
-            return true;
         });
+
+        OrderCancelled::dispatch($order);
+
+        return true;
     }
 }

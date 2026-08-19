@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'goship' => [
+        'base_url'              => env('GOSHIP_BASE_URL', 'https://api.goship.io/api/v2'),
+        'token'                 => env('GOSHIP_TOKEN', ''),
+        'warehouse_name'        => env('GOSHIP_WAREHOUSE_NAME', 'MYSHOP Store'),
+        'warehouse_phone'       => env('GOSHIP_WAREHOUSE_PHONE', '0901234567'),
+        'warehouse_address'     => env('GOSHIP_WAREHOUSE_ADDRESS', '123 Nguyen Van Linh'),
+        'warehouse_city_id'     => env('GOSHIP_WAREHOUSE_CITY_ID', '1'),
+        'warehouse_district_id' => env('GOSHIP_WAREHOUSE_DISTRICT_ID', '1'),
+    ],
+
 ];

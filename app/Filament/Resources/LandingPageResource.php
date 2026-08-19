@@ -35,9 +35,9 @@ class LandingPageResource extends Resource
                                 Forms\Components\TextInput::make('slug')
                                     ->required()
                                     ->unique(ignoreRecord: true)
-                                    ->notIn(['admin', 'cart', 'checkout', 'login', 'register', 'api'])
+                                    ->notIn(['admin', 'cart', 'checkout', 'login', 'register', 'api', 'products', 'about', 'contact', 'track-order', 'account', 'newsletter', 'wishlist', 'order-tracking', 'password'])
                                     ->validationMessages([
-                                        'not_in' => 'The slug cannot be a reserved system route.',
+                                        'not_in' => 'Slug này trùng với đường dẫn hệ thống đã được đặt trước.',
                                     ]),
                                 Forms\Components\Select::make('product_id')
                                     ->relationship('product', 'name')

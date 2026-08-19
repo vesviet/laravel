@@ -41,7 +41,7 @@ class ProcessLandingOrderAction
             ? (int) ($combo['price'] ?? 0)
             : (int) ($landingPage->product?->price ?? 0);
 
-        return DB::transaction(function () use ($landingPage, $data, $combo, $totalAmount) {
+        $order = DB::transaction(function () use ($landingPage, $data, $combo, $totalAmount) {
             $order = Order::create([
                 'landing_page_id' => $landingPage->id,
                 'order_number'    => $this->generateOrderNumber(),

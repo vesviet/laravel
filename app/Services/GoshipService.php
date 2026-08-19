@@ -80,6 +80,14 @@ class GoshipService
      */
     public function createWaybill(Order $order): ?array
     {
+        $order->loadMissing('items.product');
+        $weight = 0;
+        foreach ($order->items as $item) {
+            $itemWeight = (int) ($item->product?->weight ?? 500);
+            $weight += max(100, $itemWeight) * (int) $item->quantity;
+        }
+        $weight = max(500, $weight);
+
         $payload = [
             'shipment' => [
                 'order_id' => $order->id,
@@ -88,7 +96,7 @@ class GoshipService
                 'parcel' => [
                     // COD amount = total if payment is COD, otherwise 0.
                     'cod' => $order->payment_method === 'cod' ? (float) $order->total_amount : 0,
-                    'weight' => 1000, // TODO: use product weight field when added to Product model
+                    'weight' => $weight,
                 ],
             ],
         ];

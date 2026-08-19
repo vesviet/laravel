@@ -59,7 +59,7 @@ class ProcessCheckoutAction
         );
 
         // Resolve shipping fee BEFORE the transaction — external HTTP call cannot be transactional.
-        $shippingFee = $this->resolveShippingFee($customerData);
+        $shippingFee = $this->resolveShippingFee($customerData, $cartItems);
 
         // Calculate total discount via PromotionEngine (combo + coupon stacked).
         // Run BEFORE the transaction — PromotionEngine is read-only here (no DB writes).
@@ -117,16 +117,24 @@ class ProcessCheckoutAction
      * Attempt to get a shipping fee from Goship.
      * Falls back to 0 if API is unavailable — do not block checkout on external service failure.
      */
-    protected function resolveShippingFee(array $customerData): int
+    protected function resolveShippingFee(array $customerData, array $cartItems = []): int
     {
         try {
+            $totalWeight = 0;
+            foreach ($cartItems as $item) {
+                $productWeight = (int) ($item['product']->weight ?? 500);
+                $qty = (int) ($item['quantity'] ?? 1);
+                $totalWeight += max(100, $productWeight) * $qty;
+            }
+            $totalWeight = max(500, $totalWeight);
+
             $rates = $this->goshipService->getShippingRates(
                 [
                     'city'     => $customerData['city'] ?? '',
                     'district' => $customerData['district'] ?? '',
                     'ward'     => $customerData['ward'] ?? '',
                 ],
-                ['weight' => 1000] // S8: will use actual product weight when added
+                ['weight' => $totalWeight]
             );
 
             return isset($rates[0]['total_amount']) ? (int) $rates[0]['total_amount'] : 0;

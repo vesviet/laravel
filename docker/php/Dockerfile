@@ -22,4 +22,7 @@ RUN docker-php-ext-configure intl \
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Custom PHP settings for uploads and memory
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 WORKDIR /var/www/html

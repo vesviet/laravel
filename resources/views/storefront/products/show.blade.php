@@ -236,17 +236,22 @@
                         </button>
                     </div>
 
-                    {{-- Rating & Statistics Line (★ 5.0 | 2 Đánh giá | 297 Lượt xem) --}}
+                    {{-- Rating & Statistics Line --}}
+                    @php
+                        $approvedReviews = $product->reviews()->where('status', 'approved')->get();
+                        $reviewsCount = $approvedReviews->count();
+                        $avgRating = $reviewsCount > 0 ? round($approvedReviews->avg('rating'), 1) : 5.0;
+                    @endphp
                     <div class="flex items-center gap-3 text-xs text-[#6B7280] mb-5 pb-4 border-b border-[#F3F4F6]">
                         <div class="flex items-center gap-1 text-[#F59E0B]">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
-                            <span class="font-bold text-[#111827]">5.0</span>
+                            <span class="font-bold text-[#111827]">{{ number_format($avgRating, 1) }}</span>
                         </div>
                         <span>|</span>
                         <a href="#product-details-section" @click.prevent="scrollToDetails()" class="hover:underline hover:text-[#111827]">
-                            2 Đánh giá
+                            {{ $reviewsCount }} Đánh giá
                         </a>
                         <span>|</span>
                         <div class="flex items-center gap-1">
@@ -334,7 +339,7 @@
                     class="py-4 px-3 text-sm tracking-wide transition-colors focus:outline-none -mb-px"
                     role="tab"
                     :aria-selected="tab === 'reviews'">
-                    Đánh Giá Khách Hàng (2)
+                    Đánh Giá Khách Hàng ({{ $product->reviews()->where('status', 'approved')->count() }})
                 </button>
             </div>
 
@@ -360,7 +365,7 @@
                                     @continue(in_array($key, ['secondary_image', 'gallery', 'album']))
                                     <tr class="border-b border-[#E5E7EB] odd:bg-white even:bg-[#F9FAFB]">
                                         <th class="py-3 px-4 font-semibold text-[#374151] w-1/3 uppercase text-[10px] tracking-wider border-r border-[#E5E7EB]">
-                                            {{ str_replace('_', ' ', $key) }}
+                                             {{ str_replace('_', ' ', $key) }}
                                         </th>
                                         <td class="py-3 px-4 text-[#4B5563]">
                                             {{ is_array($value) ? implode(', ', $value) : $value }}
@@ -373,38 +378,8 @@
                 @endif
 
                 {{-- Reviews Tab --}}
-                <div x-show="tab === 'reviews'" class="max-w-3xl space-y-6" style="display: none;">
-                    <div class="flex items-center gap-4 p-4 bg-[#F9FAFB] border border-[#E5E7EB]">
-                        <div class="text-3xl font-bold text-[#111827]">5.0 / 5.0</div>
-                        <div>
-                            <div class="flex text-[#F59E0B] text-sm">★★★★★</div>
-                            <p class="text-xs text-[#6B7280] mt-0.5">Dựa trên 2 lượt đánh giá thực tế từ người mua hàng</p>
-                        </div>
-                    </div>
-
-                    <div class="divide-y divide-[#E5E7EB] space-y-4">
-                        <div class="pt-4">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="font-medium text-xs text-[#111827]">Nguyễn Văn An</span>
-                                <span class="text-[10px] text-[#9CA3AF]">Đã mua hàng chính hãng</span>
-                            </div>
-                            <div class="text-[#F59E0B] text-xs mb-1">★★★★★</div>
-                            <p class="text-xs text-[#4B5563] leading-relaxed">
-                                Sản phẩm hoàn thiện sắc sảo đến từng chi tiết nhỏ. Giao hàng cẩn thận, đóng gói nhiều lớp chống trầy xước. Rất hài lòng!
-                            </p>
-                        </div>
-
-                        <div class="pt-4">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="font-medium text-xs text-[#111827]">Trần Thị Mai</span>
-                                <span class="text-[10px] text-[#9CA3AF]">Đã mua hàng chính hãng</span>
-                            </div>
-                            <div class="text-[#F59E0B] text-xs mb-1">★★★★★</div>
-                            <p class="text-xs text-[#4B5563] leading-relaxed">
-                                Thiết kế tối giản cực đẹp, đặt ở không gian phòng khách nhìn rất sang trọng. Đúng chuẩn phong cách Bắc Âu!
-                            </p>
-                        </div>
-                    </div>
+                <div x-show="tab === 'reviews'" class="max-w-4xl" style="display: none;">
+                    <livewire:product-reviews :product="$product" />
                 </div>
             </div>
 

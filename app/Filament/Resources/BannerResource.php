@@ -34,7 +34,9 @@ class BannerResource extends Resource
                     ->visibility('public')
                     ->imageEditor()
                     ->openable()
+                    ->downloadable()
                     ->previewable(true)
+                    ->maxSize(10240)
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Select::make('status')
