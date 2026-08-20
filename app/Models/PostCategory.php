@@ -64,4 +64,12 @@ class PostCategory extends Model
     {
         return $query->orderBy('sort_order', 'asc')->orderBy('name', 'asc');
     }
+
+    /**
+     * Scope query with count of published articles.
+     */
+    public function scopeWithPublishedPostsCount($query)
+    {
+        return $query->withCount(['posts' => fn ($q) => $q->published()]);
+    }
 }

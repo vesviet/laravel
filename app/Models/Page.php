@@ -97,10 +97,39 @@ class Page extends Model
     }
 
     /**
-     * SEO description accessor fallback to meta_description or excerpt.
+     * Scope: Search pages by keyword across title, excerpt, and body.
      */
-    public function getSeoDescriptionAttribute(): ?string
+    public function scopeSearch($query, ?string $keyword)
     {
-        return $this->attributes['seo_description'] ?? $this->attributes['meta_description'] ?? null;
+        if (empty($keyword)) {
+            return $query;
+        }
+
+        $term = trim($keyword);
+
+        return $query->where(function ($q) use ($term) {
+            $q->where('title', 'like', "%{$term}%")
+              ->orWhere('excerpt', 'like', "%{$term}%")
+              ->orWhere('body', 'like', "%{$term}%");
+        });
+    }
+
+    /**
+     * Generate Schema.org JSON-LD WebPage representation.
+     */
+    public function toSchemaOrgJsonLd(string $url): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => $this->schema_type ?: 'WebPage',
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $url,
+            ],
+            'name' => $this->title,
+            'description' => $this->seo_description ?: ($this->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($this->body), 160)),
+            'datePublished' => $this->published_at?->toIso8601String(),
+            'dateModified' => $this->updated_at->toIso8601String(),
+        ];
     }
 }

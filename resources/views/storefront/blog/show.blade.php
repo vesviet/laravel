@@ -1,12 +1,18 @@
 @extends('layouts.storefront')
 
+@php
+    $shortcodeService = app(\App\Services\ShortcodeService::class);
+    $plainBody = $shortcodeService->strip($post->body);
+    $metaDescription = $post->seo_description ?: ($post->excerpt ?: Str::limit(strip_tags($plainBody), 160));
+@endphp
+
 @pushonce('page_title'){{ $post->seo_title ?: $post->title }} — @endpushonce
-@pushonce('meta_description'){{ $post->seo_description ?: $post->excerpt ?: Str::limit(strip_tags($post->body), 160) }}@endpushonce
+@pushonce('meta_description'){{ $metaDescription }}@endpushonce
 
 @pushonce('og_tags')
 {{-- OpenGraph Meta Tags --}}
 <meta property="og:title" content="{{ $post->seo_title ?: $post->title }}">
-<meta property="og:description" content="{{ $post->seo_description ?: $post->excerpt ?: Str::limit(strip_tags($post->body), 160) }}">
+<meta property="og:description" content="{{ $metaDescription }}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="{{ url()->current() }}">
 <meta property="og:image" content="{{ $post->og_image_url ?: $post->featured_image_url ?: asset('images/default-og.jpg') }}">
@@ -18,7 +24,7 @@
 {{-- Twitter Card Tags --}}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $post->seo_title ?: $post->title }}">
-<meta name="twitter:description" content="{{ $post->seo_description ?: $post->excerpt ?: Str::limit(strip_tags($post->body), 160) }}">
+<meta name="twitter:description" content="{{ $metaDescription }}">
 <meta name="twitter:image" content="{{ $post->og_image_url ?: $post->featured_image_url ?: asset('images/default-og.jpg') }}">
 
 {{-- Canonical URL --}}
@@ -34,7 +40,7 @@
             '@id' => url()->current(),
         ],
         'headline' => $post->title,
-        'description' => $post->seo_description ?: ($post->excerpt ?: Str::limit(strip_tags($post->body), 160)),
+        'description' => $metaDescription,
         'image' => [
             $post->featured_image_url ?: asset('images/default-og.jpg'),
         ],

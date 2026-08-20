@@ -7,6 +7,7 @@ use App\Http\Controllers\Storefront\AuthController;
 use App\Http\Controllers\Storefront\BlogController;
 use App\Http\Controllers\Storefront\CatalogController;
 use App\Http\Controllers\Storefront\CheckoutController;
+use App\Http\Controllers\Storefront\FeedController;
 use App\Http\Controllers\Storefront\HomepageController;
 use App\Http\Controllers\Storefront\LandingPageController;
 use App\Http\Controllers\Storefront\NewsletterController;
@@ -55,6 +56,9 @@ Route::prefix('account')->name('account.')->group(function () {
 
     Route::middleware('auth:customer')->group(function () {
         Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
+        Route::get('/orders/{order_number}', [AccountController::class, 'orderDetail'])->name('orders.show');
+        Route::post('/orders/{order_number}/cancel', [AccountController::class, 'cancelOrder'])->name('orders.cancel');
+        Route::post('/orders/{order_number}/reorder', [AccountController::class, 'reorder'])->name('orders.reorder');
         Route::get('/wishlist', WishlistPage::class)->name('wishlist');
         Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store'])->name('products.reviews.store');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -66,6 +70,16 @@ Route::prefix('account')->name('account.')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/admin/orders/{id}/pdf', [OrderPdfController::class, 'download'])->name('admin.orders.pdf');
 });
+
+// SEO Feeds & XML Sitemaps
+Route::get('/sitemap.xml', [FeedController::class, 'sitemapIndex'])->name('sitemap.index');
+Route::get('/sitemap-products.xml', [FeedController::class, 'productsSitemap'])->name('sitemap.products');
+Route::get('/sitemap-categories.xml', [FeedController::class, 'categoriesSitemap'])->name('sitemap.categories');
+Route::get('/sitemap-posts.xml', [FeedController::class, 'postsSitemap'])->name('sitemap.posts');
+Route::get('/sitemap-pages.xml', [FeedController::class, 'pagesSitemap'])->name('sitemap.pages');
+Route::get('/feeds/google-merchant.xml', [FeedController::class, 'googleMerchantFeed'])->name('feed.google-merchant');
+Route::get('/feed', [FeedController::class, 'blogRssFeed'])->name('feed.rss');
+Route::get('/rss.xml', [FeedController::class, 'blogRssFeed'])->name('feed.rss.xml');
 
 // Dynamic CMS & Landing Page Route (Must be at the very end to avoid conflicts)
 Route::get('/pages/{slug}', [PageController::class, 'show'])->name('pages.show');

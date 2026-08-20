@@ -98,7 +98,7 @@
                                 <input type="text"
                                        name="address"
                                        id="address"
-                                       value="{{ old('address') }}"
+                                       value="{{ old('address', $customer?->last_shipping_address['address'] ?? '') }}"
                                        required
                                        autocomplete="street-address"
                                        class="input-underline w-full @error('address') border-[#E84444] @enderror"

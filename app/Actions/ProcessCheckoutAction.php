@@ -63,7 +63,7 @@ class ProcessCheckoutAction
 
         // Calculate total discount via PromotionEngine (combo + coupon stacked).
         // Run BEFORE the transaction — PromotionEngine is read-only here (no DB writes).
-        $discountAmount = $this->promotionEngine->calculateDiscount($subtotal, $cartItems, $couponCode);
+        $discountAmount = $this->promotionEngine->calculateDiscount($subtotal, $cartItems, $couponCode, (float) $shippingFee);
 
         // DB transaction: all writes (order, items, stock, coupon) are atomic.
         $order = DB::transaction(function () use (
@@ -77,9 +77,13 @@ class ProcessCheckoutAction
 
                 // Re-validate inside the transaction; if now invalid (exhausted by concurrent request),
                 // zero out only the coupon portion. Combo discount is unaffected.
-                if (! ($coupon && $coupon->isApplicable($eligibleSubtotal))) {
+                $isCouponApplicable = in_array($coupon?->type, ['free_shipping', 'shipping_discount'])
+                    ? $coupon?->isApplicable($subtotal)
+                    : ($eligibleSubtotal > 0 && $coupon?->isApplicable($eligibleSubtotal));
+
+                if (! $isCouponApplicable) {
                     $discountAmount -= $coupon
-                        ? $coupon->calculateDiscount($eligibleSubtotal)
+                        ? $coupon->calculateDiscount($eligibleSubtotal, (float) $shippingFee)
                         : 0;
                     $discountAmount = max(0, $discountAmount);
                     $coupon = null;

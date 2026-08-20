@@ -220,18 +220,86 @@ class Post extends Model
     }
 
     /**
-     * SEO title accessor fallback to meta_title or title.
+     * Scope: Search posts by keyword across title, excerpt, and body.
      */
-    public function getSeoTitleAttribute(): ?string
+    public function scopeSearch($query, ?string $keyword)
     {
-        return $this->attributes['seo_title'] ?? $this->attributes['meta_title'] ?? null;
+        if (empty($keyword)) {
+            return $query;
+        }
+
+        $term = trim($keyword);
+
+        return $query->where(function ($q) use ($term) {
+            $q->where('title', 'like', "%{$term}%")
+              ->orWhere('excerpt', 'like', "%{$term}%")
+              ->orWhere('body', 'like', "%{$term}%");
+        });
     }
 
     /**
-     * SEO description accessor fallback to meta_description or excerpt.
+     * Formatted published date string in Vietnamese format (d/m/Y).
      */
-    public function getSeoDescriptionAttribute(): ?string
+    public function getFormattedPublishedDateAttribute(): string
     {
-        return $this->attributes['seo_description'] ?? $this->attributes['meta_description'] ?? null;
+        return $this->published_at ? $this->published_at->format('d/m/Y') : $this->created_at->format('d/m/Y');
+    }
+
+    /**
+     * Get related articles from the same category excluding self.
+     */
+    public function getRelatedPosts(int $limit = 3)
+    {
+        if (!$this->post_category_id) {
+            return collect();
+        }
+
+        return static::published()
+            ->where('post_category_id', $this->post_category_id)
+            ->where('id', '!=', $this->id)
+            ->with('category')
+            ->latest('published_at')
+            ->take($limit)
+            ->get();
+    }
+
+    /**
+     * Generate Schema.org JSON-LD Article / BlogPosting representation.
+     */
+    public function toSchemaOrgJsonLd(string $url): array
+    {
+        $shortcodeService = app(\App\Services\ShortcodeService::class);
+        $plainBody = $shortcodeService->strip($this->body);
+        $metaDescription = $this->seo_description ?: ($this->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($plainBody), 160));
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => $this->schema_type ?: 'BlogPosting',
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $url,
+            ],
+            'headline' => $this->title,
+            'description' => $metaDescription,
+            'image' => [
+                $this->featured_image_url ?: asset('images/default-og.jpg'),
+            ],
+            'datePublished' => $this->published_at?->toIso8601String(),
+            'dateModified' => $this->updated_at->toIso8601String(),
+            'author' => [
+                '@type' => 'Person',
+                'name' => $this->author?->name ?: config('app.name', 'Sober Editorial'),
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => config('app.name', 'Sober Furniture'),
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('images/logo.png'),
+                ],
+            ],
+        ];
+
+        return $schema;
     }
 }

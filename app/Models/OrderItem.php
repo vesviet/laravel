@@ -41,4 +41,36 @@ class OrderItem extends Model
     {
         return $this->belongsTo(ProductVariant::class);
     }
+
+    /**
+     * Subtotal for this line item.
+     */
+    public function getSubtotalAttribute(): int
+    {
+        return (int) ($this->price_at_purchase * $this->quantity);
+    }
+
+    /**
+     * Formatted unit price in VND.
+     */
+    public function getFormattedPriceAttribute(): string
+    {
+        return number_format($this->price_at_purchase, 0, ',', '.') . '₫';
+    }
+
+    /**
+     * Formatted line item subtotal in VND.
+     */
+    public function getFormattedSubtotalAttribute(): string
+    {
+        return number_format($this->subtotal, 0, ',', '.') . '₫';
+    }
+
+    /**
+     * Product thumbnail image URL.
+     */
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        return $this->product?->primary_image_url;
+    }
 }

@@ -447,6 +447,31 @@
             </section>
         @endif
 
+        {{-- ── RELATED PRODUCTS SECTION ── --}}
+        @if(isset($relatedProducts) && $relatedProducts->count() > 0)
+            <section class="mt-14 pt-12 border-t border-[#E5E5E5]" aria-label="Sản phẩm tương tự">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <span class="text-[10px] uppercase font-semibold tracking-[0.2em] text-[#888888] block mb-1">Bộ Sưu Tập</span>
+                        <h2 class="text-xl sm:text-2xl font-light text-[#23232C] uppercase tracking-wide">
+                            Sản Phẩm Tương Tự
+                        </h2>
+                    </div>
+                    @if($product->category)
+                        <a href="{{ route('products.index', ['category' => $product->category->slug]) }}" class="text-xs uppercase font-medium tracking-wider text-[#23232C] hover:text-[#E84444] link-underline">
+                            Xem tất cả &rarr;
+                        </a>
+                    @endif
+                </div>
+
+                <div class="product-grid">
+                    @foreach($relatedProducts as $related)
+                        <x-product-card :product="$related" />
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
     </div>
 
     {{-- ── FULLSCREEN LIGHTBOX MODAL ── --}}

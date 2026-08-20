@@ -53,13 +53,14 @@ class Coupon extends Model
     }
 
     /**
-     * Calculate the discount amount for the given subtotal.
+     * Calculate the discount amount for the given subtotal (and optional shipping fee).
      */
-    public function calculateDiscount(float $subtotal): float
+    public function calculateDiscount(float $subtotal, float $shippingFee = 0.0): float
     {
         return match ($this->type) {
             'percentage' => $subtotal * ((float) $this->value / 100),
             'fixed' => min((float) $this->value, $subtotal),
+            'free_shipping', 'shipping_discount' => $this->value > 0 ? min((float) $this->value, $shippingFee) : $shippingFee,
             default => 0.0,
         };
     }

@@ -66,9 +66,9 @@
                             <li class="py-5 flex items-start gap-4">
 
                                 {{-- Thumbnail --}}
-                                <div class="w-[72px] h-[72px] flex-shrink-0 bg-[#E8E4DF] overflow-hidden">
+                                <div class="w-[72px] h-[72px] flex-shrink-0 bg-[#E8E4DF] overflow-hidden flex items-center justify-center">
                                     @if($item['image_path'] ?? null)
-                                        <img src="{{ Storage::url($item['image_path']) }}"
+                                        <img src="{{ $item['image_path'] }}"
                                              alt="{{ $item['product_name'] }}"
                                              class="w-full h-full object-cover"
                                              loading="lazy">

@@ -44,10 +44,10 @@ class CouponInput extends Component
         // Resolve coupon — uses PromotionEngine which validates applicability
         $cartItems = $cartService->getCartItemsDetails();
         $eligibleSubtotal = collect($cartItems)
-            ->filter(fn($item) => ! $item['is_flash_sale'])
+            ->filter(fn($item) => empty($item['is_flash_sale']))
             ->sum(fn($item) => $item['price'] * $item['quantity']);
 
-        $coupon = $promotionEngine->resolveCoupon($code, $eligibleSubtotal);
+        $coupon = $promotionEngine->resolveCoupon($code, $this->subtotal, $eligibleSubtotal);
 
         if (! $coupon) {
             $this->errorMessage = 'Mã giảm giá không hợp lệ hoặc đã hết hạn.';
@@ -86,10 +86,10 @@ class CouponInput extends Component
 
         $cartItems = $cartService->getCartItemsDetails();
         $eligibleSubtotal = collect($cartItems)
-            ->filter(fn($item) => ! $item['is_flash_sale'])
+            ->filter(fn($item) => empty($item['is_flash_sale']))
             ->sum(fn($item) => $item['price'] * $item['quantity']);
 
-        $coupon = $promotionEngine->resolveCoupon($this->couponCode, $eligibleSubtotal);
+        $coupon = $promotionEngine->resolveCoupon($this->couponCode, $this->subtotal, $eligibleSubtotal);
 
         if ($coupon) {
             $rawDiscount = $coupon->calculateDiscount($eligibleSubtotal);

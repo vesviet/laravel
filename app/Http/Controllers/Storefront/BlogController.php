@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Storefront;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Services\ShortcodeService;
 use App\Services\TocService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -25,17 +26,12 @@ class BlogController extends Controller
         }
 
         if ($request->filled('search')) {
-            $search = trim($request->query('search'));
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('excerpt', 'like', "%{$search}%")
-                  ->orWhere('body', 'like', "%{$search}%");
-            });
+            $query->search($request->query('search'));
         }
 
         $categories = PostCategory::active()
             ->ordered()
-            ->withCount(['posts' => fn ($q) => $q->published()])
+            ->withPublishedPostsCount()
             ->get();
 
         $featuredPost = Post::published()
@@ -52,7 +48,7 @@ class BlogController extends Controller
     /**
      * Display a single blog article with Table of Contents, contextual commerce, and related posts.
      */
-    public function show(string $slug, TocService $tocService)
+    public function show(string $slug, TocService $tocService, ShortcodeService $shortcodeService)
     {
         $post = Post::where('slug', $slug)
             ->when(!auth()->check(), fn ($q) => $q->published())
@@ -70,17 +66,9 @@ class BlogController extends Controller
 
         $tocResult = $tocService->generate($post->body);
         $toc = $tocResult['toc'];
-        $anchoredBody = $tocResult['html'];
+        $anchoredBody = $shortcodeService->parse($tocResult['html']);
 
-        $relatedPosts = $post->post_category_id
-            ? Post::published()
-                ->where('post_category_id', $post->post_category_id)
-                ->where('id', '!=', $post->id)
-                ->with('category')
-                ->latest('published_at')
-                ->take(3)
-                ->get()
-            : collect();
+        $relatedPosts = $post->getRelatedPosts(3);
 
         return view('storefront.blog.show', compact('post', 'toc', 'anchoredBody', 'relatedPosts'));
     }

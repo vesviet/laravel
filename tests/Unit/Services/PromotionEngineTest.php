@@ -147,3 +147,40 @@ it('limits discount to subtotal', function () {
     $discount = $this->engine->calculateDiscount($subtotal, $cartItems, null);
     expect($discount)->toBe(0.0);
 });
+
+it('excludes flash sale items from percentage coupon discounts', function () {
+    Coupon::create([
+        'code' => 'DISCOUNT10',
+        'type' => 'percentage',
+        'value' => 10,
+        'is_active' => true,
+    ]);
+
+    $subtotal = 800000.0;
+    $cartItems = [
+        ['price' => 500000, 'quantity' => 1, 'subtotal' => 500000.0, 'is_flash_sale' => true],
+        ['price' => 300000, 'quantity' => 1, 'subtotal' => 300000.0, 'is_flash_sale' => false],
+    ];
+
+    $discount = $this->engine->calculateDiscount($subtotal, $cartItems, 'DISCOUNT10');
+    // Only 10% of 300,000 (regular item) = 30,000. Flash sale item (500k) is isolated!
+    expect($discount)->toBe(30000.0);
+});
+
+it('allows free shipping coupon on flash sale orders', function () {
+    Coupon::create([
+        'code' => 'FREESHIP',
+        'type' => 'free_shipping',
+        'value' => 0, // 0 = 100% free shipping
+        'is_active' => true,
+    ]);
+
+    $subtotal = 500000.0;
+    $cartItems = [
+        ['price' => 500000, 'quantity' => 1, 'subtotal' => 500000.0, 'is_flash_sale' => true],
+    ];
+
+    $shippingFee = 35000.0;
+    $discount = $this->engine->calculateDiscount($subtotal, $cartItems, 'FREESHIP', $shippingFee);
+    expect($discount)->toBe(35000.0);
+});

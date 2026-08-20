@@ -121,14 +121,14 @@ class CartService
                 $name = $variant->product->name ?? '';
                 $variantName = $variant->name;
                 $sku = $variant->sku ?? '';
-                $imagePath = $variant->product->thumbnail ?? null;
+                $imagePath = $variant->product->primary_image_url ?? $variant->product->thumbnail ?? null;
                 $slug = $variant->product->slug ?? null;
             } elseif ($products->has($productId)) {
                 $product = $products->get($productId);
                 $price = (float) $product->price;
                 $name = $product->name;
                 $sku = $product->sku ?? '';
-                $imagePath = $product->thumbnail ?? null;
+                $imagePath = $product->primary_image_url ?? $product->thumbnail ?? null;
                 $slug = $product->slug ?? null;
             }
 
@@ -177,6 +177,72 @@ class CartService
             ->keyBy('product_id');
 
         return $items->all();
+    }
+
+    /**
+     * Validate real-time stock availability for all items in the current cart.
+     * Returns an array of issues if any, or empty array if all items are in stock.
+     */
+    public function validateStock(): array
+    {
+        $cart = $this->getCart();
+        if (empty($cart)) {
+            return [];
+        }
+
+        $productIds = array_column($cart, 'product_id');
+        $variantIds = array_filter(array_column($cart, 'product_variant_id'));
+
+        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+        $variants = !empty($variantIds) ? ProductVariant::whereIn('id', $variantIds)->get()->keyBy('id') : collect();
+
+        $issues = [];
+
+        foreach ($cart as $key => $item) {
+            $productId = $item['product_id'];
+            $variantId = $item['product_variant_id'] ?? null;
+            $quantity = $item['quantity'];
+
+            if ($variantId && $variants->has($variantId)) {
+                $variant = $variants->get($variantId);
+                if ($variant->stock < $quantity) {
+                    $issues[] = [
+                        'name' => ($variant->product->name ?? 'Sản phẩm') . ' (' . $variant->name . ')',
+                        'requested' => $quantity,
+                        'available' => $variant->stock,
+                    ];
+                }
+            } elseif ($products->has($productId)) {
+                $product = $products->get($productId);
+                if ($product->stock < $quantity) {
+                    $issues[] = [
+                        'name' => $product->name,
+                        'requested' => $quantity,
+                        'available' => $product->stock,
+                    ];
+                }
+            }
+        }
+
+        return $issues;
+    }
+
+    /**
+     * Get a comprehensive structured summary of the cart.
+     */
+    public function getSummary(): array
+    {
+        $items = $this->getCartItemsDetails();
+        $subtotal = $this->calculateTotal();
+        $totalItems = array_sum(array_column($items, 'quantity'));
+
+        return [
+            'items' => $items,
+            'item_count' => $totalItems,
+            'subtotal' => $subtotal,
+            'formatted_subtotal' => number_format($subtotal, 0, ',', '.') . '₫',
+            'is_empty' => empty($items),
+        ];
     }
 
     protected function generateKey(int $productId, ?int $variantId): string
