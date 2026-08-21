@@ -27,6 +27,18 @@ class DatabaseSeeder extends Seeder
         // ── 1. ADMIN USER & ROLES ───────────────────────────────────────────
         $superAdminRole = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
 
+        // Generate all Shield permissions and assign to super_admin role
+        try {
+            \Illuminate\Support\Facades\Artisan::call('shield:generate', [
+                '--all' => true,
+                '--panel' => 'admin',
+                '--option' => 'permissions',
+            ]);
+            $superAdminRole->syncPermissions(\Spatie\Permission\Models\Permission::all());
+        } catch (\Throwable $e) {
+            // Shield command fallback
+        }
+
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
@@ -735,5 +747,13 @@ class DatabaseSeeder extends Seeder
 
         // ── 11. CMS BLOG & PAGES SEEDER ─────────────────────────────────────
         $this->call(CmsSeeder::class);
+
+        // ── 12. BANNER SEEDER ───────────────────────────────────────────────
+        $this->call(BannerSeeder::class);
+
+        // ── 13. PROMOTION SEEDER ─────────────────────────────────────────────
+        $this->call(PromotionSeeder::class);
     }
 }
+
+

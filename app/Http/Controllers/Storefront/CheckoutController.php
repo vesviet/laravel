@@ -82,10 +82,11 @@ class CheckoutController extends Controller
         } catch (\Throwable $e) {
             // P1-02: Generic/system exceptions MUST NOT expose $e->getMessage() to the user
             // (could contain DB errors, stack traces, internal class names — OWASP A05)
+            // [B-04] Do NOT log raw cart session data — use only safe metadata (item count).
             Log::error('Checkout failed', [
-                'exception' => $e->getMessage(),
-                'trace'     => $e->getTraceAsString(),
-                'cart'      => session()->get('cart'),
+                'exception'       => get_class($e),
+                'message'         => $e->getMessage(),
+                'cart_item_count' => count(session()->get('cart', [])),
             ]);
 
             return back()

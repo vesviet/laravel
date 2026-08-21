@@ -3,6 +3,27 @@
 @pushonce('page_title')Thanh Toán @endpushonce
 @pushonce('meta_description')Hoàn tất đơn hàng của bạn tại MYSHOP.@endpushonce
 
+@php
+    $promotionEngine = app(\App\Services\Promotions\PromotionEngine::class);
+
+    // Check if any active Free Shipping rule or applied coupon exists
+    $hasFreeShippingRule = \App\Models\PromotionRule::active()
+        ->cartRules()
+        ->where('action_type', \App\Models\PromotionRule::ACTION_FREE_SHIPPING)
+        ->exists();
+
+    $initialShippingFee = $hasFreeShippingRule ? 30000.0 : 0.0;
+
+    $breakdown = $breakdown ?? $promotionEngine->calculateCartDiscounts(
+        subtotal: $subtotal,
+        cartItems: $cart,
+        couponCode: $appliedCoupon,
+        shippingFee: $initialShippingFee,
+        customer: $customer,
+        email: $customer?->email ?? ''
+    );
+@endphp
+
 @section('content')
 
 <div class="py-10 md:py-16">
@@ -229,11 +250,10 @@
                         Tóm Tắt Đơn Hàng
                     </h2>
 
-                    {{-- Cart items --}}
+                    {{-- Cart items list --}}
                     <ul class="divide-y divide-[#E5E5E5] mb-6" aria-label="Sản phẩm trong đơn hàng">
                         @foreach($cart as $item)
                             <li class="py-4 flex items-start gap-4">
-                                {{-- Thumbnail --}}
                                 @if($item['image_path'] ?? null)
                                     <div class="w-16 h-16 flex-shrink-0 bg-[#F0F0F0] overflow-hidden">
                                         <img src="{{ Storage::url($item['image_path']) }}"
@@ -245,16 +265,14 @@
                                     <div class="w-16 h-16 flex-shrink-0 bg-[#E8E4DF]"></div>
                                 @endif
 
-                                {{-- Info --}}
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm leading-snug truncate">{{ $item['product_name'] }}</p>
-                                    @if($item['variant_name'])
+                                    @if(!empty($item['variant_name']))
                                         <p class="text-xs text-[#888888] mt-0.5">{{ $item['variant_name'] }}</p>
                                     @endif
                                     <p class="text-xs text-[#888888] mt-0.5">Số lượng: {{ $item['quantity'] }}</p>
                                 </div>
 
-                                {{-- Price --}}
                                 <p class="text-sm font-medium shrink-0">
                                     {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}₫
                                 </p>
@@ -262,26 +280,71 @@
                         @endforeach
                     </ul>
 
-                    {{-- Totals --}}
+                    {{-- Free Gifts Section if any --}}
+                    @if(!empty($breakdown->freeGifts))
+                        <div class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-sm">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 block mb-1.5 flex items-center gap-1.5">
+                                <span>🎁</span> QUÀ TẶNG KÈM ĐƠN HÀNG
+                            </span>
+                            @foreach($breakdown->freeGifts as $gift)
+                                <div class="flex justify-between text-xs text-amber-900">
+                                    <span>{{ $gift['name'] ?? $gift['product_name'] ?? 'Sản phẩm quà tặng' }} (x{{ $gift['quantity'] ?? 1 }})</span>
+                                    <span class="font-bold text-emerald-700">Miễn phí (0₫)</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    {{-- Totals & Transparent Financial Breakdown --}}
                     <div id="order-totals" class="border-t border-[#E5E5E5] pt-5 space-y-3">
+                        {{-- Subtotal --}}
                         <div class="flex justify-between text-sm">
                             <span class="text-[#888888]">Tạm tính</span>
-                            <span>{{ number_format($subtotal, 0, ',', '.') }}₫</span>
+                            <span id="subtotal-display">{{ number_format($breakdown->subtotal, 0, ',', '.') }}₫</span>
                         </div>
+
+                        {{-- Shipping Fee --}}
                         <div class="flex justify-between text-sm">
                             <span class="text-[#888888]">Phí vận chuyển</span>
-                            <span class="text-green-700">Miễn phí</span>
+                            @if($breakdown->finalShippingFee <= 0)
+                                <span class="text-emerald-700 font-medium" id="shipping-display">Miễn phí</span>
+                            @else
+                                <span id="shipping-display">{{ number_format($breakdown->finalShippingFee, 0, ',', '.') }}₫</span>
+                            @endif
                         </div>
-                        @if($appliedCoupon)
-                            <div class="flex justify-between text-sm text-green-700" id="discount-row">
-                                <span>Giảm giá</span>
-                                <span id="discount-amount">Đang tính...</span>
+
+                        {{-- Itemized Applied Promotions List --}}
+                        <div id="applied-promotions-container" class="{{ empty($breakdown->appliedRules) ? 'hidden' : '' }} py-2 border-t border-dashed border-[#E5E5E5] space-y-2">
+                            <span class="text-[10px] font-semibold text-[#888888] uppercase tracking-wider block">Ưu đãi áp dụng</span>
+                            <div id="applied-rules-list" class="space-y-1.5">
+                                @foreach($breakdown->appliedRules as $rule)
+                                    <div class="flex justify-between items-center text-xs text-emerald-700 bg-emerald-50/80 px-2.5 py-1.5 rounded border border-emerald-200/60">
+                                        <div class="flex items-center gap-1.5 truncate max-w-[70%]">
+                                            <svg class="w-3.5 h-3.5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                            </svg>
+                                            <span class="truncate font-medium">{{ $rule->ruleName }}</span>
+                                            @if($rule->isCoupon)
+                                                <span class="text-[9px] bg-emerald-200 text-emerald-800 px-1 rounded uppercase font-bold">Mã coupon</span>
+                                            @endif
+                                        </div>
+                                        <span class="font-bold shrink-0">-{{ number_format($rule->discountAmount, 0, ',', '.') }}₫</span>
+                                    </div>
+                                @endforeach
                             </div>
-                        @endif
-                        <div class="flex justify-between pt-4 border-t border-[#E5E5E5]">
-                            <span class="text-sm font-medium tracking-wide">Tổng cộng</span>
-                            <span class="text-lg font-medium" id="total-display">
-                                {{ number_format($subtotal, 0, ',', '.') }}₫
+                        </div>
+
+                        {{-- Total Discount Row (if applicable) --}}
+                        <div id="total-discount-row" class="{{ $breakdown->totalDiscount > 0 ? '' : 'hidden' }} flex justify-between text-sm text-emerald-700 font-medium">
+                            <span>Tổng giảm giá</span>
+                            <span id="total-discount-amount">-{{ number_format($breakdown->totalDiscount, 0, ',', '.') }}₫</span>
+                        </div>
+
+                        {{-- Final Payable Total --}}
+                        <div class="flex justify-between pt-4 border-t border-[#E5E5E5] items-baseline">
+                            <span class="text-sm font-medium tracking-wide">Tổng thanh toán</span>
+                            <span class="text-xl font-bold text-[#E84444]" id="total-display">
+                                {{ number_format($breakdown->finalTotal, 0, ',', '.') }}₫
                             </span>
                         </div>
                     </div>
@@ -305,33 +368,41 @@
     // Listen for Livewire coupon events and update the summary sidebar
     document.addEventListener('livewire:initialized', () => {
         Livewire.on('coupon-applied', (event) => {
-            const discount = event.discount;
-            const subtotal = {{ $subtotal }};
+            const discount = event.discount || 0;
+            const subtotal = {{ (float) $subtotal }};
             const newTotal = Math.max(0, subtotal - discount);
 
-            // Show or update discount row
-            let discountRow = document.getElementById('discount-row');
-            if (!discountRow) {
-                const totals = document.getElementById('order-totals');
-                const totalRow = totals.querySelector('.border-t.pt-4');
-                discountRow = document.createElement('div');
-                discountRow.id = 'discount-row';
-                discountRow.className = 'flex justify-between text-sm text-green-700';
-                discountRow.innerHTML = `<span>Giảm giá</span><span id="discount-amount"></span>`;
-                totals.insertBefore(discountRow, totalRow);
+            const fmt = (n) => new Intl.NumberFormat('vi-VN').format(n) + '₫';
+
+            // Show or update total discount row
+            const totalDiscountRow = document.getElementById('total-discount-row');
+            const totalDiscountAmount = document.getElementById('total-discount-amount');
+            if (totalDiscountRow && totalDiscountAmount) {
+                if (discount > 0) {
+                    totalDiscountAmount.textContent = '-' + fmt(discount);
+                    totalDiscountRow.classList.remove('hidden');
+                }
             }
 
-            const fmt = (n) => new Intl.NumberFormat('vi-VN').format(n) + '₫';
-            document.getElementById('discount-amount').textContent = '-' + fmt(discount);
-            document.getElementById('total-display').textContent = fmt(newTotal);
+            const totalDisplay = document.getElementById('total-display');
+            if (totalDisplay) {
+                totalDisplay.textContent = fmt(newTotal);
+            }
         });
 
         Livewire.on('coupon-removed', () => {
-            const subtotal = {{ $subtotal }};
-            const discountRow = document.getElementById('discount-row');
-            if (discountRow) discountRow.remove();
-            document.getElementById('total-display').textContent =
-                new Intl.NumberFormat('vi-VN').format(subtotal) + '₫';
+            const subtotal = {{ (float) $subtotal }};
+            const fmt = (n) => new Intl.NumberFormat('vi-VN').format(n) + '₫';
+
+            const totalDiscountRow = document.getElementById('total-discount-row');
+            if (totalDiscountRow) {
+                totalDiscountRow.classList.add('hidden');
+            }
+
+            const totalDisplay = document.getElementById('total-display');
+            if (totalDisplay) {
+                totalDisplay.textContent = fmt(subtotal);
+            }
         });
     });
 </script>

@@ -24,3 +24,8 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# [B-03] Never commit local database files — they may contain real PII and business data
+database/*.sqlite
+database/*.sqlite-shm
+database/*.sqlite-wal

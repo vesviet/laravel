@@ -1,58 +1,142 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel E-Commerce Storefront
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A production-grade server-rendered e-commerce storefront built with Laravel 13, Filament 3, and Livewire 3. Deployed on cPanel/Docker with MySQL.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tech Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Layer | Technology |
+|-------|-----------|
+| Framework | Laravel 13.x (PHP 8.3+) |
+| Admin Panel | Filament 3 + filament-shield (RBAC) |
+| Frontend | Blade + Livewire 3 + Vite |
+| Auth | Custom customer guard + Filament admin guard |
+| Database | MySQL 8.0 (production), SQLite (local dev only) |
+| Queue | Database-backed (upgradeable to Redis) |
+| Cache | Database-backed (upgradeable to Redis) |
+| Shipping | Goship API (COD + shipping calculation) |
+| PDF | barryvdh/laravel-dompdf |
+| Testing | Pest PHP 4 |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Project Structure
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+app/
+  Actions/           # Transaction owners (ADR-S2) — ProcessCheckoutAction, CancelOrderAction
+  Enums/             # Typed value objects — OrderStatus, CustomerTier
+  Filament/          # Admin panel resources, pages, widgets
+  Http/Controllers/  # Storefront + Admin controllers (thin layer only)
+  Models/            # Eloquent models
+  Services/          # Business logic services (called inside Actions)
+    Promotions/      # Core PromotionEngine + strategies + DTOs
+    CustomerTierResolver.php  # ADR-B1: tier computation service
+  Observers/         # Model observers (cache invalidation)
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Architecture Decisions
 
-## Contributing
+See [ARCHITECTURE.md](ARCHITECTURE.md) for ADR details. Key decisions:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **ADR-S2 (Transaction Boundary)**: `DB::transaction()` is only permitted inside `app/Actions/`. Services must be called from within an active transaction. Enforced by CI fitness function.
+- **ADR-S3 (Structural Trust Zones)**: `.env` and `database/*.sqlite` must never be committed to git. Pre-commit patterns enforced via CI.
+- **ADR-B1 (Customer Tier Ownership)**: Tier computation lives exclusively in `CustomerTierResolver`. `PromotionRule` consumes `CustomerTier` enum values — it does not compute tiers.
+- **ADR-B2 (Legacy Combo Rule)**: The 5% two-item combo discount is being migrated from hardcoded logic to a `PromotionRule` DB record. See `database/seeders/PromotionSeeder.php`.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Local Development Setup
 
-## Security Vulnerabilities
+### Prerequisites
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- PHP 8.3+
+- Composer 2.x
+- Node.js 20+ (for Vite)
+- MySQL 8.0 or SQLite (local only)
 
-## License
+### Setup
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+# 1. Clone and install
+git clone <repo-url>
+cd laravel
+composer install
+npm install
+
+# 2. Environment
+cp .env.example .env
+php artisan key:generate
+
+# 3. Database — SQLite for local dev
+# In .env: DB_CONNECTION=sqlite
+php artisan migrate
+php artisan db:seed
+
+# 4. Start dev server
+php artisan serve
+npm run dev
+```
+
+### Admin Panel
+
+Access at `/admin`. Create the first admin user:
+
+```bash
+php artisan make:filament-user
+php artisan shield:generate --all --panel=admin
+```
+
+---
+
+## Running Tests
+
+```bash
+# All tests
+php artisan test
+
+# Specific suite
+php artisan test --filter CustomerAuthTest
+php artisan test --filter ProcessCheckoutActionTest
+
+# With coverage
+php artisan test --coverage
+```
+
+---
+
+## Key Environment Variables
+
+See `.env.example` for the full reference. Critical production variables:
+
+| Variable | Production Value |
+|----------|-----------------|
+| `APP_DEBUG` | `false` |
+| `LOG_LEVEL` | `error` |
+| `SESSION_ENCRYPT` | `true` |
+| `GOSHIP_TOKEN` | Required for shipping rates |
+| `MAIL_MAILER` | SMTP provider credentials |
+
+---
+
+## CI/CD
+
+GitHub Actions workflow (`.github/workflows/ci-cd.yml`) runs:
+
+1. **Architectural Fitness Functions** — ADR-S2 transaction boundary check, ADR-S3 secret scanner
+2. **Pest Tests** — Full test suite against MySQL
+3. **Docker Build** — On `main` branch only
+4. **Deploy** — Self-hosted runner, Docker Compose
+
+---
+
+## Deployment
+
+See [DEPLOY.md](DEPLOY.md) for Docker Compose deployment and [CPANEL_SETUP.md](CPANEL_SETUP.md) for cPanel hosting setup.
+
+---
+
+## Operational Runbook
+
+See [RUNBOOK.md](RUNBOOK.md) for on-call response procedures for checkout failures, queue worker down, and Goship API unavailability.

@@ -59,11 +59,6 @@ class BlogController extends Controller
             ])
             ->firstOrFail();
 
-        // Increment view_count safely if column exists
-        if (Schema::hasColumn('posts', 'view_count')) {
-            $post->increment('view_count');
-        }
-
         $tocResult = $tocService->generate($post->body);
         $toc = $tocResult['toc'];
         $anchoredBody = $shortcodeService->parse($tocResult['html']);

@@ -8,6 +8,10 @@
     $primaryImageUrl = $gallery[0] ?? null;
     $albumImages = $product->album_images;
 
+    // Resolve active catalog promotion strike price & badge (Cached in memory - 0 N+1 queries)
+    $promoted = app(\App\Services\Promotions\PromotionEngine::class)->resolveProductPromotedPrice($product);
+    $activePrice = $promoted ? $promoted->promotedPrice : $product->price;
+
     // Bullet points for short description
     $bullets = [];
     if (!empty($product->attributes_json['material'])) {
@@ -20,6 +24,25 @@
         $bullets[] = 'Xuất xứ & Thiết kế: ' . $product->attributes_json['origin'] . '.';
     }
     $bullets[] = 'Bảo hành chính hãng 24 tháng kết cấu, hỗ trợ đổi trả miễn phí trong 30 ngày.';
+
+    // Schema.org Product structured data
+    $schemaData = [
+        '@context' => 'https://schema.org/',
+        '@type' => 'Product',
+        'name' => $product->name,
+        'description' => $product->seo_description ?? strip_tags($product->description),
+        'sku' => $product->sku,
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => request()->url(),
+            'priceCurrency' => 'VND',
+            'price' => (string) $activePrice,
+            'availability' => 'https://schema.org/' . ($product->stock > 0 ? 'InStock' : 'OutOfStock'),
+        ],
+    ];
+    if ($primaryImageUrl) {
+        $schemaData['image'] = $gallery;
+    }
 @endphp
 
 @pushonce('page_title'){{ $product->seo_title ?? $product->name }} — @endpushonce
@@ -33,23 +56,7 @@
 <meta property="og:image" content="{{ $primaryImageUrl }}">
 @endif
 <script type="application/ld+json">
-{
-  "@@context": "https://schema.org/",
-  "@@type": "Product",
-  "name": "{{ $product->name }}",
-  @if($primaryImageUrl)
-  "image": {!! json_encode($gallery) !!},
-  @endif
-  "description": "{{ $product->seo_description ?? strip_tags($product->description) }}",
-  "sku": "{{ $product->sku }}",
-  "offers": {
-    "@@type": "Offer",
-    "url": "{{ request()->url() }}",
-    "priceCurrency": "VND",
-    "price": "{{ $product->price }}",
-    "availability": "https://schema.org/{{ $product->stock > 0 ? 'InStock' : 'OutOfStock' }}"
-  }
-}
+{!! json_encode($schemaData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
 </script>
 @endpushonce
 
@@ -183,10 +190,18 @@
                             </div>
                         </template>
 
-                        {{-- HOT Badge --}}
-                        @if($product->is_featured)
-                            <span class="badge-hot absolute top-3 left-3 z-10 pointer-events-none" aria-label="Sản phẩm nổi bật">HOT</span>
-                        @endif
+                        {{-- Badges Stack: HOT & Promo Badge --}}
+                        <div class="absolute top-3 left-3 z-10 pointer-events-none flex flex-col gap-1.5 items-start">
+                            @if($product->is_featured)
+                                <span class="badge-hot" aria-label="Sản phẩm nổi bật">HOT</span>
+                            @endif
+                            @if($promoted)
+                                <span class="bg-[#E84444] text-white font-bold text-xs tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm"
+                                      aria-label="Khuyến mãi {{ round($promoted->discountPercentage) }}%">
+                                    {{ $promoted->badgeLabel ?: '-' . round($promoted->discountPercentage) . '% PROMO' }}
+                                </span>
+                            @endif
+                        </div>
 
                         {{-- Lightbox Expand Icon --}}
                         <button type="button"
@@ -219,21 +234,40 @@
                 {{-- ── RIGHT: Product Details & Purchase Options (50% on MD, 55% on LG) ── --}}
                 <div class="w-full md:w-1/2 lg:w-7/12 flex flex-col">
 
-                    {{-- Title Row with Top-Right Share Icon --}}
-                    <div class="flex items-start justify-between gap-4 mb-3">
-                        <h1 class="text-xl sm:text-2xl font-bold text-[#111827] leading-snug">
-                            {{ $product->name }}
-                        </h1>
-                        <button
-                            type="button"
-                            onclick="navigator.clipboard.writeText(window.location.href); alert('Đã sao chép liên kết sản phẩm!');"
-                            class="p-2 border border-[#E5E7EB] hover:border-[#111827] text-[#6B7280] hover:text-[#111827] transition-colors shrink-0"
-                            title="Chia sẻ sản phẩm"
-                            aria-label="Chia sẻ sản phẩm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-                            </svg>
-                        </button>
+                    {{-- Title Row with Top-Right Share Icon & Above-Title Promo Badge --}}
+                    <div class="mb-3">
+                        @if($promoted)
+                            <div class="flex items-center gap-2 mb-2 flex-wrap">
+                                <span class="inline-flex items-center bg-[#E84444] text-white font-bold text-xs tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm"
+                                      aria-label="Khuyến mãi {{ round($promoted->discountPercentage) }}%">
+                                    {{ $promoted->badgeLabel ?: '-' . round($promoted->discountPercentage) . '% PROMO' }}
+                                </span>
+                                @if($promoted->ruleName)
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-medium">
+                                        <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                        </svg>
+                                        {{ $promoted->ruleName }}
+                                    </span>
+                                @endif
+                            </div>
+                        @endif
+
+                        <div class="flex items-start justify-between gap-4">
+                            <h1 class="text-xl sm:text-2xl font-bold text-[#111827] leading-snug">
+                                {{ $product->name }}
+                            </h1>
+                            <button
+                                type="button"
+                                onclick="navigator.clipboard.writeText(window.location.href); alert('Đã sao chép liên kết sản phẩm!');"
+                                class="p-2 border border-[#E5E7EB] hover:border-[#111827] text-[#6B7280] hover:text-[#111827] transition-colors shrink-0"
+                                title="Chia sẻ sản phẩm"
+                                aria-label="Chia sẻ sản phẩm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     {{-- Rating & Statistics Line --}}
@@ -263,11 +297,40 @@
                         </div>
                     </div>
 
-                    {{-- Large Price Block --}}
+                    {{-- Large Price Block with Promotion Strike-Through & CTKM badge --}}
                     <div class="mb-6">
-                        <div class="text-3xl sm:text-4xl font-bold text-[#111827] tracking-tight">
-                            {{ number_format($product->price, 0, ',', '.') }}₫
-                        </div>
+                        @if($promoted)
+                            <div class="flex items-baseline gap-3 flex-wrap">
+                                <span class="text-3xl sm:text-4xl font-bold text-[#E84444] tracking-tight">
+                                    {{ number_format($promoted->promotedPrice, 0, ',', '.') }}₫
+                                </span>
+                                <span class="text-lg sm:text-xl text-[#9CA3AF] line-through font-normal">
+                                    {{ number_format($promoted->originalPrice, 0, ',', '.') }}₫
+                                </span>
+                                <span class="inline-flex items-center bg-[#E84444] text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow-sm">
+                                    {{ $promoted->badgeLabel ?: '-' . round($promoted->discountPercentage) . '% PROMO' }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 mt-2 flex-wrap">
+                                @if($promoted->ruleName)
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
+                                        <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                        </svg>
+                                        CTKM: {{ $promoted->ruleName }}
+                                    </span>
+                                @endif
+                                <span class="text-xs text-emerald-600 font-medium">
+                                    (Tiết kiệm: {{ number_format($promoted->discountAmount, 0, ',', '.') }}₫)
+                                </span>
+                            </div>
+                        @else
+                            <div class="text-3xl sm:text-4xl font-bold text-[#111827] tracking-tight">
+                                {{ number_format($product->price, 0, ',', '.') }}₫
+                            </div>
+                        @endif
+
                         <p class="text-xs text-[#6B7280] mt-1.5">
                             Giá sản phẩm đã gồm VAT và chưa gồm phí vận chuyển (nếu có)
                         </p>

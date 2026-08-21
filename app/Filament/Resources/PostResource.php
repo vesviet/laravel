@@ -188,27 +188,26 @@ class PostResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make("featured_image")
-                    ->label("Ảnh")
+                    ->label("Ảnh bìa")
                     ->disk("public")
-                    ->circular(),
+                    ->height(45)
+                    ->width(72)
+                    ->extraImgAttributes(['class' => 'object-cover rounded-md shadow-xs']),
 
                 Tables\Columns\TextColumn::make("title")
-                    ->label("Tiêu đề")
+                    ->label("Tiêu đề bài viết")
                     ->searchable()
                     ->sortable()
-                    ->wrap()
-                    ->description(fn ($record) => Str::limit($record->excerpt, 60)),
+                    ->grow()
+                    ->weight('medium')
+                    ->description(fn ($record) => Str::limit($record->excerpt, 80))
+                    ->tooltip(fn ($record) => $record->title),
 
                 Tables\Columns\TextColumn::make("category.name")
                     ->label("Danh mục")
                     ->sortable()
                     ->badge()
                     ->color("info"),
-
-                Tables\Columns\TextColumn::make("author.name")
-                    ->label("Tác giả")
-                    ->sortable()
-                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make("status")
                     ->label("Trạng thái")
@@ -221,20 +220,24 @@ class PostResource extends Resource
                         default => "gray",
                     }),
 
-                Tables\Columns\IconColumn::make("is_featured")
-                    ->label("Nổi bật")
-                    ->boolean(),
-
-                Tables\Columns\TextColumn::make("reading_time_minutes")
-                    ->label("Thời gian đọc")
-                    ->suffix(" phút")
-                    ->sortable()
-                    ->toggleable(),
+                Tables\Columns\ToggleColumn::make("is_featured")
+                    ->label("Nổi bật"),
 
                 Tables\Columns\TextColumn::make("published_at")
                     ->label("Ngày xuất bản")
                     ->dateTime("d/m/Y H:i")
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make("author.name")
+                    ->label("Tác giả")
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make("reading_time_minutes")
+                    ->label("Thời gian đọc")
+                    ->suffix(" phút")
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make("post_category_id")

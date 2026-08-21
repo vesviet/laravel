@@ -20,6 +20,52 @@
         Bỏ qua điều hướng
     </a>
 
+    {{-- Top Announcement Header Banner (from Admin Banner: position = 'top_announcement') --}}
+    @php
+        class_exists(\App\Models\Banner::class);
+        $topAnnouncement = \Illuminate\Support\Facades\Cache::remember('top_announcement_banner', 3600, function () {
+            return \App\Models\Banner::active()
+                ->position(\App\Models\Banner::POSITION_TOP_ANNOUNCEMENT)
+                ->ordered()
+                ->first();
+        });
+        if ($topAnnouncement instanceof \__PHP_Incomplete_Class) {
+            \Illuminate\Support\Facades\Cache::forget('top_announcement_banner');
+            $topAnnouncement = \App\Models\Banner::active()
+                ->position(\App\Models\Banner::POSITION_TOP_ANNOUNCEMENT)
+                ->ordered()
+                ->first();
+        }
+    @endphp
+
+    @if($topAnnouncement)
+        <div class="bg-[#23232C] text-white py-2 px-4 text-xs font-light tracking-wider text-center border-b border-white/10 relative z-50">
+            <div class="section-wrapper flex items-center justify-center gap-2 md:gap-4 flex-wrap">
+                @if($topAnnouncement->eyebrow)
+                    <span class="bg-white/10 text-white/90 text-[10px] font-semibold tracking-[0.2em] uppercase px-2 py-0.5 rounded">
+                        {{ $topAnnouncement->eyebrow }}
+                    </span>
+                @endif
+                <span class="font-medium text-white tracking-wide">
+                    {{ $topAnnouncement->title }}
+                </span>
+                @if($topAnnouncement->subtitle)
+                    <span class="hidden sm:inline text-white/70">
+                        — {{ $topAnnouncement->subtitle }}
+                    </span>
+                @endif
+                @if($topAnnouncement->link)
+                    <a href="{{ route('banner.click', $topAnnouncement->id) }}"
+                       target="{{ $topAnnouncement->open_in_new_tab ? '_blank' : '_self' }}"
+                       @if($topAnnouncement->open_in_new_tab) rel="noopener noreferrer" @endif
+                       class="underline hover:text-white/80 transition-colors font-medium text-[11px] uppercase tracking-widest ml-1">
+                        {{ $topAnnouncement->cta_text ?: 'Xem Ngay' }} →
+                    </a>
+                @endif
+            </div>
+        </div>
+    @endif
+
     {{-- Flash sale banner (Livewire component) --}}
     <livewire:flash-sale-banner />
 

@@ -10,10 +10,10 @@
 
 @section('content')
     {{-- Section 1: Hero Slider --}}
-    @include('storefront.home.partials.hero')
+    @include('storefront.home.partials.hero', ['heroSlides' => $heroSlides])
 
     {{-- Section 2: 2-Column Promo Banners --}}
-    @include('storefront.home.partials.category-banners')
+    @include('storefront.home.partials.category-banners', ['promoBanners' => $promoBanners])
 
     {{-- Section 3: Intro Heading & Description --}}
     @include('storefront.home.partials.intro')
@@ -25,7 +25,7 @@
     @include('storefront.home.partials.new-arrivals', ['products' => $newArrivals])
 
     {{-- Section 6: Featured Collections (3 Columns) --}}
-    @include('storefront.home.partials.collection-banner')
+    @include('storefront.home.partials.collection-banner', ['collectionBanners' => $collectionBanners])
 
     {{-- Section 7: Trust Badges (3 Columns) --}}
     @include('storefront.home.partials.trust-badges')

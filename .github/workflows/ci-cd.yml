@@ -13,9 +13,118 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  # ──────────────────────────────────────────────────────────────
+  # [ADR-S3 + ADR-S4] Architectural Fitness Functions
+  # Purpose: Convert ADR constraints from advisory documentation
+  #          into executable CI gates that fail the build on violation.
+  # ──────────────────────────────────────────────────────────────
+  architectural-fitness:
+    name: Architectural Fitness Functions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: '[ADR-S4] Enforce ADR-S2: DB::transaction only in app/Actions/'
+        run: |
+          echo "=== ADR-S2: Transaction Boundary Fitness Function ==="
+          echo "Rule: DB::transaction() and DB::beginTransaction() MUST only appear in app/Actions/"
+          echo "      Any occurrence outside app/Actions/ is an architectural violation."
+          echo ""
+
+          VIOLATIONS=$(grep -rn "DB::transaction\|DB::beginTransaction\|DB::commit\|DB::rollBack" \
+            --include="*.php" app/ \
+            | grep -v "^app/Actions/" \
+            | grep -v "// ADR-S2: exception allowed" \
+            | grep -v "# ADR-S2: exception allowed" \
+            || true)
+
+          if [ -n "$VIOLATIONS" ]; then
+            echo "❌ ADR-S2 VIOLATION: DB::transaction found outside app/Actions/"
+            echo ""
+            echo "$VIOLATIONS"
+            echo ""
+            echo "Fix: Move transaction management into an Action class."
+            echo "     If this is intentional, add '// ADR-S2: exception allowed' comment."
+            exit 1
+          fi
+          echo "✅ ADR-S2 PASS: All transaction boundaries are within app/Actions/"
+
+      - name: '[ADR-S3] Secret Scanner: detect committed secrets'
+        run: |
+          echo "=== ADR-S3: Secret Scanner ==="
+          echo "Rule: No real APP_KEY values, API tokens, or passwords should be committed."
+          echo ""
+
+          # Check for committed .env with real content (not .env.example)
+          if git ls-files | grep -q "^\.env$"; then
+            echo "❌ ADR-S3 VIOLATION: .env file is tracked by git."
+            echo "   Run: git rm --cached .env && git commit -m 'fix: remove .env from git tracking'"
+            exit 1
+          fi
+
+          # Check for committed sqlite files
+          if git ls-files | grep -qE "database/.*\.sqlite"; then
+            echo "❌ ADR-S3 VIOLATION: SQLite database file is tracked by git (contains PII risk)."
+            echo "   Run: git rm --cached database/*.sqlite && git commit -m 'fix: remove sqlite from git tracking'"
+            exit 1
+          fi
+
+          # Check for real-looking APP_KEY values in tracked PHP/env files
+          HARDCODED_KEYS=$(git ls-files '*.php' '*.env*' 'config/*.php' \
+            | xargs grep -l "APP_KEY=base64:" 2>/dev/null \
+            | grep -v ".env.example" \
+            | grep -v ".gitignore" \
+            || true)
+
+          if [ -n "$HARDCODED_KEYS" ]; then
+            echo "❌ ADR-S3 VIOLATION: APP_KEY value found in tracked file(s):"
+            echo "$HARDCODED_KEYS"
+            exit 1
+          fi
+
+          # Check for hardcoded GOSHIP or other API tokens in PHP code
+          HARDCODED_TOKENS=$(grep -rn "GOSHIP_TOKEN\s*=\s*['\"][^'\"]\+['\"]" \
+            --include="*.php" app/ config/ \
+            | grep -v "env(" \
+            | grep -v "//" \
+            || true)
+
+          if [ -n "$HARDCODED_TOKENS" ]; then
+            echo "❌ ADR-S3 VIOLATION: Hardcoded API token found (use env() instead):"
+            echo "$HARDCODED_TOKENS"
+            exit 1
+          fi
+
+          echo "✅ ADR-S3 PASS: No secrets detected in tracked files"
+
+      - name: '[ADR-S3] Structural Trust Zone: Verify Restricted zone file patterns'
+        run: |
+          echo "=== ADR-S3: Restricted Zone Integrity ==="
+          echo "Rule: Auth config, payment-adjacent code, and encryption keys"
+          echo "      must not contain hardcoded credential values."
+          echo ""
+
+          # No hardcoded passwords in config/ files
+          CONFIG_SECRETS=$(grep -rn "password\s*=>\s*['\"][^'\"]" \
+            --include="*.php" config/ \
+            | grep -v "env(" \
+            | grep -v "//" \
+            | grep -v "'password' => ''" \
+            || true)
+
+          if [ -n "$CONFIG_SECRETS" ]; then
+            echo "❌ ADR-S3 VIOLATION: Possible hardcoded credential in config/:"
+            echo "$CONFIG_SECRETS"
+            exit 1
+          fi
+
+          echo "✅ ADR-S3 PASS: Restricted zone config files look clean"
+
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    needs: architectural-fitness
     services:
       mysql:
         image: mysql:8.0

@@ -9,6 +9,7 @@ class BannerObserver
     private function clearCache(): void
     {
         \Illuminate\Support\Facades\Cache::forget('home_banners');
+        \Illuminate\Support\Facades\Cache::forget('top_announcement_banner');
     }
 
     /**

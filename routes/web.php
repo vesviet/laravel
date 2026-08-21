@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\OrderPdfController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\Storefront\AccountController;
 use App\Http\Controllers\Storefront\AuthController;
+use App\Http\Controllers\Storefront\BannerClickController;
 use App\Http\Controllers\Storefront\BlogController;
 use App\Http\Controllers\Storefront\CatalogController;
 use App\Http\Controllers\Storefront\CheckoutController;
@@ -80,6 +81,9 @@ Route::get('/sitemap-pages.xml', [FeedController::class, 'pagesSitemap'])->name(
 Route::get('/feeds/google-merchant.xml', [FeedController::class, 'googleMerchantFeed'])->name('feed.google-merchant');
 Route::get('/feed', [FeedController::class, 'blogRssFeed'])->name('feed.rss');
 Route::get('/rss.xml', [FeedController::class, 'blogRssFeed'])->name('feed.rss.xml');
+
+// Banner Click Tracking
+Route::get('/banner/click/{banner}', [BannerClickController::class, 'track'])->name('banner.click');
 
 // Dynamic CMS & Landing Page Route (Must be at the very end to avoid conflicts)
 Route::get('/pages/{slug}', [PageController::class, 'show'])->name('pages.show');

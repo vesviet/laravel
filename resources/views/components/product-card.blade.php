@@ -4,17 +4,32 @@
     $primaryImage = $product->primary_image_url;
     $secondaryImage = $product->secondary_image_url;
     $hasSecondaryImage = !empty($secondaryImage) && $secondaryImage !== $primaryImage;
+
+    // Resolve active catalog promotion strike price & badge (Cached in memory - 0 N+1 queries)
+    $promoted = app(\App\Services\Promotions\PromotionEngine::class)->resolveProductPromotedPrice($product);
 @endphp
 
 <article class="group relative flex flex-col" aria-label="{{ $product->name }}">
 
-    {{-- HOT Ribbon Badge (.badge-hot #E84444) --}}
+    {{-- Badges Stack (Top-Left): Featured HOT --}}
     @if($product->is_featured)
-        <span class="badge-hot absolute top-2.5 left-2.5 z-10 pointer-events-none" aria-label="Sản phẩm nổi bật">HOT</span>
+        <div class="absolute top-2.5 left-2.5 z-10 pointer-events-none flex flex-col gap-1 items-start">
+            <span class="badge-hot" aria-label="Sản phẩm nổi bật">HOT</span>
+        </div>
     @endif
 
-    {{-- Wishlist Toggle Icon (top-right of image frame with hover transition) --}}
-    <div class="absolute top-2.5 right-2.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
+    {{-- Promotion Badge (Top-Right Corner as per M4 spec) --}}
+    @if($promoted)
+        <div class="absolute top-2.5 right-2.5 z-10 pointer-events-none">
+            <span class="bg-[#E84444] text-white font-bold text-[10px] tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm"
+                  aria-label="Khuyến mãi {{ round($promoted->discountPercentage) }}%">
+                {{ $promoted->badgeLabel ?: '-' . round($promoted->discountPercentage) . '% PROMO' }}
+            </span>
+        </div>
+    @endif
+
+    {{-- Wishlist Toggle Icon (Positioned smoothly below promo badge or at top-right on hover) --}}
+    <div class="absolute {{ $promoted ? 'top-9' : 'top-2.5' }} right-2.5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
         @auth('customer')
             <livewire:wishlist-button :product="$product" :key="'wb-'.$product->id" />
         @else
@@ -90,10 +105,21 @@
             </a>
         </h3>
 
-        {{-- Formatted VND Price --}}
-        <p class="text-sm font-medium text-[#23232C]">
-            {{ number_format($product->price, 0, ',', '.') }}₫
-        </p>
+        {{-- Formatted VND Price: Strike-Through & Promoted Price --}}
+        @if($promoted)
+            <div class="flex items-center justify-center gap-2">
+                <span class="text-sm font-bold text-[#E84444]">
+                    {{ number_format($promoted->promotedPrice, 0, ',', '.') }}₫
+                </span>
+                <span class="line-through text-gray-400 text-xs sm:text-sm">
+                    {{ number_format($promoted->originalPrice, 0, ',', '.') }}₫
+                </span>
+            </div>
+        @else
+            <p class="text-sm font-medium text-[#23232C]">
+                {{ number_format($product->price, 0, ',', '.') }}₫
+            </p>
+        @endif
     </div>
 
 </article>

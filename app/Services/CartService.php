@@ -5,11 +5,24 @@ namespace App\Services;
 use App\Models\FlashSaleItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Services\Promotions\DTOs\PromotedPriceResult;
+use App\Services\Promotions\PromotionEngine;
 use Illuminate\Support\Facades\Session;
+
 
 class CartService
 {
     protected string $sessionKey = 'cart';
+
+    /**
+     * [I-02] Inject PromotionEngine via constructor — do not call app() per loop iteration.
+     * The engine's getActiveCatalogRules() is cache-backed, but re-constructing via app()
+     * on every product is wasteful and bypasses constructor-level DI contracts.
+     */
+    public function __construct(
+        protected PromotionEngine $promotionEngine
+    ) {}
+
 
     public function getCart(): array
     {
@@ -115,41 +128,61 @@ class CartService
             $imagePath   = null;
 
             $slug = null;
+            $categoryId = null;
+            $originalPrice = 0.0;
+            $promotedResult = null;
+
             if ($variantId && $variants->has($variantId)) {
                 $variant = $variants->get($variantId);
                 $price = (float) $variant->price;
+                $originalPrice = $price;
                 $name = $variant->product->name ?? '';
                 $variantName = $variant->name;
                 $sku = $variant->sku ?? '';
                 $imagePath = $variant->product->primary_image_url ?? $variant->product->thumbnail ?? null;
                 $slug = $variant->product->slug ?? null;
+                $categoryId = $variant->product->category_id ?? null;
             } elseif ($products->has($productId)) {
                 $product = $products->get($productId);
                 $price = (float) $product->price;
+                $originalPrice = $price;
                 $name = $product->name;
                 $sku = $product->sku ?? '';
                 $imagePath = $product->primary_image_url ?? $product->thumbnail ?? null;
                 $slug = $product->slug ?? null;
+                $categoryId = $product->category_id ?? null;
+
+                // [I-02] Use injected engine instance — catalog rules are already cache-backed
+                // in getActiveCatalogRules(); no N+1 here since the cache is populated once.
+                $promotedResult = $this->promotionEngine->resolveProductPromotedPrice($product);
+                if ($promotedResult !== null) {
+                    $price = (float) $promotedResult->promotedPrice;
+                    $originalPrice = (float) $promotedResult->originalPrice;
+                }
             }
 
-            // Override price with flash sale price if applicable
+            // Override price with flash sale price if applicable (Flash sale takes precedence)
             if (isset($flashSaleItems[$productId])) {
                 $price = (float) $flashSaleItems[$productId]->price;
                 $isFlashSale = true;
             }
 
             $items[] = [
-                'product_id'         => $productId,
-                'product_variant_id' => $variantId,
-                'product_name'       => $name,
-                'variant_name'       => $variantName,
-                'sku'                => $sku,
-                'price'              => $price,
-                'quantity'           => $quantity,
-                'subtotal'           => $price * $quantity,
-                'is_flash_sale'      => $isFlashSale,
-                'image_path'         => $imagePath ?? null,
-                'slug'               => $slug,
+                'product_id'          => $productId,
+                'product_variant_id'  => $variantId,
+                'category_id'         => $categoryId,
+                'product_name'        => $name,
+                'variant_name'        => $variantName,
+                'sku'                 => $sku,
+                'price'               => $price,
+                'original_price'      => $originalPrice,
+                'quantity'            => $quantity,
+                'subtotal'            => $price * $quantity,
+                'is_flash_sale'       => $isFlashSale,
+                'is_catalog_promoted' => ($promotedResult !== null && ! $isFlashSale),
+                'promoted_result'     => $promotedResult?->toArray(),
+                'image_path'          => $imagePath ?? null,
+                'slug'                => $slug,
             ];
         }
 

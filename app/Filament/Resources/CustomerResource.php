@@ -37,8 +37,8 @@ class CustomerResource extends Resource
                     ])
                     ->default('active')
                     ->required(),
-                Forms\Components\TextInput::make('stripe_customer_id')
-                    ->maxLength(255),
+                // [I-09] stripe_customer_id removed — Stripe package not yet integrated.
+                // Add back when Stripe integration is scoped and ADR-B3 is approved.
             ]);
     }
 
@@ -56,7 +56,24 @@ class CustomerResource extends Resource
                         'inactive' => 'danger',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('stripe_customer_id')->searchable(),
+                // [I-03] Use orders_sum_total_amount via withSum() to avoid N+1.
+                // The orders_sum_total_amount is loaded by getEloquentQuery() below,
+                // preventing a separate query per customer row in the listing.
+                Tables\Columns\TextColumn::make('orders_sum_total_amount')
+                    ->label('Total Spent')
+                    ->formatStateUsing(fn ($state) => $state
+                        ? number_format((float) $state, 0, ',', '.') . '₫'
+                        : '0₫'
+                    )
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('membership_tier')
+                    ->label('Tier')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'VIP Diamond' => 'warning',
+                        'Thành Viên Thân Thiết' => 'success',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
             ])
             ->filters([
@@ -70,6 +87,17 @@ class CustomerResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * [I-03] Override getEloquentQuery to eager-load orders sum with a single JOIN.
+     * This prevents N+1 queries when listing customers with total_spent column.
+     * withSum() generates a single SQL subquery instead of one query per customer.
+     */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()
+            ->withSum('orders', 'total_amount');
     }
 
     public static function getRelations(): array

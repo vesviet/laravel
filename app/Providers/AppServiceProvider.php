@@ -5,11 +5,14 @@ namespace App\Providers;
 use App\Events\OrderPlaced;
 use App\Listeners\SendOrderConfirmationEmail;
 use App\Models\Product;
+use App\Models\PromotionRule;
 use App\Observers\ProductObserver;
+use App\Observers\PromotionRuleObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
@@ -32,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Super Admin bypass for all Shield and policy permission gates
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('super_admin') ? true : null;
+        });
+
         if (! extension_loaded('intl')) {
             // Macro overrides Number::format() with a plain number_format fallback.
             // This prevents RuntimeException on hosts without the intl extension.
@@ -47,8 +55,9 @@ class AppServiceProvider extends ServiceProvider
         // The listener is queued (ShouldQueue) — runs via 'database' queue worker (ADR-03).
         Event::listen(OrderPlaced::class, SendOrderConfirmationEmail::class);
 
-        // Observer: invalidate homepage cache when products change (is_featured, status, price)
+        // Observers: invalidate cached promotional prices and homepage data
         Product::observe(ProductObserver::class);
+        PromotionRule::observe(PromotionRuleObserver::class);
 
         // Rate Limiters (S4)
         // Checkout form: max 10 submissions per minute per IP

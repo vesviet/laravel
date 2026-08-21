@@ -16,7 +16,9 @@ class Customer extends Authenticatable
         'phone',
         'password',
         'status',
-        'stripe_customer_id',
+        // [I-09] stripe_customer_id is NOT included — Stripe package not yet integrated.
+        // Add back only when Stripe integration is approved via ADR and migration adds the column.
+        // 'stripe_customer_id',
     ];
 
     protected $hidden = [

@@ -1,6 +1,6 @@
 {{-- ════════════════════════════════════════════════════════
      SECTION 6: FEATURED COLLECTIONS (3-Column Grid)
-     Sober Home v12: "Copenhague Desk", "Cement Wood Lamp", "Arte 60 Stool"
+     Dynamic Multi-Position Banner & Scandinavian Fallback
      ════════════════════════════════════════════════════════ --}}
 <section class="py-16 md:py-20 bg-white">
     <div class="section-wrapper">
@@ -16,47 +16,97 @@
 
         {{-- 3-Column Card Grid --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            @if(isset($collectionBanners) && count($collectionBanners) > 0)
+                @foreach($collectionBanners->take(3) as $index => $banner)
+                    @php
+                        $isDark = ($index === 1);
+                        $hasImage = !empty($banner->image_url);
+                        $defaultGradient = match($index) {
+                            0 => 'from-[#d8d2cb] to-[#beb5ab]',
+                            1 => 'from-[#35353d] to-[#1a1a20]',
+                            default => 'from-[#eeeae5] to-[#d5cec6]',
+                        };
+                        $bgColor = $isDark ? 'bg-[#23232C]' : ($index === 0 ? 'bg-[#E8E4DF]' : 'bg-[#EAE7E2]');
+                        $alignBottom = ($index === 1);
+                    @endphp
+                    <a href="{{ route('banner.click', $banner->id) }}"
+                       target="{{ $banner->open_in_new_tab ? '_blank' : '_self' }}"
+                       @if($banner->open_in_new_tab) rel="noopener noreferrer" @endif
+                       class="group relative overflow-hidden block h-[380px] md:h-[440px] {{ $bgColor }} focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                       aria-label="Bộ sưu tập {{ $banner->title }}">
+                        @if($hasImage)
+                            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                                 style="background-image: url('{{ $banner->image_url }}');"></div>
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60"></div>
+                        @else
+                            <div class="absolute inset-0 bg-gradient-to-b {{ $defaultGradient }} transition-transform duration-700 ease-out group-hover:scale-105"></div>
+                        @endif
 
-            {{-- Card 1: Copenhague Desk / Đồ Nội Thất --}}
-            <a href="{{ route('products.index') }}"
-               class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#E8E4DF]"
-               aria-label="Bộ sưu tập Copenhague Desk — Đồ Nội Thất">
-                <div class="absolute inset-0 bg-gradient-to-b from-[#d8d2cb] to-[#beb5ab] transition-transform duration-700 ease-out group-hover:scale-105"></div>
-                <div class="absolute inset-0 flex flex-col items-center justify-start text-center pt-10 px-6 z-10">
-                    <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#888888] mb-2">Copenhague Desk · Danh Mục 01</p>
-                    <h3 class="text-xl md:text-2xl font-medium tracking-wide text-[#23232C] mb-2">Đồ Nội Thất</h3>
-                    <p class="text-xs text-[#888888] font-light mb-4">Giao hàng miễn phí & lắp đặt tận nơi</p>
-                    <span class="link-underline text-[#23232C] text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
-                </div>
-            </a>
+                        <div class="absolute inset-0 flex flex-col items-center {{ $alignBottom ? 'justify-end pb-10' : 'justify-start pt-10' }} text-center px-6 z-10">
+                            @if($banner->eyebrow)
+                                <p class="text-[10px] font-semibold tracking-[0.25em] uppercase {{ ($hasImage || $isDark) ? 'text-white/70' : 'text-[#888888]' }} mb-2">
+                                    {{ $banner->eyebrow }}
+                                </p>
+                            @endif
+                            <h3 class="text-xl md:text-2xl font-medium tracking-wide {{ ($hasImage || $isDark) ? 'text-white' : 'text-[#23232C]' }} mb-2">
+                                {{ $banner->title }}
+                            </h3>
+                            @if($banner->subtitle)
+                                <p class="text-xs {{ ($hasImage || $isDark) ? 'text-white/80' : 'text-[#888888]' }} font-light mb-4">
+                                    {{ $banner->subtitle }}
+                                </p>
+                            @endif
+                            <span class="link-underline {{ ($hasImage || $isDark) ? 'text-white border-white' : 'text-[#23232C]' }} text-[10px] tracking-[0.2em] uppercase">
+                                {{ $banner->cta_text ?: 'SEE COLLECTIONS' }}
+                            </span>
+                        </div>
+                        @if($banner->open_in_new_tab)
+                            <span class="sr-only">(mở trong tab mới)</span>
+                        @endif
+                    </a>
+                @endforeach
+            @else
+                {{-- Card 1: Copenhague Desk / Đồ Nội Thất --}}
+                <a href="{{ route('products.index') }}"
+                   class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#E8E4DF] focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                   aria-label="Bộ sưu tập Copenhague Desk — Đồ Nội Thất">
+                    <div class="absolute inset-0 bg-gradient-to-b from-[#d8d2cb] to-[#beb5ab] transition-transform duration-700 ease-out group-hover:scale-105"></div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-start text-center pt-10 px-6 z-10">
+                        <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#888888] mb-2">Copenhague Desk · Danh Mục 01</p>
+                        <h3 class="text-xl md:text-2xl font-medium tracking-wide text-[#23232C] mb-2">Đồ Nội Thất</h3>
+                        <p class="text-xs text-[#888888] font-light mb-4">Giao hàng miễn phí & lắp đặt tận nơi</p>
+                        <span class="link-underline text-[#23232C] text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
+                    </div>
+                </a>
 
-            {{-- Card 2: Cement Wood Lamp / Trang Trí Nhà --}}
-            <a href="{{ route('products.index') }}"
-               class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#23232C]"
-               aria-label="Bộ sưu tập Cement Wood Lamp — Trang Trí Nhà">
-                <div class="absolute inset-0 bg-gradient-to-b from-[#35353d] to-[#1a1a20] transition-transform duration-700 ease-out group-hover:scale-105"></div>
-                <div class="absolute inset-0 flex flex-col items-center justify-end text-center pb-10 px-6 z-10">
-                    <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-white/60 mb-2">Cement Wood Lamp · Danh Mục 02</p>
-                    <h3 class="text-xl md:text-2xl font-medium tracking-wide text-white mb-2">Trang Trí Nhà</h3>
-                    <p class="text-xs text-white/70 font-light mb-4">Ánh sáng ấm cúng cho không gian sống</p>
-                    <span class="link-underline text-white border-white text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
-                </div>
-            </a>
+                {{-- Card 2: Cement Wood Lamp / Trang Trí Nhà --}}
+                <a href="{{ route('products.index') }}"
+                   class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#23232C] focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                   aria-label="Bộ sưu tập Cement Wood Lamp — Trang Trí Nhà">
+                    <div class="absolute inset-0 bg-gradient-to-b from-[#35353d] to-[#1a1a20] transition-transform duration-700 ease-out group-hover:scale-105"></div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-end text-center pb-10 px-6 z-10">
+                        <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-white/60 mb-2">Cement Wood Lamp · Danh Mục 02</p>
+                        <h3 class="text-xl md:text-2xl font-medium tracking-wide text-white mb-2">Trang Trí Nhà</h3>
+                        <p class="text-xs text-white/70 font-light mb-4">Ánh sáng ấm cúng cho không gian sống</p>
+                        <span class="link-underline text-white border-white text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
+                    </div>
+                </a>
 
-            {{-- Card 3: Arte 60 Stool / Phụ Kiện --}}
-            <a href="{{ route('products.index') }}"
-               class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#EAE7E2]"
-               aria-label="Bộ sưu tập Arte 60 Stool — Phụ Kiện">
-                <div class="absolute inset-0 bg-gradient-to-b from-[#eeeae5] to-[#d5cec6] transition-transform duration-700 ease-out group-hover:scale-105"></div>
-                <div class="absolute inset-0 flex flex-col items-center justify-start text-center pt-10 px-6 z-10">
-                    <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#888888] mb-2">Arte 60 Stool · Danh Mục 03</p>
-                    <h3 class="text-xl md:text-2xl font-medium tracking-wide text-[#23232C] mb-2">Phụ Kiện</h3>
-                    <p class="text-xs text-[#888888] font-light mb-4">Điểm nhấn nghệ thuật tối giản Bắc Âu</p>
-                    <span class="link-underline text-[#23232C] text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
-                </div>
-            </a>
-
+                {{-- Card 3: Arte 60 Stool / Phụ Kiện --}}
+                <a href="{{ route('products.index') }}"
+                   class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#EAE7E2] focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                   aria-label="Bộ sưu tập Arte 60 Stool — Phụ Kiện">
+                    <div class="absolute inset-0 bg-gradient-to-b from-[#eeeae5] to-[#d5cec6] transition-transform duration-700 ease-out group-hover:scale-105"></div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-start text-center pt-10 px-6 z-10">
+                        <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#888888] mb-2">Arte 60 Stool · Danh Mục 03</p>
+                        <h3 class="text-xl md:text-2xl font-medium tracking-wide text-[#23232C] mb-2">Phụ Kiện</h3>
+                        <p class="text-xs text-[#888888] font-light mb-4">Điểm nhấn nghệ thuật tối giản Bắc Âu</p>
+                        <span class="link-underline text-[#23232C] text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
+                    </div>
+                </a>
+            @endif
         </div>
 
     </div>
 </section>
+
