@@ -7,25 +7,33 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class ProductReviews extends Component
 {
+    use WithPagination;
+
     public Product $product;
 
     public $rating = 5;
-
     public $comment = '';
+    public $pros = '';
+    public $cons = '';
 
     protected $rules = [
         'rating'  => 'required|integer|min:1|max:5',
-        'comment' => 'nullable|string|max:1000',
+        'comment' => 'nullable|string|max:2000',
+        'pros'    => 'nullable|string|max:500',
+        'cons'    => 'nullable|string|max:500',
     ];
 
     protected $messages = [
         'rating.required' => 'Vui lòng chọn số sao đánh giá.',
         'rating.min'      => 'Đánh giá tối thiểu là 1 sao.',
         'rating.max'      => 'Đánh giá tối đa là 5 sao.',
-        'comment.max'     => 'Nhận xét không được vượt quá 1000 ký tự.',
+        'comment.max'     => 'Nhận xét không được vượt quá 2000 ký tự.',
+        'pros.max'        => 'Ưu điểm không được vượt quá 500 ký tự.',
+        'cons.max'        => 'Nhược điểm không được vượt quá 500 ký tự.',
     ];
 
     public function submitReview()
@@ -33,7 +41,8 @@ class ProductReviews extends Component
         $this->validate();
 
         if (! Auth::guard('customer')->check()) {
-            return redirect()->route('account.login');
+            $this->dispatch('show-login-modal');
+            return;
         }
 
         $customerId = Auth::guard('customer')->id();
@@ -70,12 +79,42 @@ class ProductReviews extends Component
             'customer_id' => $customerId,
             'rating'      => $this->rating,
             'comment'     => $this->comment,
+            'pros'        ? $this->pros : null,
+            'cons'        ? $this->cons : null,
             'status'      => 'pending', // Requires admin approval.
         ]);
 
-        $this->reset(['rating', 'comment']);
+        $this->reset(['rating', 'comment', 'pros', 'cons']);
 
-        session()->flash('message', 'Đánh giá của bạn đã được gửi thành công và đang chờ ban quản trị kiểm duyệt.');
+        $this->dispatch('review-submitted', message: 'Đánh giá của bạn đã được gửi thành công và đang chờ ban quản trị kiểm duyệt.');
+    }
+
+    public function voteHelpful(int $reviewId)
+    {
+        if (! Auth::guard('customer')->check()) {
+            $this->dispatch('show-login-modal');
+            return;
+        }
+
+        $review = ProductReview::find($reviewId);
+        if ($review) {
+            $review->voteHelpful();
+            $this->dispatch('review-voted', message: 'Cảm ơn bạn đã bình chọn!');
+        }
+    }
+
+    public function voteNotHelpful(int $reviewId)
+    {
+        if (! Auth::guard('customer')->check()) {
+            $this->dispatch('show-login-modal');
+            return;
+        }
+
+        $review = ProductReview::find($reviewId);
+        if ($review) {
+            $review->voteNotHelpful();
+            $this->dispatch('review-voted', message: 'Cảm ơn bạn đã bình chọn!');
+        }
     }
 
     public function render()
@@ -84,10 +123,26 @@ class ProductReviews extends Component
             ->where('status', 'approved')
             ->with('customer')
             ->latest()
-            ->get();
+            ->paginate(5, ['*'], 'review-page');
+
+        // Calculate rating distribution
+        $ratingStats = ProductReview::where('product_id', $this->product->id)
+            ->where('status', 'approved')
+            ->selectRaw('rating, count(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
+
+        $totalReviews = array_sum($ratingStats);
+        $avgRating = $totalReviews > 0
+            ? array_sum(array_map(fn ($r, $c) => $r * $c, array_keys($ratingStats), $ratingStats)) / $totalReviews
+            : 0;
 
         return view('livewire.product-reviews', [
-            'reviews' => $reviews,
+            'reviews'      => $reviews,
+            'ratingStats'  => $ratingStats,
+            'totalReviews' => $totalReviews,
+            'avgRating'    => round($avgRating, 1),
         ]);
     }
 }

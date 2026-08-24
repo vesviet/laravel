@@ -55,7 +55,7 @@ Route::prefix('account')->name('account.')->group(function () {
         Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
     });
 
-    Route::middleware('auth:customer')->group(function () {
+    Route::middleware(['auth:customer', 'concurrent.sessions'])->group(function () {
         Route::get('/orders', [AccountController::class, 'orders'])->name('orders');
         Route::get('/orders/{order_number}', [AccountController::class, 'orderDetail'])->name('orders.show');
         Route::post('/orders/{order_number}/cancel', [AccountController::class, 'cancelOrder'])->name('orders.cancel');

@@ -16,6 +16,8 @@ class Customer extends Authenticatable
         'phone',
         'password',
         'status',
+        'failed_login_attempts',
+        'locked_until',
         // [I-09] stripe_customer_id is NOT included — Stripe package not yet integrated.
         // Add back only when Stripe integration is approved via ADR and migration adds the column.
         // 'stripe_customer_id',
@@ -28,6 +30,8 @@ class Customer extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
+        'locked_until' => 'datetime',
+        'active_sessions' => 'array',
     ];
 
     public function orders()
@@ -132,5 +136,90 @@ class Customer extends Authenticatable
             ->latest()
             ->take($limit)
             ->get();
+    }
+
+    /**
+     * Regenerate the remember token for the customer.
+     * This should be called on login, password change, and sensitive actions.
+     */
+    public function regenerateRememberToken(): string
+    {
+        $this->remember_token = \Illuminate\Support\Str::random(60);
+        $this->save();
+
+        return $this->remember_token;
+    }
+
+    /**
+     * Check if the remember token has been rotated (for security auditing).
+     */
+    public function hasValidRememberToken(string $token): bool
+    {
+        return $this->remember_token === $token;
+    }
+
+    /**
+     * Invalidate all remember tokens (logout from all devices).
+     */
+    public function invalidateAllRememberTokens(): void
+    {
+        $this->remember_token = null;
+        $this->save();
+    }
+
+    /**
+     * Get the number of active sessions for this customer.
+     * This is a placeholder for concurrent session tracking.
+     */
+    public function getActiveSessionsCount(): int
+    {
+        // In a real implementation, this would query the sessions table
+        // filtered by customer_id. For now, return 1 as baseline.
+        return 1;
+    }
+
+    /**
+     * Check if the account is currently locked.
+     */
+    public function isLocked(): bool
+    {
+        return $this->locked_until && $this->locked_until->isFuture();
+    }
+
+    /**
+     * Increment the failed login attempts counter.
+     */
+    public function incrementFailedLoginAttempts(): void
+    {
+        $this->failed_login_attempts += 1;
+        
+        // Lock account after 5 failed attempts for 15 minutes
+        if ($this->failed_login_attempts >= 5) {
+            $this->locked_until = now()->addMinutes(15);
+        }
+        
+        $this->save();
+    }
+
+    /**
+     * Reset the failed login attempts counter.
+     */
+    public function resetFailedLoginAttempts(): void
+    {
+        $this->failed_login_attempts = 0;
+        $this->locked_until = null;
+        $this->save();
+    }
+
+    /**
+     * Get the remaining lockout time in minutes.
+     */
+    public function getLockoutRemainingMinutes(): int
+    {
+        if (!$this->isLocked()) {
+            return 0;
+        }
+        
+        return max(1, (int) $this->locked_until->diffInMinutes(now()));
     }
 }

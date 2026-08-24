@@ -18,21 +18,63 @@ class Product extends Model
         'description',
         'image_path',
         'price',
+        'compare_at_price',
         'stock',
+        'low_stock_threshold',
         'weight',
+        'length',
+        'width',
+        'height',
         'status',
         'is_featured',
+        'is_visible',
+        'is_purchasable',
+        'published_at',
         'attributes_json',
+        'tags',
+        'structured_data',
         'seo_title',
         'seo_description',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
     ];
 
     protected $casts = [
-        'attributes_json' => 'array',
-        'price'           => 'integer',
-        'stock'           => 'integer',
-        'weight'          => 'integer',
-        'is_featured'     => 'boolean',
+        'attributes_json'   => 'array',
+        'tags'              => 'array',
+        'structured_data'   => 'array',
+        'price'             => 'integer',
+        'compare_at_price'  => 'integer',
+        'stock'             => 'integer',
+        'low_stock_threshold' => 'integer',
+        'weight'            => 'integer',
+        'length'            => 'integer',
+        'width'             => 'integer',
+        'height'            => 'integer',
+        'is_featured'       => 'boolean',
+        'is_visible'        => 'boolean',
+        'is_purchasable'    => 'boolean',
+        'published_at'      => 'datetime',
+    ];
+
+    protected $appends = [
+        'primary_image_url',
+        'secondary_image_url',
+        'gallery_images',
+        'album_images',
+        'thumbnail',
+        'formatted_price',
+        'formatted_compare_at_price',
+        'is_in_stock',
+        'is_low_stock',
+        'stock_status_label',
+        'stock_status_color',
+        'discount_percentage',
+        'has_discount',
+        'dimensions',
+        'volume_cm3',
+        'schema_org_json_ld',
     ];
 
     public function category()
@@ -125,23 +167,72 @@ class Product extends Model
     }
 
     /**
+     * Scope: Filter by low stock.
+     */
+    public function scopeLowStock($query)
+    {
+        return $query->whereRaw('stock > 0 AND stock <= low_stock_threshold');
+    }
+
+    /**
+     * Scope: Filter by tags (flexible tagging system).
+     */
+    public function scopeWithTags($query, array $tags)
+    {
+        if (empty($tags)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($tags) {
+            foreach ($tags as $tag) {
+                $q->orWhereJsonContains('tags', $tag);
+            }
+        });
+    }
+
+    /**
+     * Scope: Filter by attribute values.
+     */
+    public function scopeWithAttributes($query, array $attributes)
+    {
+        if (empty($attributes)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($attributes) {
+            foreach ($attributes as $key => $value) {
+                $q->orWhereJsonContains("attributes_json->{$key}", $value);
+            }
+        });
+    }
+
+    /**
      * Scope: Sort by predefined sorting criteria.
      */
     public function scopeSortedBy($query, ?string $sort)
     {
         return match ($sort) {
-            'price_asc'  => $query->orderBy('price', 'asc'),
-            'price_desc' => $query->orderBy('price', 'desc'),
-            'name_asc'   => $query->orderBy('name', 'asc'),
-            'name_desc'  => $query->orderBy('name', 'desc'),
-            'featured'   => $query->orderBy('is_featured', 'desc')->latest(),
-            default      => $query->latest(),
+            'price_asc'     => $query->orderBy('price', 'asc'),
+            'price_desc'    => $query->orderBy('price', 'desc'),
+            'name_asc'      => $query->orderBy('name', 'asc'),
+            'name_desc'     => $query->orderBy('name', 'desc'),
+            'featured'      => $query->orderBy('is_featured', 'desc')->latest(),
+            'newest'        => $query->latest(),
+            'oldest'        => $query->oldest(),
+            'best_selling'  => $query->orderBy('stock', 'asc'), // Placeholder for actual sales count
+            'top_rated'     => $query->whereHas('reviews', fn ($q) => $q->where('status', 'approved'))
+                                        ->withAvg('reviews as avg_rating', 'rating')
+                                        ->orderBy('avg_rating', 'desc'),
+            'on_sale'       => $query->whereNotNull('compare_at_price')
+                                        ->whereRaw('compare_at_price > price'),
+            default         => $query->latest(),
         };
     }
 
     public function scopeActive($query)
     {
-        return $query->whereIn('status', ['active', 'published']);
+        return $query->whereIn('status', ['active', 'published'])
+                     ->where('is_visible', true);
     }
 
     /**
@@ -149,7 +240,40 @@ class Product extends Model
      */
     public function scopeFeatured($query)
     {
-        return $query->where('is_featured', true)->whereIn('status', ['active', 'published']);
+        return $query->where('is_featured', true)
+                     ->whereIn('status', ['active', 'published'])
+                     ->where('is_visible', true);
+    }
+
+    /**
+     * Scope: New arrivals (published in last 30 days).
+     */
+    public function scopeNewArrivals($query, int $days = 30)
+    {
+        return $query->where('published_at', '>=', now()->subDays($days))
+                     ->whereIn('status', ['active', 'published'])
+                     ->where('is_visible', true);
+    }
+
+    /**
+     * Scope: On sale products.
+     */
+    public function scopeOnSale($query)
+    {
+        return $query->whereNotNull('compare_at_price')
+                     ->whereRaw('compare_at_price > price')
+                     ->whereIn('status', ['active', 'published'])
+                     ->where('is_visible', true);
+    }
+
+    /**
+     * Scope: Published products (for public catalog).
+     */
+    public function scopePublished($query)
+    {
+        return $query->whereIn('status', ['active', 'published'])
+                     ->where('is_visible', true)
+                     ->whereNotNull('published_at');
     }
 
     /**
@@ -293,6 +417,36 @@ class Product extends Model
     }
 
     /**
+     * Formatted compare-at price in Vietnamese Dong (VND).
+     */
+    public function getFormattedCompareAtPriceAttribute(): ?string
+    {
+        if ($this->compare_at_price) {
+            return number_format($this->compare_at_price, 0, ',', '.') . '₫';
+        }
+        return null;
+    }
+
+    /**
+     * Check if product has a discount/sale price.
+     */
+    public function getHasDiscountAttribute(): bool
+    {
+        return $this->compare_at_price && $this->compare_at_price > $this->price;
+    }
+
+    /**
+     * Discount percentage.
+     */
+    public function getDiscountPercentageAttribute(): ?int
+    {
+        if (!$this->has_discount || !$this->compare_at_price) {
+            return null;
+        }
+        return (int) round((($this->compare_at_price - $this->price) / $this->compare_at_price) * 100);
+    }
+
+    /**
      * Check if product is in stock.
      */
     public function getIsInStockAttribute(): bool
@@ -301,11 +455,27 @@ class Product extends Model
     }
 
     /**
+     * Check if product is low stock.
+     */
+    public function getIsLowStockAttribute(): bool
+    {
+        return $this->stock > 0 && $this->stock <= $this->low_stock_threshold;
+    }
+
+    /**
      * Stock status text label.
      */
     public function getStockStatusLabelAttribute(): string
     {
-        return $this->stock > 0 ? "Còn hàng ({$this->stock})" : 'Hết hàng';
+        if ($this->stock <= 0) {
+            return 'Hết hàng';
+        }
+        
+        if ($this->is_low_stock) {
+            return "Sắp hết hàng (còn {$this->stock})";
+        }
+        
+        return "Còn hàng ({$this->stock})";
     }
 
     /**
@@ -313,7 +483,37 @@ class Product extends Model
      */
     public function getStockStatusColorAttribute(): string
     {
-        return $this->stock > 0 ? 'text-emerald-600' : 'text-[#E84444]';
+        if ($this->stock <= 0) {
+            return 'text-[#E84444]';
+        }
+        
+        if ($this->is_low_stock) {
+            return 'text-amber-600';
+        }
+        
+        return 'text-emerald-600';
+    }
+
+    /**
+     * Product dimensions as formatted string.
+     */
+    public function getDimensionsAttribute(): ?string
+    {
+        if ($this->length && $this->width && $this->height) {
+            return "{$this->length} x {$this->width} x {$this->height} cm";
+        }
+        return null;
+    }
+
+    /**
+     * Volume in cubic cm.
+     */
+    public function getVolumeCm3Attribute(): ?int
+    {
+        if ($this->length && $this->width && $this->height) {
+            return $this->length * $this->width * $this->height;
+        }
+        return null;
     }
 
     /**
@@ -339,20 +539,28 @@ class Product extends Model
             $gallery = [$this->primary_image_url];
         }
 
+        $offers = [
+            '@type' => 'Offer',
+            'url' => $url,
+            'priceCurrency' => 'VND',
+            'price' => (string) $this->price,
+            'availability' => 'https://schema.org/' . ($this->stock > 0 ? 'InStock' : 'OutOfStock'),
+            'itemCondition' => 'https://schema.org/NewCondition',
+        ];
+
+        // Add sale price if applicable
+        if ($this->has_discount) {
+            $offers['price'] = (string) $this->price;
+            $offers['priceValidUntil'] = now()->addDays(30)->format('Y-m-d');
+        }
+
         $schema = [
             '@context' => 'https://schema.org/',
             '@type' => 'Product',
             'name' => $this->name,
             'description' => $this->seo_description ?? strip_tags($this->description ?? $this->name),
             'sku' => $this->sku ?? "PRD-{$this->id}",
-            'offers' => [
-                '@type' => 'Offer',
-                'url' => $url,
-                'priceCurrency' => 'VND',
-                'price' => (string) $this->price,
-                'availability' => 'https://schema.org/' . ($this->stock > 0 ? 'InStock' : 'OutOfStock'),
-                'itemCondition' => 'https://schema.org/NewCondition',
-            ],
+            'offers' => $offers,
         ];
 
         if (!empty($gallery)) {
@@ -363,6 +571,33 @@ class Product extends Model
             $schema['category'] = $this->category->name;
         }
 
+        if ($this->brand_name ?? $this->attributes_json['brand'] ?? null) {
+            $schema['brand'] = [
+                '@type' => 'Brand',
+                'name' => $this->attributes_json['brand'] ?? 'Sober Furniture',
+            ];
+        }
+
+        // Add aggregate rating if reviews exist
+        if ($this->reviews()->where('status', 'approved')->exists()) {
+            $avgRating = $this->reviews()->where('status', 'approved')->avg('rating');
+            $reviewCount = $this->reviews()->where('status', 'approved')->count();
+            if ($avgRating) {
+                $schema['aggregateRating'] = [
+                    '@type' => 'AggregateRating',
+                    'ratingValue' => round($avgRating, 1),
+                    'reviewCount' => $reviewCount,
+                    'bestRating' => 5,
+                    'worstRating' => 1,
+                ];
+            }
+        }
+
         return $schema;
+    }
+
+    public function getSchemaOrgJsonLdAttribute(): array
+    {
+        return $this->toSchemaOrgJsonLd(request()->url());
     }
 }
