@@ -16,7 +16,7 @@ class OrderService
     /**
      * Build an order record and its items, then deduct stock.
      *
-     * IMPORTANT: This method MUST be called within an active DB::transaction().
+     * IMPORTANT: This method MUST be called within an active database transaction.
      * Transaction ownership belongs to the calling Action (ProcessCheckoutAction).
      *
      * Order number uniqueness is enforced by the unique index on the orders table.

@@ -42,7 +42,7 @@ class CheckoutController extends Controller
 
     /**
      * Process checkout — delegates entirely to ProcessCheckoutAction.
-     * The outer DB::transaction is removed; ProcessCheckoutAction owns the transaction boundary.
+     * The outer database transaction is removed; ProcessCheckoutAction owns the transaction boundary.
      */
     public function store(CheckoutRequest $request)
     {

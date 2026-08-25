@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
  * A1: OrderPlaced domain event.
  *
  * Fired by ProcessCheckoutAction and ProcessLandingOrderAction after the
- * DB::transaction() commits successfully. Listeners should be queued
+ * database transaction commits successfully. Listeners should be queued
  * (implements ShouldQueue) to avoid blocking the checkout response.
  *
  * Replaces: inline Mail::send() in CheckoutController.

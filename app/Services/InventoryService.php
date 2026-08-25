@@ -14,7 +14,7 @@ class InventoryService
     /**
      * Deduct stock for all items in the given order.
      *
-     * IMPORTANT: This method MUST be called within an active DB::transaction().
+     * IMPORTANT: This method MUST be called within an active database transaction.
      * It uses lockForUpdate() on rows — these locks are only effective inside a transaction.
      * The transaction is owned by the calling Action (ProcessCheckoutAction, etc.).
      *
@@ -69,7 +69,7 @@ class InventoryService
     /**
      * Restore stock for all items in the given order (e.g. when order is cancelled).
      *
-     * IMPORTANT: This method MUST be called within an active DB::transaction().
+     * IMPORTANT: This method MUST be called within an active database transaction.
      * The transaction is owned by the calling Action (CancelOrderAction, etc.).
      */
     public function restoreStock(Order $order): void
