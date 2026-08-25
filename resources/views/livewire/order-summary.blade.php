@@ -1,7 +1,7 @@
 <div
     class="bg-white border border-border-subtle p-6 sticky top-24"
     x-data="{
-        breakdown: @entrust($breakdown->toJson()),
+        breakdown: @js($breakdown),
         subtotal: {{ $subtotal }},
         shippingFee: {{ $shippingFee ?? 0 }},
         fmt: (n) => new Intl.NumberFormat(\"vi-VN\").format(n) + \"\u20ab\",

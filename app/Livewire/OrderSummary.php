@@ -7,7 +7,7 @@ use Livewire\Component;
 
 class OrderSummary extends Component
 {
-    public PromotionDiscountBreakdown $breakdown;
+    public array $breakdown = [];
 
     public float $subtotal = 0;
 
@@ -28,7 +28,7 @@ class OrderSummary extends Component
     ];
 
     public function mount(
-        PromotionDiscountBreakdown $breakdown,
+        array|PromotionDiscountBreakdown $breakdown,
         float $subtotal = 0,
         ?float $shippingFee = null,
         bool $showFreeGifts = true,
@@ -36,7 +36,7 @@ class OrderSummary extends Component
         bool $showShipping = true,
         string $theme = "light"
     ): void {
-        $this->breakdown = $breakdown;
+        $this->breakdown = $breakdown instanceof PromotionDiscountBreakdown ? $breakdown->toArray() : $breakdown;
         $this->subtotal = $subtotal;
         $this->shippingFee = $shippingFee;
         $this->showFreeGifts = $showFreeGifts;
