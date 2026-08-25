@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\OrderPdfController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\Storefront\AccountController;
+use App\Http\Controllers\Storefront\AddressController;
 use App\Http\Controllers\Storefront\AuthController;
 use App\Http\Controllers\Storefront\BannerClickController;
 use App\Http\Controllers\Storefront\BlogController;
@@ -12,14 +13,22 @@ use App\Http\Controllers\Storefront\FeedController;
 use App\Http\Controllers\Storefront\HomepageController;
 use App\Http\Controllers\Storefront\LandingPageController;
 use App\Http\Controllers\Storefront\NewsletterController;
+use App\Http\Controllers\Storefront\NotificationPreferenceController;
 use App\Http\Controllers\Storefront\OrderTrackingController;
 use App\Http\Controllers\Storefront\PageController;
+use App\Http\Controllers\Storefront\PrivacyController;
+use App\Http\Controllers\Storefront\ProfileController;
+use App\Http\Controllers\Storefront\ReferralController;
+use App\Http\Controllers\Storefront\SessionController;
 use App\Livewire\WishlistPage;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomepageController::class, 'index'])->name('home');
 Route::view('/about', 'storefront.pages.about')->name('about');
 Route::view('/contact', 'storefront.pages.contact')->name('contact');
+
+// Fallback login route for auth middleware
+Route::get('/login', fn () => redirect()->route('account.login'))->name('login');
 
 // Blog & Knowledge Hub
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
@@ -30,8 +39,8 @@ Route::get('/products', [CatalogController::class, 'index'])->name('products.ind
 Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');
 
 // Checkout
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store')->middleware('throttle:checkout');
+Route::get('/checkout', \App\Livewire\CheckoutFlow::class)->name('checkout.index');
+Route::post('/checkout', \App\Livewire\CheckoutFlow::class)->name('checkout.store')->middleware('throttle:checkout');
 Route::get('/checkout/success/{order_number}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Order Tracking
@@ -53,6 +62,10 @@ Route::prefix('account')->name('account.')->group(function () {
         Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:5,1');
         Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
         Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
+        // Two-Factor Authentication Challenge (after successful password auth)
+        Route::get('/2fa/challenge', [AuthController::class, 'showTwoFactorChallenge'])->name('2fa.challenge');
+        Route::post('/2fa/verify', [AuthController::class, 'verifyTwoFactor'])->name('2fa.verify')->middleware('throttle:10,1');
     });
 
     Route::middleware(['auth:customer', 'concurrent.sessions'])->group(function () {
@@ -63,6 +76,45 @@ Route::prefix('account')->name('account.')->group(function () {
         Route::get('/wishlist', WishlistPage::class)->name('wishlist');
         Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store'])->name('products.reviews.store');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+        // Profile Management
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
+        Route::delete('/profile', [ProfileController::class, 'deleteAccount'])->name('profile.delete');
+
+        // Address Management
+        Route::get('/addresses', [AddressController::class, 'index'])->name('addresses');
+        Route::get('/addresses/create', [AddressController::class, 'create'])->name('addresses.create');
+        Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
+        Route::get('/addresses/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit');
+        Route::put('/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
+        Route::delete('/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
+        Route::put('/addresses/{address}/default', [AddressController::class, 'setDefault'])->name('addresses.default');
+
+        // Two-Factor Authentication Management
+        Route::get('/two-factor', [ProfileController::class, 'showTwoFactor'])->name('two-factor');
+        Route::post('/two-factor/enable', [ProfileController::class, 'enableTwoFactor'])->name('two-factor.enable')->middleware('throttle:5,1');
+        Route::post('/two-factor/disable', [ProfileController::class, 'disableTwoFactor'])->name('two-factor.disable')->middleware('throttle:5,1');
+        Route::post('/two-factor/regenerate-recovery-codes', [ProfileController::class, 'regenerateRecoveryCodes'])->name('two-factor.regenerate-recovery-codes')->middleware('throttle:5,1');
+
+        // Session Management
+        Route::get('/sessions', [SessionController::class, 'index'])->name('sessions');
+        Route::delete('/sessions/{sessionId}', [SessionController::class, 'destroy'])->name('sessions.destroy');
+        Route::delete('/sessions', [SessionController::class, 'destroyAll'])->name('sessions.destroy-all');
+
+        // Notification Preferences
+        Route::get('/notifications', [NotificationPreferenceController::class, 'index'])->name('notifications');
+        Route::put('/notifications', [NotificationPreferenceController::class, 'update'])->name('notifications.update');
+
+        // Referral & Loyalty
+        Route::get('/referrals', [ReferralController::class, 'index'])->name('referrals');
+        Route::get('/referrals/share', [ReferralController::class, 'share'])->name('referrals.share');
+
+        // Privacy & GDPR
+        Route::get('/privacy', [PrivacyController::class, 'index'])->name('privacy');
+        Route::get('/privacy/export', [PrivacyController::class, 'exportData'])->name('privacy.export');
+        Route::delete('/privacy', [PrivacyController::class, 'deleteAccount'])->name('privacy.delete');
     });
 });
 

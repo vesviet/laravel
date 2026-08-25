@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\CustomerAddress;
+use App\Models\CustomerAuditLog;
 
 class Customer extends Authenticatable
 {
@@ -18,6 +20,19 @@ class Customer extends Authenticatable
         'status',
         'failed_login_attempts',
         'locked_until',
+        'avatar',
+        'date_of_birth',
+        'gender',
+        'referral_code',
+        'referred_by',
+        'loyalty_points',
+        'email_verified_at',
+        'notification_preferences',
+        'privacy_consent',
+        'two_factor_enabled',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
         // [I-09] stripe_customer_id is NOT included — Stripe package not yet integrated.
         // Add back only when Stripe integration is approved via ADR and migration adds the column.
         // 'stripe_customer_id',
@@ -26,12 +41,21 @@ class Customer extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     protected $casts = [
         'password' => 'hashed',
         'locked_until' => 'datetime',
         'active_sessions' => 'array',
+        'date_of_birth' => 'date',
+        'email_verified_at' => 'datetime',
+        'notification_preferences' => 'array',
+        'privacy_consent' => 'array',
+        'two_factor_enabled' => 'boolean',
+        'two_factor_confirmed_at' => 'datetime',
+        'two_factor_recovery_codes' => 'array',
     ];
 
     public function orders()
@@ -47,6 +71,54 @@ class Customer extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(ProductReview::class);
+    }
+
+    /**
+     * Customer addresses relationship.
+     */
+    public function addresses()
+    {
+        return $this->hasMany(CustomerAddress::class);
+    }
+
+    /**
+     * Default shipping address.
+     */
+    public function defaultShippingAddress()
+    {
+        return $this->hasOne(CustomerAddress::class)->where('type', 'shipping')->where('is_default', true);
+    }
+
+    /**
+     * Default billing address.
+     */
+    public function defaultBillingAddress()
+    {
+        return $this->hasOne(CustomerAddress::class)->where('type', 'billing')->where('is_default', true);
+    }
+
+    /**
+     * Referrer relationship (who referred this customer).
+     */
+    public function referrer()
+    {
+        return $this->belongsTo(Customer::class, 'referred_by');
+    }
+
+    /**
+     * Referrals relationship (customers this customer referred).
+     */
+    public function referrals()
+    {
+        return $this->hasMany(Customer::class, 'referred_by');
+    }
+
+    /**
+     * Audit logs relationship.
+     */
+    public function auditLogs()
+    {
+        return $this->hasMany(CustomerAuditLog::class);
     }
 
     /**

@@ -13,6 +13,11 @@
             <form action="{{ url('/account/register') }}" method="POST" class="space-y-6">
                 @csrf
 
+                {{-- Referral Code (hidden) --}}
+                @if(request()->has('ref'))
+                    <input type="hidden" name="ref" value="{{ request()->query('ref') }}">
+                @endif
+
                 {{-- Name --}}
                 <div>
                     <label for="name" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
