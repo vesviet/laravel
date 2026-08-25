@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: '[ADR-S4] Enforce ADR-S2: DB::transaction only in app/Actions/'
         run: |
@@ -138,10 +138,10 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
         with:
           php-version: '8.4'
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
@@ -166,10 +166,10 @@ jobs:
       packages: write
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -177,12 +177,12 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
         with:
           context: .
           file: docker/php/Dockerfile.prod
@@ -190,15 +190,22 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      - name: Generate SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+          format: spdx-json
+          output-file: sbom.spdx.json
+
   deploy:
     name: Deploy to Homelab
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux, x64]
     environment: production
     needs: build
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup Environment Variables
         run: |
@@ -227,6 +234,11 @@ jobs:
 
       - name: Deploy with Docker Compose
         run: docker compose -f docker-compose.prod.yml up -d
+
+      - name: Backup Database before Migration
+        run: |
+          echo "Dumping database before migration for rollback safety..."
+          docker compose -f docker-compose.prod.yml exec -T db mysqldump -u${{ secrets.DB_USERNAME || 'laravel' }} -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_DATABASE || 'laravel' }} > backup_before_migrate.sql || true
 
       - name: Run Database Migrations
         run: docker compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
