@@ -264,3 +264,14 @@ jobs:
             exit 1
           fi
           echo "Health check passed!"
+
+      - name: Rollback Database on Failure
+        if: failure()
+        run: |
+          echo "Deployment failed! Rolling back database..."
+          if [ -f "backup_before_migrate.sql" ]; then
+            docker compose -f docker-compose.prod.yml exec -T db mysql -u${{ secrets.DB_USERNAME || 'laravel' }} -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_DATABASE || 'laravel' }} < backup_before_migrate.sql
+            echo "Database rollback complete."
+          else
+            echo "No database backup found, skipping database rollback."
+          fi
