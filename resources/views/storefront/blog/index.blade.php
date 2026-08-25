@@ -17,22 +17,22 @@
 @endpushonce
 
 @section('content')
-<div class="bg-[#F0F0F0] py-8 md:py-12 border-b border-[#E5E5E5]">
+<div class="bg-surface-bg py-8 md:py-12 border-b border-border-subtle">
     <div class="section-wrapper">
         {{-- Breadcrumbs --}}
-        <nav class="flex items-center gap-2 text-xs text-[#888888] font-light mb-6 uppercase tracking-wider" aria-label="Breadcrumb">
-            <a href="{{ route('home') }}" class="hover:text-[#23232C] transition-colors">Trang Chủ</a>
+        <nav class="flex items-center gap-2 text-xs text-muted-text font-light mb-6 uppercase tracking-wider" aria-label="Breadcrumb">
+            <a href="{{ route('home') }}" class="hover:text-primary-dark transition-colors">Trang Chủ</a>
             <span>/</span>
-            <span class="text-[#23232C] font-normal">Blog &amp; Kiến Thức</span>
+            <span class="text-primary-dark font-normal">Blog &amp; Kiến Thức</span>
         </nav>
 
         {{-- Section Hero Header --}}
         <div class="max-w-3xl">
-            <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#888888] mb-2">Editorial & Knowledge Hub</p>
-            <h1 class="text-3xl md:text-5xl font-light text-[#23232C] leading-tight mb-4">
+            <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-muted-text mb-2">Editorial & Knowledge Hub</p>
+            <h1 class="text-3xl md:text-5xl font-light text-primary-dark leading-tight mb-4">
                 Blog &amp; Kiến Thức Nội Thất
             </h1>
-            <p class="text-sm md:text-base text-[#888888] font-light leading-relaxed">
+            <p class="text-sm md:text-base text-muted-text font-light leading-relaxed">
                 Khám phá xu hướng thiết kế, nghệ thuật bài trí không gian sống và cẩm nang bảo quản nội thất chuẩn Scandinavian.
             </p>
         </div>
@@ -41,11 +41,11 @@
 
 <div class="section-wrapper py-10 md:py-16">
     {{-- Filter & Search Bar --}}
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-[#E5E5E5] mb-10">
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-border-subtle mb-10">
         {{-- Category Pills --}}
         <div class="flex flex-wrap items-center gap-2">
             <a href="{{ route('blog.index', array_filter(['search' => request('search')])) }}"
-               class="px-4 py-2 text-xs font-medium uppercase tracking-[0.15em] border transition-all duration-200 {{ !request('category') ? 'bg-[#23232C] text-white border-[#23232C]' : 'bg-white text-[#23232C] border-[#E5E5E5] hover:border-[#23232C]' }}">
+               class="px-4 py-2 text-xs font-medium uppercase tracking-[0.15em] border transition-all duration-200 {{ !request('category') ? 'bg-primary-dark text-white border-primary-dark' : 'bg-white text-primary-dark border-border-subtle hover:border-primary-dark' }}">
                 Tất Cả
             </a>
             @foreach($categories as $cat)
@@ -53,7 +53,7 @@
                     $isActive = request('category') === $cat->slug || request('category') === (string)$cat->id;
                 @endphp
                 <a href="{{ route('blog.index', array_merge(array_filter(['search' => request('search')]), ['category' => $cat->slug])) }}"
-                   class="px-4 py-2 text-xs font-medium uppercase tracking-[0.15em] border transition-all duration-200 flex items-center gap-1.5 {{ $isActive ? 'bg-[#23232C] text-white border-[#23232C]' : 'bg-white text-[#23232C] border-[#E5E5E5] hover:border-[#23232C]' }}">
+                   class="px-4 py-2 text-xs font-medium uppercase tracking-[0.15em] border transition-all duration-200 flex items-center gap-1.5 {{ $isActive ? 'bg-primary-dark text-white border-primary-dark' : 'bg-white text-primary-dark border-border-subtle hover:border-primary-dark' }}">
                     <span>{{ $cat->name }}</span>
                     <span class="text-[10px] opacity-70">({{ $cat->posts_count }})</span>
                 </a>
@@ -70,18 +70,16 @@
                        name="search"
                        value="{{ request('search') }}"
                        placeholder="Tìm kiếm bài viết..."
-                       class="w-full bg-white border border-[#E5E5E5] px-4 py-2 pr-10 text-xs font-light text-[#23232C] placeholder-[#888888] focus:outline-none focus:border-[#23232C]">
+                       class="w-full bg-white border border-border-subtle px-4 py-2 pr-10 text-xs font-light text-primary-dark placeholder-muted-text focus:outline-none focus:border-primary-dark">
                 <button type="submit"
-                        class="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-[#888888] hover:text-[#23232C]"
+                        class="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-muted-text hover:text-primary-dark"
                         aria-label="Tìm kiếm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                    </svg>
+                    <x-icons.search class="w-4 h-4" />
                 </button>
             </div>
             @if(request('search') || request('category'))
                 <a href="{{ route('blog.index') }}"
-                   class="shrink-0 px-3 py-2 text-xs text-[#888888] hover:text-[#23232C] border border-[#E5E5E5] bg-white transition-colors"
+                   class="shrink-0 px-3 py-2 text-xs text-muted-text hover:text-primary-dark border border-border-subtle bg-white transition-colors"
                    title="Xóa bộ lọc">
                     ✕
                 </a>
@@ -92,7 +90,7 @@
     {{-- Featured Hero Article (Only on page 1 without active search) --}}
     @if($featuredPost && !request('search') && (!request('page') || request('page') == 1))
         <section class="mb-14" aria-label="Bài viết nổi bật">
-            <div class="bg-white border border-[#E5E5E5] overflow-hidden group grid grid-cols-1 lg:grid-cols-12 gap-0">
+            <div class="bg-white border border-border-subtle overflow-hidden group grid grid-cols-1 lg:grid-cols-12 gap-0">
                 <div class="lg:col-span-7 relative aspect-[16/10] lg:aspect-auto overflow-hidden bg-[#E8E4DF]">
                     <a href="{{ route('blog.show', $featuredPost->slug) }}" class="block w-full h-full">
                         @if($featuredPost->featured_image_url)
@@ -107,7 +105,7 @@
                                 </svg>
                             </div>
                         @endif
-                        <span class="absolute top-4 left-4 z-10 px-3 py-1 bg-[#23232C] text-white text-[9px] font-semibold tracking-[0.2em] uppercase">
+                        <span class="absolute top-4 left-4 z-10 px-3 py-1 bg-primary-dark text-white text-[9px] font-semibold tracking-[0.2em] uppercase">
                             Nổi Bật
                         </span>
                     </a>
@@ -115,9 +113,9 @@
 
                 <div class="lg:col-span-5 p-8 md:p-12 flex flex-col justify-between">
                     <div>
-                        <div class="flex items-center gap-3 text-xs text-[#888888] font-light mb-3">
+                        <div class="flex items-center gap-3 text-xs text-muted-text font-light mb-3">
                             @if($featuredPost->category)
-                                <span class="font-medium text-[#23232C] uppercase tracking-wider text-[10px]">
+                                <span class="font-medium text-primary-dark uppercase tracking-wider text-[10px]">
                                     {{ $featuredPost->category->name }}
                                 </span>
                                 <span>•</span>
@@ -127,25 +125,25 @@
                             <span>{{ $featuredPost->reading_time_minutes }} phút đọc</span>
                         </div>
 
-                        <h2 class="text-2xl md:text-3xl font-light text-[#23232C] leading-snug mb-4">
+                        <h2 class="text-2xl md:text-3xl font-light text-primary-dark leading-snug mb-4">
                             <a href="{{ route('blog.show', $featuredPost->slug) }}" class="group-hover:text-[#666666] transition-colors">
                                 {{ $featuredPost->title }}
                             </a>
                         </h2>
 
-                        <p class="text-sm text-[#888888] font-light leading-relaxed line-clamp-3 mb-6">
+                        <p class="text-sm text-muted-text font-light leading-relaxed line-clamp-3 mb-6">
                             {{ $featuredPost->excerpt ?: Str::limit(strip_tags($featuredPost->body), 180) }}
                         </p>
                     </div>
 
-                    <div class="pt-6 border-t border-[#E5E5E5] flex items-center justify-between">
+                    <div class="pt-6 border-t border-border-subtle flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-medium text-[#23232C]">
+                            <span class="text-xs font-medium text-primary-dark">
                                 {{ $featuredPost->author?->name ?? 'MYSHOP Editorial' }}
                             </span>
                         </div>
                         <a href="{{ route('blog.show', $featuredPost->slug) }}"
-                           class="text-xs font-semibold uppercase tracking-[0.15em] text-[#23232C] group-hover:underline flex items-center gap-1">
+                           class="text-xs font-semibold uppercase tracking-[0.15em] text-primary-dark group-hover:underline flex items-center gap-1">
                             <span>Đọc Bài Viết</span>
                             <span>&rarr;</span>
                         </a>
@@ -159,7 +157,7 @@
     @if($posts->isNotEmpty())
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($posts as $post)
-                <article class="bg-white border border-[#E5E5E5] flex flex-col group hover:shadow-md transition-shadow duration-300" aria-label="{{ $post->title }}">
+                <article class="bg-white border border-border-subtle flex flex-col group hover:shadow-md transition-shadow duration-300" aria-label="{{ $post->title }}">
                     {{-- Thumbnail Frame (16:9) --}}
                     <div class="relative aspect-[16/9] overflow-hidden bg-[#E8E4DF]">
                         <a href="{{ route('blog.show', $post->slug) }}" class="block w-full h-full">
@@ -177,7 +175,7 @@
                             @endif
 
                             @if($post->category)
-                                <span class="absolute top-3 left-3 z-10 px-2.5 py-1 bg-white/95 text-[#23232C] text-[9px] font-semibold tracking-[0.15em] uppercase shadow-sm">
+                                <span class="absolute top-3 left-3 z-10 px-2.5 py-1 bg-white/95 text-primary-dark text-[9px] font-semibold tracking-[0.15em] uppercase shadow-sm">
                                     {{ $post->category->name }}
                                 </span>
                             @endif
@@ -187,29 +185,29 @@
                     {{-- Content Box --}}
                     <div class="p-6 flex flex-col flex-1 justify-between">
                         <div>
-                            <div class="flex items-center gap-2 text-[11px] text-[#888888] font-light mb-2.5">
+                            <div class="flex items-center gap-2 text-[11px] text-muted-text font-light mb-2.5">
                                 <span>{{ $post->published_at?->format('d/m/Y') }}</span>
                                 <span>•</span>
                                 <span>{{ $post->reading_time_minutes }} phút đọc</span>
                             </div>
 
-                            <h3 class="text-lg font-normal text-[#23232C] leading-snug mb-3 line-clamp-2">
+                            <h3 class="text-lg font-normal text-primary-dark leading-snug mb-3 line-clamp-2">
                                 <a href="{{ route('blog.show', $post->slug) }}" class="group-hover:text-[#666666] transition-colors">
                                     {{ $post->title }}
                                 </a>
                             </h3>
 
-                            <p class="text-xs text-[#888888] font-light leading-relaxed line-clamp-3 mb-6">
+                            <p class="text-xs text-muted-text font-light leading-relaxed line-clamp-3 mb-6">
                                 {{ $post->excerpt ?: Str::limit(strip_tags($post->body), 120) }}
                             </p>
                         </div>
 
-                        <div class="pt-4 border-t border-[#E5E5E5] flex items-center justify-between text-xs">
-                            <span class="text-[#888888] font-light text-[11px]">
+                        <div class="pt-4 border-t border-border-subtle flex items-center justify-between text-xs">
+                            <span class="text-muted-text font-light text-[11px]">
                                 {{ $post->author?->name ?? 'MYSHOP' }}
                             </span>
                             <a href="{{ route('blog.show', $post->slug) }}"
-                               class="font-semibold uppercase tracking-[0.15em] text-[#23232C] group-hover:underline flex items-center gap-1 text-[11px]">
+                               class="font-semibold uppercase tracking-[0.15em] text-primary-dark group-hover:underline flex items-center gap-1 text-[11px]">
                                 <span>Đọc tiếp</span>
                                 <span>&rarr;</span>
                             </a>
@@ -225,12 +223,12 @@
         </div>
     @else
         {{-- Zero-State --}}
-        <div class="text-center py-16 bg-white border border-[#E5E5E5] p-8">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-[#888888] mb-4 stroke-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="text-center py-16 bg-white border border-border-subtle p-8">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto text-muted-text mb-4 stroke-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
             </svg>
-            <h3 class="text-lg font-light text-[#23232C] mb-2">Không tìm thấy bài viết nào phù hợp với bộ lọc.</h3>
-            <p class="text-xs text-[#888888] font-light mb-6">Hãy thử tìm kiếm với từ khóa khác hoặc bỏ các tiêu chí lọc hiện tại.</p>
+            <h3 class="text-lg font-light text-primary-dark mb-2">Không tìm thấy bài viết nào phù hợp với bộ lọc.</h3>
+            <p class="text-xs text-muted-text font-light mb-6">Hãy thử tìm kiếm với từ khóa khác hoặc bỏ các tiêu chí lọc hiện tại.</p>
             <a href="{{ route('blog.index') }}" class="btn-dark inline-block">
                 Xem Tất Cả Bài Viết
             </a>

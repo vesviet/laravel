@@ -45,7 +45,8 @@
             @php $combos = $landingPage->comboRules(); @endphp
             @if(count($combos) > 0)
                 <div>
-                    <label style="display:block;margin-bottom:5px;font-weight:500;">Chọn Combo Ưu Đãi</label>
+                <fieldset style="border:none;padding:0;margin:0;">
+                    <legend style="display:block;margin-bottom:5px;font-weight:500;">Chọn Combo Ưu Đãi</legend>
                     <div style="display:flex;flex-direction:column;gap:10px;">
                         @foreach($combos as $combo)
                             <label style="display:flex;align-items:center;padding:10px;border:{{ $selectedComboId === ($combo['id'] ?? '') ? '2px solid #3b82f6' : '1px solid #d1d5db' }};border-radius:8px;cursor:pointer;background:{{ $selectedComboId === ($combo['id'] ?? '') ? '#eff6ff' : '#fff' }};">
@@ -62,15 +63,17 @@
                             </label>
                         @endforeach
                     </div>
-                    @error('selectedComboId') <span style="color:#dc2626;font-size:0.8rem;">{{ $message }}</span> @enderror
+                </fieldset>
+                @error('selectedComboId') <span style="color:#dc2626;font-size:0.8rem;">{{ $message }}</span> @enderror
                 </div>
             @endif
 
             {{-- Name --}}
             <div>
-                <label style="display:block;margin-bottom:5px;font-weight:500;">Họ và Tên <span style="color:#e11d48;">*</span></label>
+                <label for="lof-name" style="display:block;margin-bottom:5px;font-weight:500;">Họ và Tên <span style="color:#e11d48;">*</span></label>
                 <input
                     type="text"
+                    id="lof-name"
                     wire:model="name"
                     placeholder="Nguyễn Văn A"
                     style="width:100%;padding:10px;border-radius:6px;border:1px solid #d1d5db;box-sizing:border-box;"
@@ -80,9 +83,10 @@
 
             {{-- Phone --}}
             <div>
-                <label style="display:block;margin-bottom:5px;font-weight:500;">Số Điện Thoại <span style="color:#e11d48;">*</span></label>
+                <label for="lof-phone" style="display:block;margin-bottom:5px;font-weight:500;">Số Điện Thoại <span style="color:#e11d48;">*</span></label>
                 <input
                     type="tel"
+                    id="lof-phone"
                     wire:model="phone"
                     placeholder="09xxxxxxxx"
                     style="width:100%;padding:10px;border-radius:6px;border:1px solid #d1d5db;box-sizing:border-box;"
@@ -92,8 +96,9 @@
 
             {{-- Address --}}
             <div>
-                <label style="display:block;margin-bottom:5px;font-weight:500;">Địa chỉ nhận hàng <span style="color:#e11d48;">*</span></label>
+                <label for="lof-address" style="display:block;margin-bottom:5px;font-weight:500;">Địa chỉ nhận hàng <span style="color:#e11d48;">*</span></label>
                 <textarea
+                    id="lof-address"
                     wire:model="address"
                     placeholder="Số nhà, Đường, Phường, Quận, Thành phố..."
                     style="width:100%;padding:10px;border-radius:6px;border:1px solid #d1d5db;min-height:80px;box-sizing:border-box;"
@@ -103,9 +108,10 @@
 
             {{-- Note --}}
             <div>
-                <label style="display:block;margin-bottom:5px;font-weight:500;">Ghi chú <span style="color:#9ca3af;font-weight:400;">(Tùy chọn)</span></label>
+                <label for="lof-note" style="display:block;margin-bottom:5px;font-weight:500;">Ghi chú <span style="color:#9ca3af;font-weight:400;">(Tùy chọn)</span></label>
                 <input
                     type="text"
+                    id="lof-note"
                     wire:model="note"
                     placeholder="Giao giờ hành chính, gọi trước khi giao..."
                     style="width:100%;padding:10px;border-radius:6px;border:1px solid #d1d5db;box-sizing:border-box;">

@@ -21,7 +21,7 @@
     {{-- Promotion Badge (Top-Right Corner as per M4 spec) --}}
     @if($promoted)
         <div class="absolute top-2.5 right-2.5 z-10 pointer-events-none">
-            <span class="bg-[#E84444] text-white font-bold text-[10px] tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm"
+            <span class="bg-badge-hot text-white font-bold text-[10px] tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm"
                   aria-label="Khuyến mãi {{ round($promoted->discountPercentage) }}%">
                 {{ $promoted->badgeLabel ?: '-' . round($promoted->discountPercentage) . '% PROMO' }}
             </span>
@@ -34,11 +34,9 @@
             <livewire:wishlist-button :product="$product" :key="'wb-'.$product->id" />
         @else
             <a href="{{ route('account.login') }}"
-               class="p-2 rounded-full bg-white/90 hover:bg-white text-[#888888] hover:text-[#E84444] shadow-sm transition-colors flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#23232C]"
+               class="p-2 rounded-full bg-white/90 hover:bg-white text-muted-text hover:text-badge-hot shadow-sm transition-colors flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-dark"
                aria-label="Thêm {{ $product->name }} vào danh sách yêu thích">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                </svg>
+                <x-icons.heart stroke="1.75" />
             </a>
         @endauth
     </div>
@@ -75,14 +73,12 @@
             @else
                 {{-- Styled SVG Placeholder Fallback --}}
                 <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#e0dbd5] to-[#ccc6bf]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[#b0a89e] group-hover:scale-110 transition-transform duration-500 ease-out" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                    </svg>
+                    <x-icons.image-placeholder class="w-10 h-10 text-[#b0a89e] group-hover:scale-110 transition-transform duration-500 ease-out" />
                 </div>
             @endif
 
             {{-- "Xem Chi Tiết" Quick Action Hover Bar --}}
-            <div class="absolute bottom-0 inset-x-0 bg-[#23232C]/90 text-white text-[10px] font-medium tracking-[0.2em] uppercase text-center py-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+            <div class="absolute bottom-0 inset-x-0 bg-primary-dark/90 text-white text-[10px] font-medium tracking-[0.2em] uppercase text-center py-3.5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
                 Xem Chi Tiết
             </div>
         </a>
@@ -92,15 +88,15 @@
     <div class="mt-3 text-center px-1">
         {{-- Category in small uppercase tracking --}}
         @if($product->category)
-            <p class="text-[10px] font-medium text-[#888888] tracking-[0.2em] uppercase mb-1">
+            <p class="text-[10px] font-medium text-muted-text tracking-[0.2em] uppercase mb-1">
                 {{ $product->category->name }}
             </p>
         @endif
 
         {{-- Product Title in medium font with subtle hover transition --}}
-        <h3 class="text-sm font-normal md:font-medium text-[#23232C] leading-snug mb-1">
+        <h3 class="text-sm font-normal md:font-medium text-primary-dark leading-snug mb-1">
             <a href="{{ route('products.show', $product->slug) }}"
-               class="block hover:opacity-60 transition-opacity line-clamp-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#23232C] rounded-sm">
+               class="block hover:opacity-60 transition-opacity line-clamp-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-dark rounded-sm">
                 {{ $product->name }}
             </a>
         </h3>
@@ -108,7 +104,7 @@
         {{-- Formatted VND Price: Strike-Through & Promoted Price --}}
         @if($promoted)
             <div class="flex items-center justify-center gap-2">
-                <span class="text-sm font-bold text-[#E84444]">
+                <span class="text-sm font-bold text-badge-hot">
                     {{ number_format($promoted->promotedPrice, 0, ',', '.') }}₫
                 </span>
                 <span class="line-through text-gray-400 text-xs sm:text-sm">
@@ -116,7 +112,7 @@
                 </span>
             </div>
         @else
-            <p class="text-sm font-medium text-[#23232C]">
+            <p class="text-sm font-medium text-primary-dark">
                 {{ number_format($product->price, 0, ',', '.') }}₫
             </p>
         @endif

@@ -102,7 +102,7 @@
     @mouseleave="resume()"
     @focusin="pause()"
     @focusout="resume()"
-    class="relative overflow-hidden w-full bg-[#F0F0F0]"
+    class="relative overflow-hidden w-full bg-surface-bg"
     style="height: clamp(450px, 55vw, 650px);"
     wire:ignore
     role="region"
@@ -135,27 +135,27 @@
                     <p
                         x-text="slide.eyebrow"
                         class="text-xs font-semibold tracking-[0.2em] uppercase mb-2"
-                        :class="slide.textDark ? 'text-[#23232C]' : 'text-white/80'"
+                        :class="slide.textDark ? 'text-primary-dark' : 'text-white/80'"
                     ></p>
 
                     {{-- Main Headline --}}
                     <h1
                         x-text="slide.heading"
                         class="text-4xl md:text-6xl font-light tracking-wide mb-3 leading-[1.1]"
-                        :class="slide.textDark ? 'text-[#23232C]' : 'text-white'"
+                        :class="slide.textDark ? 'text-primary-dark' : 'text-white'"
                     ></h1>
 
                     {{-- Decorative horizontal divider --}}
                     <div
                         class="w-8 h-[2px] mb-4 transition-colors"
-                        :class="slide.textDark ? 'bg-[#23232C]' : 'bg-white/80'"
+                        :class="slide.textDark ? 'bg-primary-dark' : 'bg-white/80'"
                     ></div>
 
                     {{-- Subtitle --}}
                     <p
                         x-text="slide.sub"
                         class="text-xs md:text-sm mb-6 leading-relaxed font-light max-w-md"
-                        :class="slide.textDark ? 'text-[#888888]' : 'text-white/70'"
+                        :class="slide.textDark ? 'text-muted-text' : 'text-white/70'"
                     ></p>
 
                     {{-- Underline CTA link --}}
@@ -164,8 +164,8 @@
                             :href="slide.link"
                             :target="slide.open_in_new_tab ? '_blank' : '_self'"
                             :rel="slide.open_in_new_tab ? 'noopener noreferrer' : ''"
-                            class="link-underline text-xs tracking-[0.2em] uppercase font-medium focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
-                            :class="slide.textDark ? 'text-[#23232C]' : 'text-white border-white'"
+                            class="link-underline text-xs tracking-[0.2em] uppercase font-medium focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
+                            :class="slide.textDark ? 'text-primary-dark' : 'text-white border-white'"
                             x-text="slide.cta"
                         ></a>
                         <span x-show="slide.open_in_new_tab" class="sr-only">(mở trong tab mới)</span>
@@ -180,7 +180,7 @@
         <template x-for="(slide, i) in slides" :key="i">
             <button
                 @click="current = i"
-                class="min-w-[24px] min-h-[24px] p-1 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none rounded"
+                class="min-w-[24px] min-h-[24px] p-1 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none rounded"
                 :aria-label="`Slide ${i + 1}`"
                 :aria-selected="current === i"
                 :tabindex="current === i ? 0 : -1"
@@ -188,7 +188,7 @@
             >
                 <span
                     class="h-1.5 rounded-full transition-all duration-300 block"
-                    :class="current === i ? 'bg-[#23232C] w-6' : 'bg-[#23232C]/30 w-1.5 hover:bg-[#23232C]/60'"
+                    :class="current === i ? 'bg-primary-dark w-6' : 'bg-primary-dark/30 w-1.5 hover:bg-primary-dark/60'"
                 ></span>
             </button>
         </template>
@@ -197,7 +197,7 @@
     {{-- Prev Arrow Button --}}
     <button
         @click="prev()"
-        class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white text-[#23232C] shadow-sm transition-all z-20 hover:scale-105 focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+        class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white text-primary-dark shadow-sm transition-all z-20 hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
         aria-label="Slide trước"
     >
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -208,7 +208,7 @@
     {{-- Next Arrow Button --}}
     <button
         @click="next()"
-        class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white text-[#23232C] shadow-sm transition-all z-20 hover:scale-105 focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+        class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white text-primary-dark shadow-sm transition-all z-20 hover:scale-105 focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
         aria-label="Slide tiếp theo"
     >
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">

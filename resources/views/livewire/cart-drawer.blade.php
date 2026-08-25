@@ -39,13 +39,13 @@
         <div class="w-screen max-w-[440px] pointer-events-auto flex flex-col bg-white h-full shadow-2xl">
 
             {{-- ── Header ── --}}
-            <div class="flex items-center justify-between px-6 py-5 border-b border-[#E5E5E5] bg-white shrink-0">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-border-subtle bg-white shrink-0">
                 <div class="flex items-center gap-2">
-                    <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-[#23232C]" id="cart-drawer-title">
+                    <h2 class="text-sm font-semibold tracking-[0.15em] uppercase text-primary-dark" id="cart-drawer-title">
                         Giỏ Hàng
                     </h2>
                     @if(!empty($cartItems))
-                        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-[#F0F0F0] text-[#23232C]">
+                        <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-bg text-primary-dark">
                             {{ $this->totalQuantity }}
                         </span>
                     @endif
@@ -57,7 +57,7 @@
                             type="button"
                             wire:click="clearCart"
                             wire:confirm="Bạn có chắc chắn muốn làm trống giỏ hàng?"
-                            class="text-[10px] tracking-[0.1em] uppercase text-[#888888] hover:text-[#E84444] transition-colors px-2 py-1"
+                            class="text-[10px] tracking-[0.1em] uppercase text-muted-text hover:text-badge-hot transition-colors px-2 py-1"
                             aria-label="Làm trống giỏ hàng"
                         >
                             Xoá hết
@@ -67,12 +67,10 @@
                     <button
                         type="button"
                         wire:click="closeCart"
-                        class="w-8 h-8 flex items-center justify-center text-[#888888] hover:text-[#23232C] transition-colors rounded-full hover:bg-[#F0F0F0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#23232C]"
+                        class="w-8 h-8 flex items-center justify-center text-muted-text hover:text-primary-dark transition-colors rounded-full hover:bg-surface-bg focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-dark"
                         aria-label="Đóng giỏ hàng"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <x-icons.close class="w-5 h-5" />
                     </button>
                 </div>
             </div>
@@ -80,11 +78,11 @@
             {{-- ── Smart Nudge Progress Bar (Prominently at Top) ── --}}
             @if(!empty($cartItems) && $this->smartNudge)
                 @php $nudge = $this->smartNudge; @endphp
-                <div class="px-6 py-3.5 border-b border-[#E5E5E5] bg-[#FBF9F6] shrink-0">
+                <div class="px-6 py-3.5 border-b border-border-subtle bg-[#FBF9F6] shrink-0">
                     <div class="flex items-center justify-between gap-2 mb-2">
-                        <div class="flex items-center gap-1.5 text-xs font-medium text-[#23232C]">
+                        <div class="flex items-center gap-1.5 text-xs font-medium text-primary-dark">
                             @if($nudge['icon'] === 'truck')
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#23232C] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary-dark shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.25V4.125C14.25 3.504 13.746 3 13.125 3H3.375C2.754 3 2.25 3.504 2.25 4.125v10.125c0 .621.504 1.125 1.125 1.125h1.5" />
                                 </svg>
                             @else
@@ -94,15 +92,15 @@
                             @endif
                             <span class="leading-tight">{{ $nudge['message'] }}</span>
                         </div>
-                        <span class="text-[10px] font-bold tracking-wider uppercase shrink-0 {{ $nudge['is_completed'] ? 'text-emerald-700' : 'text-[#888888]' }}">
+                        <span class="text-[10px] font-bold tracking-wider uppercase shrink-0 {{ $nudge['is_completed'] ? 'text-emerald-700' : 'text-muted-text' }}">
                             {{ $nudge['badge'] }}
                         </span>
                     </div>
 
                     {{-- Animated Progress Track --}}
-                    <div class="w-full bg-[#E5E5E5] h-2 rounded-full overflow-hidden relative shadow-inner">
+                    <div class="w-full bg-border-subtle h-2 rounded-full overflow-hidden relative shadow-inner">
                         <div
-                            class="h-full rounded-full transition-all duration-700 ease-out {{ $nudge['is_completed'] ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-[#23232C] via-[#4A4A5A] to-[#23232C]' }}"
+                            class="h-full rounded-full transition-all duration-700 ease-out {{ $nudge['is_completed'] ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-primary-dark via-[#4A4A5A] to-primary-dark' }}"
                             style="width: {{ $nudge['progress_percent'] }}%;"
                         ></div>
                     </div>
@@ -110,27 +108,25 @@
             @endif
 
             {{-- ── Cart Items (Scrollable Body) ── --}}
-            <div class="flex-1 overflow-y-auto px-6 py-2 divide-y divide-[#E5E5E5]">
+            <div class="flex-1 overflow-y-auto px-6 py-2 divide-y divide-border-subtle">
                 @if(!empty($cartItems))
-                    <ul role="list" aria-live="polite" aria-label="Danh sách sản phẩm trong giỏ hàng" class="divide-y divide-[#E5E5E5]">
+                    <ul role="list" aria-live="polite" aria-label="Danh sách sản phẩm trong giỏ hàng" class="divide-y divide-border-subtle">
                         @foreach($cartItems as $item)
                             <li class="py-4 flex items-start gap-4" wire:key="cart-item-{{ $item['product_id'] }}-{{ $item['product_variant_id'] ?? 0 }}">
 
                                 {{-- Product Thumbnail --}}
-                                <div class="w-16 h-16 flex-shrink-0 bg-[#E8E4DF] rounded-sm overflow-hidden flex items-center justify-center relative border border-[#E5E5E5]">
+                                <div class="w-16 h-16 flex-shrink-0 bg-[#E8E4DF] rounded-sm overflow-hidden flex items-center justify-center relative border border-border-subtle">
                                     @if(!empty($item['image_path']))
                                         <img src="{{ $item['image_path'] }}"
                                              alt="{{ $item['product_name'] }}"
                                              class="w-full h-full object-cover"
                                              loading="lazy">
                                     @else
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-[#888888]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                                        </svg>
+                                        <x-icons.image-placeholder class="w-6 h-6 text-muted-text" />
                                     @endif
 
                                     @if(!empty($item['is_flash_sale']))
-                                        <span class="absolute top-0 left-0 bg-[#E84444] text-white text-[8px] font-bold px-1 py-0.2 uppercase tracking-tight">
+                                        <span class="absolute top-0 left-0 bg-badge-hot text-white text-[8px] font-bold px-1 py-0.2 uppercase tracking-tight">
                                             FLASH SALE
                                         </span>
                                     @endif
@@ -139,42 +135,42 @@
                                 {{-- Info & Controls --}}
                                 <div class="flex-1 min-w-0 flex flex-col gap-1">
                                     <a href="{{ route('products.show', $item['slug'] ?? '#') }}"
-                                       class="text-sm font-medium text-[#23232C] hover:text-[#888888] transition-colors line-clamp-1 leading-snug">
+                                       class="text-sm font-medium text-primary-dark hover:text-muted-text transition-colors line-clamp-1 leading-snug">
                                         {{ $item['product_name'] }}
                                     </a>
 
                                     @if(!empty($item['variant_name']))
-                                        <p class="text-xs text-[#888888] font-light">Phân loại: {{ $item['variant_name'] }}</p>
+                                        <p class="text-xs text-muted-text font-light">Phân loại: {{ $item['variant_name'] }}</p>
                                     @endif
 
                                     <div class="flex items-baseline gap-2">
-                                        <span class="text-xs font-medium text-[#23232C]">
+                                        <span class="text-xs font-medium text-primary-dark">
                                             {{ number_format($item['price'], 0, ',', '.') }}₫
                                         </span>
                                     </div>
 
                                     {{-- Quantity buttons & Delete action --}}
                                     <div class="flex items-center gap-3 mt-1.5">
-                                        <div class="flex items-center border border-[#E5E5E5] rounded-sm bg-white">
+                                        <div class="flex items-center border border-border-subtle rounded-sm bg-white">
                                             <button
                                                 type="button"
                                                 wire:click="updateQuantity({{ $item['product_id'] }}, {{ $item['product_variant_id'] ?? 'null' }}, {{ max(1, $item['quantity'] - 1) }})"
                                                 wire:loading.attr="disabled"
-                                                class="w-6 h-6 flex items-center justify-center text-[#888888] hover:text-[#23232C] transition-colors focus:outline-none disabled:opacity-50"
+                                                class="w-6 h-6 flex items-center justify-center text-muted-text hover:text-primary-dark transition-colors focus:outline-none disabled:opacity-50"
                                                 aria-label="Giảm số lượng"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4" />
                                                 </svg>
                                             </button>
-                                            <span class="w-7 text-center text-xs font-medium text-[#23232C]" aria-live="polite">
+                                            <span class="w-7 text-center text-xs font-medium text-primary-dark" aria-live="polite">
                                                 {{ $item['quantity'] }}
                                             </span>
                                             <button
                                                 type="button"
                                                 wire:click="updateQuantity({{ $item['product_id'] }}, {{ $item['product_variant_id'] ?? 'null' }}, {{ $item['quantity'] + 1 }})"
                                                 wire:loading.attr="disabled"
-                                                class="w-6 h-6 flex items-center justify-center text-[#888888] hover:text-[#23232C] transition-colors focus:outline-none disabled:opacity-50"
+                                                class="w-6 h-6 flex items-center justify-center text-muted-text hover:text-primary-dark transition-colors focus:outline-none disabled:opacity-50"
                                                 aria-label="Tăng số lượng"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -187,7 +183,7 @@
                                             type="button"
                                             wire:click="removeItem({{ $item['product_id'] }}, {{ $item['product_variant_id'] ?? 'null' }})"
                                             wire:loading.attr="disabled"
-                                            class="text-[10px] tracking-[0.1em] uppercase text-[#888888] hover:text-[#E84444] transition-colors focus:outline-none"
+                                            class="text-[10px] tracking-[0.1em] uppercase text-muted-text hover:text-badge-hot transition-colors focus:outline-none"
                                             aria-label="Xoá sản phẩm khỏi giỏ"
                                         >
                                             Xoá
@@ -197,7 +193,7 @@
 
                                 {{-- Line Total --}}
                                 <div class="text-right shrink-0">
-                                    <span class="text-sm font-semibold text-[#23232C]">
+                                    <span class="text-sm font-semibold text-primary-dark">
                                         {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}₫
                                     </span>
                                 </div>
@@ -207,13 +203,11 @@
                 @else
                     {{-- Empty Cart State --}}
                     <div class="flex flex-col items-center justify-center h-full py-20 text-center" role="status">
-                        <div class="w-16 h-16 rounded-full bg-[#F0F0F0] flex items-center justify-center mb-4 text-[#888888]">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.25">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
-                            </svg>
+                        <div class="w-16 h-16 rounded-full bg-surface-bg flex items-center justify-center mb-4 text-muted-text">
+                            <x-icons.shopping-bag class="w-8 h-8" stroke="1.25" />
                         </div>
-                        <p class="text-sm font-medium text-[#23232C] mb-1">Giỏ hàng của bạn đang trống</p>
-                        <p class="text-xs text-[#888888] mb-6 font-light">Hãy khám phá các sản phẩm nội thất tinh tế của chúng tôi</p>
+                        <p class="text-sm font-medium text-primary-dark mb-1">Giỏ hàng của bạn đang trống</p>
+                        <p class="text-xs text-muted-text mb-6 font-light">Hãy khám phá các sản phẩm nội thất tinh tế của chúng tôi</p>
                         <button
                             type="button"
                             wire:click="closeCart"
@@ -227,19 +221,19 @@
 
             {{-- ── 1-Click Available Coupons Tray (Interactive Collapsible) ── --}}
             @if(!empty($cartItems))
-                <div class="border-t border-[#E5E5E5] bg-[#FAF8F5] px-6 py-3 shrink-0">
+                <div class="border-t border-border-subtle bg-[#FAF8F5] px-6 py-3 shrink-0">
                     <div class="flex items-center justify-between">
                         <button
                             type="button"
                             wire:click="toggleCouponsTray"
-                            class="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-[#23232C] hover:opacity-80 transition-opacity"
+                            class="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-primary-dark hover:opacity-80 transition-opacity"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#23232C]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-primary-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
                             </svg>
                             <span>Mã Ưu Đãi & Voucher</span>
                             @if($this->availableCoupons->isNotEmpty())
-                                <span class="bg-[#23232C] text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full">
+                                <span class="bg-primary-dark text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full">
                                     {{ $this->availableCoupons->count() }}
                                 </span>
                             @endif
@@ -248,7 +242,7 @@
                         <button
                             type="button"
                             wire:click="toggleCouponsTray"
-                            class="text-xs text-[#888888] hover:text-[#23232C] flex items-center gap-1 transition-transform duration-200"
+                            class="text-xs text-muted-text hover:text-primary-dark flex items-center gap-1 transition-transform duration-200"
                         >
                             <span class="text-[10px] uppercase tracking-widest">{{ $isCouponsTrayOpen ? 'Thu gọn' : 'Xem mã' }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 transform transition-transform {{ $isCouponsTrayOpen ? 'rotate-180' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -263,7 +257,8 @@
                             type="text"
                             wire:model.defer="couponCode"
                             placeholder="Nhập mã ưu đãi..."
-                            class="flex-1 text-xs border border-[#E5E5E5] px-3 py-2 uppercase tracking-wider rounded-sm bg-white text-[#23232C] placeholder-[#888888] focus:outline-none focus:border-[#23232C]"
+                            aria-label="Mã ưu đãi"
+                            class="flex-1 text-xs border border-border-subtle px-3 py-2 uppercase tracking-wider rounded-sm bg-white text-primary-dark placeholder-muted-text focus:outline-none focus:border-primary-dark"
                         />
                         <button
                             type="button"
@@ -278,7 +273,7 @@
 
                     {{-- Alert Messages --}}
                     @if($couponError)
-                        <p class="text-[11px] text-[#E84444] mt-1.5 font-medium flex items-center gap-1">
+                        <p class="text-[11px] text-badge-hot mt-1.5 font-medium flex items-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
@@ -299,18 +294,18 @@
                     @if($isCouponsTrayOpen && $this->availableCoupons->isNotEmpty())
                         <div class="mt-3 space-y-2 max-h-48 overflow-y-auto pr-1">
                             @foreach($this->availableCoupons as $coupon)
-                                <div class="p-2.5 bg-white border border-[#E5E5E5] rounded-sm flex items-center justify-between gap-2 shadow-2xs hover:border-[#23232C] transition-colors"
+                                <div class="p-2.5 bg-white border border-border-subtle rounded-sm flex items-center justify-between gap-2 shadow-2xs hover:border-primary-dark transition-colors"
                                      wire:key="available-coupon-{{ $coupon->id }}">
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2">
-                                            <span class="font-mono text-[11px] font-bold px-1.5 py-0.5 bg-[#F0F0F0] text-[#23232C] border border-dashed border-[#888888] rounded">
+                                            <span class="font-mono text-[11px] font-bold px-1.5 py-0.5 bg-surface-bg text-primary-dark border border-dashed border-muted-text rounded">
                                                 {{ $coupon->code }}
                                             </span>
-                                            <span class="text-xs font-semibold text-[#23232C]">
+                                            <span class="text-xs font-semibold text-primary-dark">
                                                 {{ $coupon->formatted_discount }}
                                             </span>
                                         </div>
-                                        <p class="text-[11px] text-[#888888] mt-0.5 line-clamp-1">
+                                        <p class="text-[11px] text-muted-text mt-0.5 line-clamp-1">
                                             {{ $coupon->name }} — {{ $coupon->min_order_formatted }}
                                         </p>
                                     </div>
@@ -324,7 +319,7 @@
                                                 <button
                                                     type="button"
                                                     wire:click="removeCoupon"
-                                                    class="text-[10px] text-[#888888] hover:text-[#E84444] underline"
+                                                    class="text-[10px] text-muted-text hover:text-badge-hot underline"
                                                     title="Gỡ mã"
                                                 >
                                                     Gỡ
@@ -340,7 +335,7 @@
                                                 Áp dụng
                                             </button>
                                         @else
-                                            <span class="text-[10px] text-[#888888] bg-[#F0F0F0] px-2 py-1 rounded cursor-not-allowed" title="{{ $coupon->ineligible_reason }}">
+                                            <span class="text-[10px] text-muted-text bg-surface-bg px-2 py-1 rounded cursor-not-allowed" title="{{ $coupon->ineligible_reason }}">
                                                 {{ $coupon->ineligible_reason }}
                                             </span>
                                         @endif
@@ -354,13 +349,13 @@
 
             {{-- ── Footer: Financial Breakdown & Checkout CTA ── --}}
             @if(!empty($cartItems))
-                <div class="border-t border-[#E5E5E5] px-6 py-5 bg-white shrink-0">
+                <div class="border-t border-border-subtle px-6 py-5 bg-white shrink-0">
                     <div class="space-y-2 mb-4 text-sm">
 
                         {{-- Subtotal (Tạm tính) --}}
-                        <div class="flex justify-between items-baseline text-[#888888]">
+                        <div class="flex justify-between items-baseline text-muted-text">
                             <span class="text-xs font-light">Tạm tính</span>
-                            <span class="text-sm font-medium text-[#23232C]">
+                            <span class="text-sm font-medium text-primary-dark">
                                 {{ number_format($this->subtotal, 0, ',', '.') }}₫
                             </span>
                         </div>
@@ -396,7 +391,7 @@
                                     <button
                                         type="button"
                                         wire:click="removeCoupon"
-                                        class="text-[#888888] hover:text-[#E84444] transition-colors focus:outline-none"
+                                        class="text-muted-text hover:text-badge-hot transition-colors focus:outline-none"
                                         title="Gỡ mã giảm giá"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
@@ -408,11 +403,11 @@
                         @endif
 
                         {{-- Shipping Discount Status --}}
-                        <div class="flex justify-between items-baseline text-xs text-[#888888]">
+                        <div class="flex justify-between items-baseline text-xs text-muted-text">
                             <span>Vận chuyển</span>
                             @if($this->breakdown->shippingDiscount > 0)
                                 <div class="flex items-center gap-1.5">
-                                    <span class="line-through text-[#888888]">{{ number_format($this->estimatedShippingFee, 0, ',', '.') }}₫</span>
+                                    <span class="line-through text-muted-text">{{ number_format($this->estimatedShippingFee, 0, ',', '.') }}₫</span>
                                     <span class="text-emerald-700 font-semibold uppercase text-[10px] bg-emerald-50 border border-emerald-300 px-1.5 py-0.2 rounded">
                                         Miễn phí
                                     </span>
@@ -436,12 +431,12 @@
                         @endif
 
                         {{-- Total Net (Tổng thanh toán) --}}
-                        <div class="border-t border-[#E5E5E5] pt-3 flex justify-between items-baseline">
-                            <span class="text-xs font-semibold tracking-[0.15em] uppercase text-[#23232C]">
+                        <div class="border-t border-border-subtle pt-3 flex justify-between items-baseline">
+                            <span class="text-xs font-semibold tracking-[0.15em] uppercase text-primary-dark">
                                 Tổng Thanh Toán
                             </span>
                             <div class="text-right">
-                                <span class="text-lg font-bold text-[#23232C]" wire:loading.class="opacity-50">
+                                <span class="text-lg font-bold text-primary-dark" wire:loading.class="opacity-50">
                                     {{ number_format($this->netTotal, 0, ',', '.') }}₫
                                 </span>
                                 @if($this->totalDiscount > 0)
@@ -462,7 +457,7 @@
                     <button
                         type="button"
                         wire:click="closeCart"
-                        class="w-full text-[10px] tracking-[0.15em] uppercase text-[#888888] py-1.5 hover:text-[#23232C] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#23232C]"
+                        class="w-full text-[10px] tracking-[0.15em] uppercase text-muted-text py-1.5 hover:text-primary-dark transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-dark"
                     >
                         Tiếp tục mua sắm
                     </button>

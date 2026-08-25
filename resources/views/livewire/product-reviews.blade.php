@@ -39,15 +39,11 @@
                 {{-- Average score --}}
                 <div class="text-center">
                     <p class="text-5xl font-bold text-gray-900">{{ $avgRating }}</p>
-                    <div class="flex justify-center mt-1">
-                        @for($i = 1; $i <= 5; $i++)
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 class="h-5 w-5 {{ $avgRating >= $i ? 'text-yellow-400' : ($avgRating >= $i - 0.5 ? 'text-yellow-300' : 'text-gray-300') }} fill-current"
-                                 viewBox="0 0 24 24">
-                                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                            </svg>
-                        @endfor
-                    </div>
+                        <div class="flex justify-center mt-1">
+                            @for($i = 1; $i <= 5; $i++)
+                                <x-icons.star class="h-5 w-5 {{ $avgRating >= $i ? 'text-yellow-400' : ($avgRating >= $i - 0.5 ? 'text-yellow-300' : 'text-gray-300') }}" />
+                            @endfor
+                        </div>
                     <p class="text-xs text-gray-500 mt-1">{{ $totalCount }} đánh giá</p>
                 </div>
 
@@ -56,9 +52,7 @@
                     @foreach($distribution as $stars => $count)
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-xs text-gray-600 w-4 text-right">{{ $stars }}</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                            </svg>
+                            <x-icons.star class="h-3 w-3 text-yellow-400" />
                             <div class="flex-1 bg-gray-200 rounded-full h-2">
                                 <div
                                     class="bg-yellow-400 h-2 rounded-full transition-all duration-300"
@@ -83,11 +77,7 @@
                     <div class="flex items-center space-x-1">
                         @for($i = 1; $i <= 5; $i++)
                             <button type="button" wire:click="$set('rating', {{ $i }})" class="focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded" aria-label="{{ $i }} sao">
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                     class="h-8 w-8 {{ $rating >= $i ? 'text-yellow-400' : 'text-gray-300' }} fill-current transition-colors"
-                                     viewBox="0 0 24 24">
-                                    <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                                </svg>
+                                <x-icons.star class="h-8 w-8 {{ $rating >= $i ? 'text-yellow-400' : 'text-gray-300' }} transition-colors" />
                             </button>
                         @endfor
                     </div>
@@ -122,11 +112,7 @@
                     {{-- Star rating --}}
                     <div class="flex mr-1">
                         @for($i = 1; $i <= 5; $i++)
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 class="h-4 w-4 {{ $review->rating >= $i ? 'text-yellow-400' : 'text-gray-300' }} fill-current"
-                                 viewBox="0 0 24 24">
-                                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                            </svg>
+                            <x-icons.star class="h-4 w-4 {{ $review->rating >= $i ? 'text-yellow-400' : 'text-gray-300' }}" />
                         @endfor
                     </div>
                     <span class="font-medium text-sm text-gray-900">{{ $review->customer->name ?? 'Ẩn danh' }}</span>

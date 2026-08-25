@@ -21,7 +21,7 @@
 
                 {{-- Email --}}
                 <div>
-                    <label for="email" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
+                    <label for="email" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
                         Địa chỉ email
                     </label>
                     <input type="email"
@@ -31,20 +31,20 @@
                            required
                            autofocus
                            autocomplete="email"
-                           class="input-underline w-full @error('email') border-[#E84444] @enderror">
+                           class="input-underline w-full @error('email') border-badge-hot @enderror">
                     @error('email')
-                        <span class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                        <span class="text-badge-hot text-xs mt-1 block" role="alert">{{ $message }}</span>
                     @enderror
                 </div>
 
                 {{-- Password --}}
                 <div>
                     <div class="flex items-baseline justify-between mb-2">
-                        <label for="password" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888]">
+                        <label for="password" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text">
                             Mật khẩu
                         </label>
                         <a href="{{ route('account.password.request') }}"
-                           class="text-[10px] tracking-[0.1em] text-[#888888] hover:text-[#1a1a1a] transition-colors">
+                           class="text-[10px] tracking-[0.1em] text-muted-text hover:text-[#1a1a1a] transition-colors">
                             Quên mật khẩu?
                         </a>
                     </div>
@@ -62,7 +62,7 @@
                            name="remember"
                            type="checkbox"
                            class="h-4 w-4 accent-[#1a1a1a] cursor-pointer">
-                    <label for="remember" class="text-sm text-[#888888] cursor-pointer font-light">
+                    <label for="remember" class="text-sm text-muted-text cursor-pointer font-light">
                         Ghi nhớ đăng nhập
                     </label>
                 </div>
@@ -73,7 +73,7 @@
             </form>
 
             <div class="mt-8 text-center">
-                <p class="text-sm text-[#888888] font-light">
+                <p class="text-sm text-muted-text font-light">
                     Chưa có tài khoản?
                     <a href="{{ route('account.register') }}"
                        class="text-[#1a1a1a] hover:opacity-60 transition-opacity ml-1 underline underline-offset-2">

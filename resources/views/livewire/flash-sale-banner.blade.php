@@ -1,6 +1,6 @@
 <div>
 @if($flashSale)
-    <div class="bg-red-600 text-white p-3 shadow-md"
+    <div class="bg-badge-hot text-white p-3 shadow-md"
          x-data="{ 
             endTime: {{ $endTime }},
             days: '00',
@@ -41,8 +41,8 @@
                 <span class="font-bold text-lg uppercase tracking-wider">{{ $flashSale->name }}</span>
             </div>
             
-            <div class="flex items-center space-x-2 font-mono text-lg font-bold bg-white text-red-600 px-4 py-1 rounded-md shadow-inner">
-                <span>Ends In:</span>
+            <div class="flex items-center space-x-2 font-mono text-lg font-bold bg-white text-badge-hot px-4 py-1 rounded-md shadow-inner">
+                <span>Kết thúc sau:</span>
                 <span x-text="days"></span>d
                 <span x-text="hours"></span>h
                 <span x-text="minutes"></span>m

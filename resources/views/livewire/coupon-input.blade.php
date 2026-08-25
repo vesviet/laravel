@@ -18,7 +18,7 @@
             <button
                 type="button"
                 wire:click="removeCoupon"
-                class="text-[10px] tracking-[0.12em] uppercase text-[#888888] hover:text-[#E84444] transition-colors ml-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1a1a1a]"
+                class="text-[10px] tracking-[0.12em] uppercase text-muted-text hover:text-badge-hot transition-colors ml-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#1a1a1a]"
             >
                 Xoá
             </button>
@@ -30,7 +30,7 @@
                 type="text"
                 wire:model="couponCode"
                 placeholder="Nhập mã giảm giá"
-                class="flex-1 bg-transparent py-2 text-sm outline-none uppercase placeholder:normal-case placeholder:text-[#888888] font-light tracking-wider"
+                class="flex-1 bg-transparent py-2 text-sm outline-none uppercase placeholder:normal-case placeholder:text-muted-text font-light tracking-wider"
                 aria-label="Mã giảm giá"
             >
             <button
@@ -52,7 +52,7 @@
 
         {{-- Error message --}}
         @if($errorMessage)
-            <p class="mt-2 text-xs text-[#E84444] flex items-center gap-1.5" role="alert">
+            <p class="mt-2 text-xs text-badge-hot flex items-center gap-1.5" role="alert">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>

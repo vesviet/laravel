@@ -69,10 +69,10 @@ it('verifies storefront homepage html incorporates design token classes and surf
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    // Verify tokenized utility classes and hex styling in layout and components
-    $response->assertSee('bg-[#F0F0F0]', false);
-    $response->assertSee('border-[#E5E5E5]', false);
-    $response->assertSee('text-[#888888]', false);
+    // Verify tokenized utility classes in layout and components
+    $response->assertSee('bg-surface-bg', false);
+    $response->assertSee('border-border-subtle', false);
+    $response->assertSee('text-muted-text', false);
 });
 
 it('verifies section wrapper utility establishes 1400px max-width container', function () {
@@ -150,11 +150,11 @@ it('verifies header renders with 72px height and sticky positioning', function (
     $response->assertSee('sticky', false);
 });
 
-it('verifies header renders with #E5E5E5 bottom border', function () {
+it('verifies header renders with subtle bottom border token', function () {
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    $response->assertSee('border-b border-[#E5E5E5]', false);
+    $response->assertSee('border-b border-border-subtle', false);
 });
 
 it('verifies header contains brand logo on the left with uppercase tracking', function () {

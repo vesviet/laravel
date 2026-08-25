@@ -9,42 +9,42 @@
         <div class="max-w-md mx-auto text-center">
             {{-- ── Header ── --}}
             <div class="mb-8">
-                <a href="{{ route("account.referrals") }}" class="text-xs uppercase tracking-wider text-[#888888] hover:text-[#23232C] font-medium link-underline inline-block mb-4">
+                <a href="{{ route("account.referrals") }}" class="text-xs uppercase tracking-wider text-muted-text hover:text-primary-dark font-medium link-underline inline-block mb-4">
                     ← Quay lại chương trình giới thiệu
                 </a>
-                <h1 class="text-2xl font-light text-[#23232C] tracking-wide uppercase">Chia Sẻ Mã Giới Thiệu</h1>
-                <p class="text-sm text-[#888888] font-light mt-2">
+                <h1 class="text-2xl font-light text-primary-dark tracking-wide uppercase">Chia Sẻ Mã Giới Thiệu</h1>
+                <p class="text-sm text-muted-text font-light mt-2">
                     Mời bạn bè mua sắm, bạn nhận 50.000đ điểm, bạn bè được ưu đãi.
                 </p>
             </div>
 
             {{-- Referral Code Card --}}
-            <div class="bg-white border border-[#E5E5E5] p-8 shadow-sm rounded-2xl mb-8">
+            <div class="bg-white border border-border-subtle p-8 shadow-sm rounded-2xl mb-8">
                 <div class="w-16 h-16 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                     </svg>
                 </div>
 
-                <p class="text-xs text-[#888888] font-light mb-2">Mã giới thiệu của bạn</p>
-                <p class="font-mono text-3xl font-bold text-[#23232C] tracking-wider mb-4">{{ $customer->referral_code }}</p>
+                <p class="text-xs text-muted-text font-light mb-2">Mã giới thiệu của bạn</p>
+                <p class="font-mono text-3xl font-bold text-primary-dark tracking-wider mb-4">{{ $customer->referral_code }}</p>
 
-                <div class="bg-[#F9F9F9] border border-[#E5E5E5] p-4 rounded-lg mb-4">
-                    <p class="text-xs text-[#888888] font-light mb-2">Link giới thiệu</p>
+                <div class="bg-[#F9F9F9] border border-border-subtle p-4 rounded-lg mb-4">
+                    <p class="text-xs text-muted-text font-light mb-2">Link giới thiệu</p>
                     <div class="flex gap-2">
                         <input type="text" id="referralLink" value="{{ $customer->referral_service->getReferralStats($customer)["referral_url"] }}" readonly class="input-underline flex-1 font-mono text-sm bg-white" onclick="this.select()">
                         <button type="button" onclick="navigator.clipboard.writeText(document.getElementById(\"referralLink\").value); this.textContent = \"Đã sao chép!\"; setTimeout(() => this.textContent = \"Sao chép\", 2000)" class="btn-dark whitespace-nowrap">Sao chép</button>
                     </div>
                 </div>
 
-                <p class="text-sm text-[#888888] leading-relaxed">
-                    Bạn bè nhập mã <span class="font-bold text-[#23232C]">{{ $customer->referral_code }}</span> khi đăng ký hoặc đặt hàng đầu tiên.
+                <p class="text-sm text-muted-text leading-relaxed">
+                    Bạn bè nhập mã <span class="font-bold text-primary-dark">{{ $customer->referral_code }}</span> khi đăng ký hoặc đặt hàng đầu tiên.
                 </p>
             </div>
 
             {{-- Share Buttons --}}
-            <div class="bg-white border border-[#E5E5E5] p-6 shadow-sm rounded-2xl mb-8">
-                <h3 class="text-xs font-semibold tracking-[0.2em] uppercase text-[#23232C] mb-4 text-center">Chia Sẻ Nhanh</h3>
+            <div class="bg-white border border-border-subtle p-6 shadow-sm rounded-2xl mb-8">
+                <h3 class="text-xs font-semibold tracking-[0.2em] uppercase text-primary-dark mb-4 text-center">Chia Sẻ Nhanh</h3>
                 <div class="grid grid-cols-2 gap-3">
                     @php
                         $shareUrl = urlencode($customer->referral_service->getReferralStats($customer)["referral_url"]);
@@ -82,12 +82,12 @@
             </div>
 
             {{-- QR Code --}}
-            <div class="bg-white border border-[#E5E5E5] p-6 shadow-sm rounded-2xl">
-                <h3 class="text-xs font-semibold tracking-[0.2em] uppercase text-[#23232C] mb-4 text-center">Quét Mã QR Để Chia Sẻ</h3>
+            <div class="bg-white border border-border-subtle p-6 shadow-sm rounded-2xl">
+                <h3 class="text-xs font-semibold tracking-[0.2em] uppercase text-primary-dark mb-4 text-center">Quét Mã QR Để Chia Sẻ</h3>
                 <div class="inline-block p-4 bg-white mx-auto">
                     {!! $customer->two_factor_service->generateQrCodeSvg($customer) !!}
                 </div>
-                <p class="text-xs text-[#888888] font-light text-center mt-3">Người khác quét mã này để lấy link giới thiệu</p>
+                <p class="text-xs text-muted-text font-light text-center mt-3">Người khác quét mã này để lấy link giới thiệu</p>
             </div>
         </div>
     </div>

@@ -1,13 +1,12 @@
 <div>
-    <button wire:click="toggleWishlist" type="button" class="p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none">
+    <button wire:click="toggleWishlist" type="button"
+            class="p-2 rounded-full hover:bg-surface-light transition-colors focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-dark"
+            aria-label="{{ $isWishlisted ? 'Xóa khỏi danh sách yêu thích' : 'Thêm vào danh sách yêu thích' }}"
+            aria-pressed="{{ $isWishlisted ? 'true' : 'false' }}">
         @if($isWishlisted)
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 fill-current" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
+            <x-icons.heart stroke="2" class="h-6 w-6 text-badge-hot fill-current" />
         @else
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 hover:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
+            <x-icons.heart stroke="2" class="h-6 w-6 text-muted-text hover:text-badge-hot transition-colors" />
         @endif
     </button>
 </div>

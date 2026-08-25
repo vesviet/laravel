@@ -184,9 +184,7 @@
 
                         <template x-if="gallery.length === 0">
                             <div class="w-full h-full flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-[#9CA3AF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                                </svg>
+                                <x-icons.image-placeholder class="w-16 h-16 text-muted-text" />
                             </div>
                         </template>
 
@@ -196,7 +194,7 @@
                                 <span class="badge-hot" aria-label="Sản phẩm nổi bật">HOT</span>
                             @endif
                             @if($promoted)
-                                <span class="bg-[#E84444] text-white font-bold text-xs tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm"
+                                <span class="bg-badge-hot text-white font-bold text-xs tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm"
                                       aria-label="Khuyến mãi {{ round($promoted->discountPercentage) }}%">
                                     {{ $promoted->badgeLabel ?: '-' . round($promoted->discountPercentage) . '% PROMO' }}
                                 </span>
@@ -221,7 +219,7 @@
                                 type="button"
                                 @click="selectImage(idx)"
                                 class="relative w-16 h-16 sm:w-18 sm:h-18 bg-white border p-1 shrink-0 flex items-center justify-center transition-all duration-150 focus:outline-none"
-                                :class="currentIndex === idx ? 'border-[#E84444] ring-1 ring-[#E84444]' : 'border-[#E5E7EB] hover:border-[#9CA3AF] opacity-80 hover:opacity-100'"
+                                :class="currentIndex === idx ? 'border-badge-hot ring-1 ring-badge-hot' : 'border-[#E5E7EB] hover:border-[#9CA3AF] opacity-80 hover:opacity-100'"
                                 :aria-label="'Xem hình ' + (idx + 1)"
                             >
                                 <img :src="img" :alt="'Thumbnail ' + (idx + 1)" class="w-full h-full object-contain">
@@ -238,7 +236,7 @@
                     <div class="mb-3">
                         @if($promoted)
                             <div class="flex items-center gap-2 mb-2 flex-wrap">
-                                <span class="inline-flex items-center bg-[#E84444] text-white font-bold text-xs tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm"
+                                <span class="inline-flex items-center bg-badge-hot text-white font-bold text-xs tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm"
                                       aria-label="Khuyến mãi {{ round($promoted->discountPercentage) }}%">
                                     {{ $promoted->badgeLabel ?: '-' . round($promoted->discountPercentage) . '% PROMO' }}
                                 </span>
@@ -301,13 +299,13 @@
                     <div class="mb-6">
                         @if($promoted)
                             <div class="flex items-baseline gap-3 flex-wrap">
-                                <span class="text-3xl sm:text-4xl font-bold text-[#E84444] tracking-tight">
+                                <span class="text-3xl sm:text-4xl font-bold text-badge-hot tracking-tight">
                                     {{ number_format($promoted->promotedPrice, 0, ',', '.') }}₫
                                 </span>
                                 <span class="text-lg sm:text-xl text-[#9CA3AF] line-through font-normal">
                                     {{ number_format($promoted->originalPrice, 0, ',', '.') }}₫
                                 </span>
-                                <span class="inline-flex items-center bg-[#E84444] text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow-sm">
+                                <span class="inline-flex items-center bg-badge-hot text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow-sm">
                                     {{ $promoted->badgeLabel ?: '-' . round($promoted->discountPercentage) . '% PROMO' }}
                                 </span>
                             </div>
@@ -453,7 +451,7 @@
             <section class="mb-16" aria-label="Album Không Gian Sống">
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-4 border-b border-[#E5E7EB]">
                     <div>
-                        <p class="text-[10px] font-bold tracking-[0.2em] uppercase text-[#E84444] mb-1">
+                        <p class="text-[10px] font-bold tracking-[0.2em] uppercase text-badge-hot mb-1">
                             LIFESTYLE LOOKBOOK
                         </p>
                         <h2 class="text-xl sm:text-2xl font-bold text-[#111827]">
@@ -512,16 +510,16 @@
 
         {{-- ── RELATED PRODUCTS SECTION ── --}}
         @if(isset($relatedProducts) && $relatedProducts->count() > 0)
-            <section class="mt-14 pt-12 border-t border-[#E5E5E5]" aria-label="Sản phẩm tương tự">
+            <section class="mt-14 pt-12 border-t border-border-subtle" aria-label="Sản phẩm tương tự">
                 <div class="flex items-center justify-between mb-8">
                     <div>
-                        <span class="text-[10px] uppercase font-semibold tracking-[0.2em] text-[#888888] block mb-1">Bộ Sưu Tập</span>
-                        <h2 class="text-xl sm:text-2xl font-light text-[#23232C] uppercase tracking-wide">
+                        <span class="text-[10px] uppercase font-semibold tracking-[0.2em] text-muted-text block mb-1">Bộ Sưu Tập</span>
+                        <h2 class="text-xl sm:text-2xl font-light text-primary-dark uppercase tracking-wide">
                             Sản Phẩm Tương Tự
                         </h2>
                     </div>
                     @if($product->category)
-                        <a href="{{ route('products.index', ['category' => $product->category->slug]) }}" class="text-xs uppercase font-medium tracking-wider text-[#23232C] hover:text-[#E84444] link-underline">
+                        <a href="{{ route('products.index', ['category' => $product->category->slug]) }}" class="text-xs uppercase font-medium tracking-wider text-primary-dark hover:text-badge-hot link-underline">
                             Xem tất cả &rarr;
                         </a>
                     @endif
@@ -596,8 +594,8 @@
                         <button type="button"
                                 @click="openLightbox(idx, 'gallery')"
                                 class="w-10 h-10 flex-shrink-0 bg-white/10 overflow-hidden"
-                                :class="lightboxIndex === idx ? 'ring-2 ring-[#E84444] opacity-100' : 'opacity-40 hover:opacity-100'">
-                            <img :src="img" class="w-full h-full object-cover">
+                                :class="lightboxIndex === idx ? 'ring-2 ring-badge-hot opacity-100' : 'opacity-40 hover:opacity-100'">
+                            <img :src="img" class="w-full h-full object-cover" :alt="'Ảnh ' + (idx + 1)">
                         </button>
                     </template>
                 </template>
@@ -606,8 +604,8 @@
                         <button type="button"
                                 @click="openLightbox(idx, 'album')"
                                 class="w-10 h-10 flex-shrink-0 bg-white/10 overflow-hidden"
-                                :class="lightboxIndex === idx ? 'ring-2 ring-[#E84444] opacity-100' : 'opacity-40 hover:opacity-100'">
-                            <img :src="item.url" class="w-full h-full object-cover">
+                                :class="lightboxIndex === idx ? 'ring-2 ring-badge-hot opacity-100' : 'opacity-40 hover:opacity-100'">
+                            <img :src="item.url" class="w-full h-full object-cover" :alt="'Album ảnh ' + (idx + 1)">
                         </button>
                     </template>
                 </template>

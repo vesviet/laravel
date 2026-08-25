@@ -50,7 +50,7 @@
 
                     {{-- ── Section: Shipping info ── --}}
                     <div class="mb-10">
-                        <h2 class="text-[11px] font-medium tracking-[0.2em] uppercase mb-6 pb-3 border-b border-[#E5E5E5]">
+                        <h2 class="text-[11px] font-medium tracking-[0.2em] uppercase mb-6 pb-3 border-b border-border-subtle">
                             Thông Tin Giao Hàng
                         </h2>
 
@@ -58,8 +58,8 @@
 
                             {{-- Name --}}
                             <div class="md:col-span-1">
-                                <label for="customer_name" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                                    Họ và tên <span class="text-[#E84444]">*</span>
+                                <label for="customer_name" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                                    Họ và tên <span class="text-badge-hot">*</span>
                                 </label>
                                 <input type="text"
                                        name="customer_name"
@@ -67,18 +67,18 @@
                                        value="{{ old('customer_name', $customer?->name) }}"
                                        required
                                        autocomplete="name"
-                                       class="input-underline w-full @error('customer_name') border-[#E84444] @enderror"
+                                       class="input-underline w-full @error('customer_name') border-badge-hot @enderror"
                                        aria-required="true"
                                        aria-describedby="@error('customer_name') error-customer_name @enderror">
                                 @error('customer_name')
-                                    <span id="error-customer_name" class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                                    <span id="error-customer_name" class="text-badge-hot text-xs mt-1 block" role="alert">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             {{-- Phone --}}
                             <div class="md:col-span-1">
-                                <label for="phone" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                                    Số điện thoại <span class="text-[#E84444]">*</span>
+                                <label for="phone" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                                    Số điện thoại <span class="text-badge-hot">*</span>
                                 </label>
                                 <input type="tel"
                                        name="phone"
@@ -86,35 +86,35 @@
                                        value="{{ old('phone', $customer?->phone) }}"
                                        required
                                        autocomplete="tel"
-                                       class="input-underline w-full @error('phone') border-[#E84444] @enderror"
+                                       class="input-underline w-full @error('phone') border-badge-hot @enderror"
                                        aria-required="true"
                                        aria-describedby="@error('phone') error-phone @enderror">
                                 @error('phone')
-                                    <span id="error-phone" class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                                    <span id="error-phone" class="text-badge-hot text-xs mt-1 block" role="alert">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             {{-- Email --}}
                             <div class="md:col-span-2">
-                                <label for="email" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                                    Email <span class="text-[#888888] text-[9px] normal-case tracking-normal">(tuỳ chọn)</span>
+                                <label for="email" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                                    Email <span class="text-muted-text text-[9px] normal-case tracking-normal">(tuỳ chọn)</span>
                                 </label>
                                 <input type="email"
                                        name="email"
                                        id="email"
                                        value="{{ old('email', $customer?->email) }}"
                                        autocomplete="email"
-                                       class="input-underline w-full @error('email') border-[#E84444] @enderror"
+                                       class="input-underline w-full @error('email') border-badge-hot @enderror"
                                        aria-describedby="@error('email') error-email @enderror">
                                 @error('email')
-                                    <span id="error-email" class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                                    <span id="error-email" class="text-badge-hot text-xs mt-1 block" role="alert">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             {{-- Address --}}
                             <div class="md:col-span-2">
-                                <label for="address" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                                    Địa chỉ <span class="text-[#E84444]">*</span>
+                                <label for="address" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                                    Địa chỉ <span class="text-badge-hot">*</span>
                                 </label>
                                 <input type="text"
                                        name="address"
@@ -122,17 +122,17 @@
                                        value="{{ old('address', $customer?->last_shipping_address['address'] ?? '') }}"
                                        required
                                        autocomplete="street-address"
-                                       class="input-underline w-full @error('address') border-[#E84444] @enderror"
+                                       class="input-underline w-full @error('address') border-badge-hot @enderror"
                                        aria-required="true"
                                        aria-describedby="@error('address') error-address @enderror">
                                 @error('address')
-                                    <span id="error-address" class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                                    <span id="error-address" class="text-badge-hot text-xs mt-1 block" role="alert">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             {{-- Province --}}
                             <div>
-                                <label for="city" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
+                                <label for="city" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
                                     Tỉnh / Thành phố
                                 </label>
                                 <select name="city"
@@ -151,7 +151,7 @@
 
                             {{-- District --}}
                             <div>
-                                <label for="district" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
+                                <label for="district" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
                                     Quận / Huyện
                                 </label>
                                 <input type="text"
@@ -164,7 +164,7 @@
 
                             {{-- Ward --}}
                             <div>
-                                <label for="ward" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
+                                <label for="ward" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
                                     Phường / Xã
                                 </label>
                                 <input type="text"
@@ -176,8 +176,8 @@
 
                             {{-- Notes --}}
                             <div class="md:col-span-2">
-                                <label for="notes" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                                    Ghi chú đơn hàng <span class="text-[#888888] text-[9px] normal-case tracking-normal">(tuỳ chọn)</span>
+                                <label for="notes" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                                    Ghi chú đơn hàng <span class="text-muted-text text-[9px] normal-case tracking-normal">(tuỳ chọn)</span>
                                 </label>
                                 <textarea name="notes"
                                           id="notes"
@@ -189,10 +189,10 @@
 
                     {{-- ── Section: Payment method ── --}}
                     <div class="mb-10">
-                        <h2 class="text-[11px] font-medium tracking-[0.2em] uppercase mb-6 pb-3 border-b border-[#E5E5E5]">
+                        <h2 class="text-[11px] font-medium tracking-[0.2em] uppercase mb-6 pb-3 border-b border-border-subtle">
                             Phương Thức Thanh Toán
                         </h2>
-                        <div class="flex items-start gap-3 py-4 border border-[#E5E5E5] px-4">
+                        <div class="flex items-start gap-3 py-4 border border-border-subtle px-4">
                             <input id="payment_cod"
                                    name="payment_method"
                                    type="radio"
@@ -203,14 +203,14 @@
                                 <label for="payment_cod" class="text-sm font-medium cursor-pointer">
                                     Thanh toán khi nhận hàng (COD)
                                 </label>
-                                <p class="text-xs text-[#888888] mt-1 font-light">Bạn thanh toán bằng tiền mặt khi nhận hàng.</p>
+                                <p class="text-xs text-muted-text mt-1 font-light">Bạn thanh toán bằng tiền mặt khi nhận hàng.</p>
                             </div>
                         </div>
                     </div>
 
                     {{-- ── Section: Coupon ── --}}
                     <div class="mb-10">
-                        <h2 class="text-[11px] font-medium tracking-[0.2em] uppercase mb-6 pb-3 border-b border-[#E5E5E5]">
+                        <h2 class="text-[11px] font-medium tracking-[0.2em] uppercase mb-6 pb-3 border-b border-border-subtle">
                             Mã Giảm Giá
                         </h2>
                         @livewire('coupon-input', ['subtotal' => $subtotal])
@@ -246,16 +246,16 @@
             <div class="w-full lg:w-[40%]">
                 <div class="sticky top-24 bg-white">
 
-                    <h2 class="text-[11px] font-medium tracking-[0.2em] uppercase mb-6 pb-3 border-b border-[#E5E5E5]">
+                    <h2 class="text-[11px] font-medium tracking-[0.2em] uppercase mb-6 pb-3 border-b border-border-subtle">
                         Tóm Tắt Đơn Hàng
                     </h2>
 
                     {{-- Cart items list --}}
-                    <ul class="divide-y divide-[#E5E5E5] mb-6" aria-label="Sản phẩm trong đơn hàng">
+                    <ul class="divide-y divide-border-subtle mb-6" aria-label="Sản phẩm trong đơn hàng">
                         @foreach($cart as $item)
                             <li class="py-4 flex items-start gap-4">
                                 @if($item['image_path'] ?? null)
-                                    <div class="w-16 h-16 flex-shrink-0 bg-[#F0F0F0] overflow-hidden">
+                                    <div class="w-16 h-16 flex-shrink-0 bg-surface-bg overflow-hidden">
                                         <img src="{{ Storage::url($item['image_path']) }}"
                                              alt="{{ $item['product_name'] }}"
                                              class="w-full h-full object-cover"
@@ -268,9 +268,9 @@
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm leading-snug truncate">{{ $item['product_name'] }}</p>
                                     @if(!empty($item['variant_name']))
-                                        <p class="text-xs text-[#888888] mt-0.5">{{ $item['variant_name'] }}</p>
+                                        <p class="text-xs text-muted-text mt-0.5">{{ $item['variant_name'] }}</p>
                                     @endif
-                                    <p class="text-xs text-[#888888] mt-0.5">Số lượng: {{ $item['quantity'] }}</p>
+                                    <p class="text-xs text-muted-text mt-0.5">Số lượng: {{ $item['quantity'] }}</p>
                                 </div>
 
                                 <p class="text-sm font-medium shrink-0">
@@ -296,16 +296,16 @@
                     @endif
 
                     {{-- Totals & Transparent Financial Breakdown --}}
-                    <div id="order-totals" class="border-t border-[#E5E5E5] pt-5 space-y-3">
+                    <div id="order-totals" class="border-t border-border-subtle pt-5 space-y-3">
                         {{-- Subtotal --}}
                         <div class="flex justify-between text-sm">
-                            <span class="text-[#888888]">Tạm tính</span>
+                            <span class="text-muted-text">Tạm tính</span>
                             <span id="subtotal-display">{{ number_format($breakdown->subtotal, 0, ',', '.') }}₫</span>
                         </div>
 
                         {{-- Shipping Fee --}}
                         <div class="flex justify-between text-sm">
-                            <span class="text-[#888888]">Phí vận chuyển</span>
+                            <span class="text-muted-text">Phí vận chuyển</span>
                             @if($breakdown->finalShippingFee <= 0)
                                 <span class="text-emerald-700 font-medium" id="shipping-display">Miễn phí</span>
                             @else
@@ -314,8 +314,8 @@
                         </div>
 
                         {{-- Itemized Applied Promotions List --}}
-                        <div id="applied-promotions-container" class="{{ empty($breakdown->appliedRules) ? 'hidden' : '' }} py-2 border-t border-dashed border-[#E5E5E5] space-y-2">
-                            <span class="text-[10px] font-semibold text-[#888888] uppercase tracking-wider block">Ưu đãi áp dụng</span>
+                        <div id="applied-promotions-container" class="{{ empty($breakdown->appliedRules) ? 'hidden' : '' }} py-2 border-t border-dashed border-border-subtle space-y-2">
+                            <span class="text-[10px] font-semibold text-muted-text uppercase tracking-wider block">Ưu đãi áp dụng</span>
                             <div id="applied-rules-list" class="space-y-1.5">
                                 @foreach($breakdown->appliedRules as $rule)
                                     <div class="flex justify-between items-center text-xs text-emerald-700 bg-emerald-50/80 px-2.5 py-1.5 rounded border border-emerald-200/60">
@@ -341,16 +341,16 @@
                         </div>
 
                         {{-- Final Payable Total --}}
-                        <div class="flex justify-between pt-4 border-t border-[#E5E5E5] items-baseline">
+                        <div class="flex justify-between pt-4 border-t border-border-subtle items-baseline">
                             <span class="text-sm font-medium tracking-wide">Tổng thanh toán</span>
-                            <span class="text-xl font-bold text-[#E84444]" id="total-display">
+                            <span class="text-xl font-bold text-badge-hot" id="total-display">
                                 {{ number_format($breakdown->finalTotal, 0, ',', '.') }}₫
                             </span>
                         </div>
                     </div>
 
                     {{-- Trust signal --}}
-                    <div class="mt-6 flex items-center gap-2 text-xs text-[#888888]">
+                    <div class="mt-6 flex items-center gap-2 text-xs text-muted-text">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                         </svg>

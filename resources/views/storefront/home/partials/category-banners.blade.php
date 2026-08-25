@@ -14,7 +14,7 @@
                     <a href="{{ route('banner.click', $banner->id) }}"
                        target="{{ $banner->open_in_new_tab ? '_blank' : '_self' }}"
                        @if($banner->open_in_new_tab) rel="noopener noreferrer" @endif
-                       class="group relative overflow-hidden block h-[320px] md:h-[400px] {{ $isDark ? 'bg-[#23232C]' : 'bg-[#EAE7E2]' }} focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                       class="group relative overflow-hidden block h-[320px] md:h-[400px] {{ $isDark ? 'bg-primary-dark' : 'bg-[#EAE7E2]' }} focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
                        aria-label="Khám phá {{ $banner->title }}">
                         @if($hasImage)
                             <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
@@ -26,20 +26,20 @@
 
                         <div class="absolute inset-0 flex flex-col justify-end p-8 md:p-10 z-10">
                             @if($banner->eyebrow)
-                                <p class="text-[10px] font-semibold tracking-[0.2em] uppercase {{ ($hasImage || $isDark) ? 'text-white/70' : 'text-[#888888]' }} mb-2">
+                                <p class="text-[10px] font-semibold tracking-[0.2em] uppercase {{ ($hasImage || $isDark) ? 'text-white/70' : 'text-muted-text' }} mb-2">
                                     {{ $banner->eyebrow }}
                                 </p>
                             @endif
-                            <h2 class="text-2xl md:text-3xl font-medium tracking-wide {{ ($hasImage || $isDark) ? 'text-white' : 'text-[#23232C]' }} mb-2">
+                            <h2 class="text-2xl md:text-3xl font-medium tracking-wide {{ ($hasImage || $isDark) ? 'text-white' : 'text-primary-dark' }} mb-2">
                                 {{ $banner->title }}
                             </h2>
                             @if($banner->subtitle)
-                                <p class="text-xs {{ ($hasImage || $isDark) ? 'text-white/80' : 'text-[#888888]' }} font-light mb-4">
+                                <p class="text-xs {{ ($hasImage || $isDark) ? 'text-white/80' : 'text-muted-text' }} font-light mb-4">
                                     {{ $banner->subtitle }}
                                 </p>
                             @endif
                             <div>
-                                <span class="link-underline {{ ($hasImage || $isDark) ? 'text-white border-white' : 'text-[#23232C]' }} text-xs tracking-[0.18em] uppercase">
+                                <span class="link-underline {{ ($hasImage || $isDark) ? 'text-white border-white' : 'text-primary-dark' }} text-xs tracking-[0.18em] uppercase">
                                     {{ $banner->cta_text ?: 'Khám Phá · SHOP NOW' }}
                                 </span>
                             </div>
@@ -52,22 +52,22 @@
             @else
                 {{-- Column 1: Lighting on Express / Phong Cách Mùa Này --}}
                 <a href="{{ route('products.index') }}"
-                   class="group relative overflow-hidden block h-[320px] md:h-[400px] bg-[#EAE7E2] focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                   class="group relative overflow-hidden block h-[320px] md:h-[400px] bg-[#EAE7E2] focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
                    aria-label="Khám phá Lighting on Express — Phong Cách Mùa Này">
                     <div class="absolute inset-0 bg-gradient-to-br from-[#e2ded9] to-[#cbc4bc] transition-transform duration-700 ease-out group-hover:scale-105"></div>
                     <div class="absolute inset-0 flex flex-col justify-end p-8 md:p-10 z-10">
-                        <p class="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#888888] mb-2">Lighting on Express · Bộ Sưu Tập</p>
-                        <h2 class="text-2xl md:text-3xl font-medium tracking-wide text-[#23232C] mb-2">Phong Cách Mùa Này</h2>
-                        <p class="text-xs text-[#888888] font-light mb-4">Giao hàng nhanh trong tuần, thiết kế tinh xảo</p>
+                        <p class="text-[10px] font-semibold tracking-[0.2em] uppercase text-muted-text mb-2">Lighting on Express · Bộ Sưu Tập</p>
+                        <h2 class="text-2xl md:text-3xl font-medium tracking-wide text-primary-dark mb-2">Phong Cách Mùa Này</h2>
+                        <p class="text-xs text-muted-text font-light mb-4">Giao hàng nhanh trong tuần, thiết kế tinh xảo</p>
                         <div>
-                            <span class="link-underline text-[#23232C] text-xs tracking-[0.18em] uppercase">Khám Phá · SHOP NOW</span>
+                            <span class="link-underline text-primary-dark text-xs tracking-[0.18em] uppercase">Khám Phá · SHOP NOW</span>
                         </div>
                     </div>
                 </a>
 
                 {{-- Column 2: Dining Chairs / Thiết Kế Tối Giản --}}
                 <a href="{{ route('products.index') }}"
-                   class="group relative overflow-hidden block h-[320px] md:h-[400px] bg-[#23232C] focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                   class="group relative overflow-hidden block h-[320px] md:h-[400px] bg-primary-dark focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
                    aria-label="Khám phá Dining Chairs — Thiết Kế Tối Giản">
                     <div class="absolute inset-0 bg-gradient-to-br from-[#2c2c34] to-[#1a1a20] transition-transform duration-700 ease-out group-hover:scale-105"></div>
                     <div class="absolute inset-0 flex flex-col justify-end p-8 md:p-10 z-10">

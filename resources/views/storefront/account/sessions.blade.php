@@ -9,11 +9,11 @@
         <div class="max-w-2xl mx-auto">
             {{-- ── Header ── --}}
             <div class="mb-8">
-                <a href="{{ route("account.profile") }}" class="text-xs uppercase tracking-wider text-[#888888] hover:text-[#23232C] font-medium link-underline inline-block mb-4">
+                <a href="{{ route("account.profile") }}" class="text-xs uppercase tracking-wider text-muted-text hover:text-primary-dark font-medium link-underline inline-block mb-4">
                     ← Quay lại hồ sơ
                 </a>
-                <h1 class="text-2xl font-light text-[#23232C] tracking-wide uppercase">Phiên Đăng Nhập</h1>
-                <p class="text-sm text-[#888888] font-light mt-2">
+                <h1 class="text-2xl font-light text-primary-dark tracking-wide uppercase">Phiên Đăng Nhập</h1>
+                <p class="text-sm text-muted-text font-light mt-2">
                     Quản lý các thiết bị đang đăng nhập vào tài khoản của bạn.
                 </p>
             </div>
@@ -31,20 +31,20 @@
             @endif
 
             {{-- Sessions List --}}
-            <div class="bg-white border border-[#E5E5E5] shadow-sm">
+            <div class="bg-white border border-border-subtle shadow-sm">
                 @if($sessions->count() > 0)
-                    <div class="divide-y divide-[#E5E5E5]">
+                    <div class="divide-y divide-border-subtle">
                         @foreach($sessions as $session)
                             <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-[#F0F0F0] border border-[#E5E5E5] rounded-lg flex items-center justify-center shrink-0">
-                                        <svg class="w-6 h-6 text-[#888888]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <div class="w-12 h-12 bg-surface-bg border border-border-subtle rounded-lg flex items-center justify-center shrink-0">
+                                        <svg class="w-6 h-6 text-muted-text" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-[#23232C]">{{ $session["device"] }}</p>
-                                        <p class="text-xs text-[#888888] font-light">{{ $session["ip"] }} &middot; Hoạt động: {{ \Carbon\Carbon::parse($session["last_active"])->diffForHumans() }}</p>
+                                        <p class="font-medium text-primary-dark">{{ $session["device"] }}</p>
+                                        <p class="text-xs text-muted-text font-light">{{ $session["ip"] }} &middot; Hoạt động: {{ \Carbon\Carbon::parse($session["last_active"])->diffForHumans() }}</p>
                                         @if($session["is_current"])
                                             <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 inline-block mt-1">Phiên hiện tại</span>
                                         @endif
@@ -61,7 +61,7 @@
                                             </button>
                                         </form>
                                     @else
-                                        <span class="text-[10px] text-[#888888] font-light">Đang sử dụng</span>
+                                        <span class="text-[10px] text-muted-text font-light">Đang sử dụng</span>
                                     @endif
                                 </div>
                             </div>
@@ -70,7 +70,7 @@
 
                     {{-- Revoke All Other Sessions --}}
                     @if($sessions->where("is_current", false)->count() > 0)
-                        <div class="p-5 border-t border-[#E5E5E5]">
+                        <div class="p-5 border-t border-border-subtle">
                             <form method="POST" action="{{ route("account.sessions.destroy-all") }}" onsubmit="return confirm(\"Bạn có chắc chắn muốn thu hồi tất cả phiên đăng nhập khác? Bạn sẽ bị đăng xuất trên các thiết bị khác.\")">
                                 @csrf
                                 @method("DELETE")
@@ -82,7 +82,7 @@
                     @endif
                 @else
                     <div class="text-center py-12">
-                        <p class="text-sm text-[#888888] font-light">Không có phiên đăng nhập nào.</p>
+                        <p class="text-sm text-muted-text font-light">Không có phiên đăng nhập nào.</p>
                     </div>
                 @endif
             </div>

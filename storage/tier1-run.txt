@@ -1,0 +1,584 @@
+
+  [39;41;1m FAIL [39;49;22m[39m Tests\Feature\E2E\Tier1FeatureCoverageTest[39m
+  [32;1m✓[39;22m[90m [39m[90mit verifies css file declares primary dark palette tokens[39m[90m           [39m [90m9.00s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies css file declares surface background tokens[39m[90m             [39m [90m0.36s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies css file declares border and muted typography tokens[39m[90m    [39m [90m0.35s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies css file declares hot badge token #E84444[39m[90m               [39m [90m0.34s[39m  
+  [31;1m⨯[39;22m[90m [39m[90mit verifies storefront homepage html incorporates design token clas[39m[90m…[39m [90m1.56s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies section wrapper utility establishes 1400px max-width co[39m[90m…[39m [90m0.34s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies css declares font family hierarchy and typography weigh[39m[90m…[39m [90m0.35s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies css declares btn-dark button variant with uppercase tra[39m[90m…[39m [90m0.36s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies css declares btn-outline button variant[39m[90m                 [39m [90m0.37s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies css declares link-underline utility with hover transiti[39m[90m…[39m [90m0.34s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies css declares input-underline form control utility[39m[90m       [39m [90m0.35s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies storefront renders button and link utility classes in l[39m[90m…[39m [90m0.51s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies header renders with 72px height and sticky positioning[39m[90m  [39m [90m0.52s[39m  
+  [31;1m⨯[39;22m[90m [39m[90mit verifies header renders with #E5E5E5 bottom border[39m[90m               [39m [90m0.52s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies header contains brand logo on the left with uppercase t[39m[90m…[39m [90m0.52s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies header contains center navigation links with required d[39m[90m…[39m [90m0.53s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies header navigation marks active indicator for home route[39m[90m [39m [90m0.57s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies header contains right action icons area with cart trigg[39m[90m…[39m [90m0.50s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies header includes mobile hamburger menu trigger button[39m[90m    [39m [90m0.51s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies layout includes responsive mobile slide-out drawer dial[39m[90m…[39m [90m0.51s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies mobile drawer contains all primary navigation links[39m[90m     [39m [90m0.55s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies mobile drawer contains customer authentication controls[39m[90m [39m [90m0.52s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies cart drawer trigger component is rendered and listening[39m[90m [39m [90m0.51s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies layout includes accessibility skip-to-content navigatio[39m[90m…[39m [90m0.51s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies homepage returns successful http 200 response[39m[90m           [39m [90m0.52s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies section 1 hero slider renders with multi-slide cta link[39m[90m…[39m [90m0.51s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies section 2 two-column promo banners render with 50-50 gr[39m[90m…[39m [90m0.52s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies section 4 featured products section renders with title[39m[90m… [39m [90m0.57s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies section 5 new arrivals grid renders with section header[39m[90m [39m [90m0.53s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies section 6 featured collections renders 3-column banner[39m[90m… [39m [90m0.52s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies section 7 trust badges renders 3-column icon row with g[39m[90m…[39m [90m0.51s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies all homepage sections render in exact required sequence[39m[90m [39m [90m0.57s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies footer renders layer 1 newsletter subscription bar[39m[90m      [39m [90m0.52s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies footer renders layer 2 two-column widgets with company[39m[90m… [39m [90m0.51s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies footer renders layer 4 copyright notice with current ye[39m[90m…[39m [90m0.49s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies footer renders layer 4 social media links[39m[90m               [39m [90m0.50s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies newsletter subscription form submission successfully pr[39m[90m…[39m [90m0.56s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies footer quick links point to working application endpoin[39m[90m…[39m [90m0.60s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies product card renders product title and formatted price[39m[90m… [39m [90m0.57s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies product card displays hot badge for featured products[39m[90m   [39m [90m0.56s[39m  
+  [31;1m⨯[39;22m[90m [39m[90mit verifies product card omits hot badge for regular non-featured p[39m[90m…[39m [90m0.47s[39m  
+  [31;1m⨯[39;22m[90m [39m[90mit verifies product card renders svg placeholder fallback when imag[39m[90m…[39m [90m0.47s[39m  
+  [31;1m⨯[39;22m[90m [39m[90mit verifies product card renders detail hover bar with xem chi tiet[39m[90m…[39m [90m0.47s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies product card integrates wishlist button component when[39m[90m… [39m [90m0.63s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies livewire cart drawer mounts and displays empty state wh[39m[90m…[39m [90m0.45s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies livewire add to cart button adds product and dispatches[39m[90m…[39m [90m0.47s[39m  
+  [31;1m⨯[39;22m[90m [39m[90mit verifies livewire cart drawer updates item quantity[39m[90m              [39m [90m0.55s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies livewire cart drawer removes item from cart[39m[90m             [39m [90m0.42s[39m  
+  [32;1m✓[39;22m[90m [39m[90mit verifies livewire cart count component updates accurately[39m[90m        [39m [90m0.38s[39m  
+  [31;1m⨯[39;22m[90m [39m[90mit verifies checkout page loads successfully when cart has items[39m[90m   [39m [90m31.17s[39m  
+  [31;1m⨯[39;22m[90m [39m[90mit verifies guest order placement via checkout pipeline creates ord[39m[90m…[39m [90m9.33s[39m  
+  [31m────────────────────────────────────────────────────────────────────────────[39m  
+  [41;1m FAILED [49;22m [1mTests\Feature\E2E\Tier1FeatureCoverageTest[22m [90m>[39m it verifies storefro…   
+[39;1m  Expected: [39;22m[31m<!DOCTYPE html>\n[39m[39;1m
+  [39;22m[31m<html lang="en">[39m[31m\n[39m[39;1m
+  [39;22m[31m<head>[39m[31m\n[39m[39;1m
+  [39;22m[90m... (980 more lines)[39m[39;1m
+
+  To contain: [39;22m[32mbg-[#F0F0F0][39m
+
+  at [32mtests/Feature/E2E/Tier1_FeatureCoverageTest.php[39m:[32m73[39m
+     69▕     $response = $this->get(route('home'));
+     70▕     $response->assertOk();
+     71▕ 
+     72▕     // Verify tokenized utility classes and hex styling in layout and components
+  ➜  73▕     $response->assertSee('bg-[#F0F0F0]', false);
+     74▕     $response->assertSee('border-[#E5E5E5]', false);
+     75▕     $response->assertSee('text-[#888888]', false);
+     76▕ });
+     77▕
+
+  [31m────────────────────────────────────────────────────────────────────────────[39m  
+  [41;1m FAILED [49;22m [1mTests\Feature\E2E\Tier1FeatureCoverageTest[22m [90m>[39m it verifies header r…   
+[39;1m  Expected: [39;22m[31m<!DOCTYPE html>\n[39m[39;1m
+  [39;22m[31m<html lang="en">[39m[31m\n[39m[39;1m
+  [39;22m[31m<head>[39m[31m\n[39m[39;1m
+  [39;22m[90m... (980 more lines)[39m[39;1m
+
+  To contain: [39;22m[32mborder-b border-[#E5E5E5][39m
+
+  at [32mtests/Feature/E2E/Tier1_FeatureCoverageTest.php[39m:[32m157[39m
+    153▕ it('verifies header renders with #E5E5E5 bottom border', function () {
+    154▕     $response = $this->get(route('home'));
+    155▕     $response->assertOk();
+    156▕ 
+  ➜ 157▕     $response->assertSee('border-b border-[#E5E5E5]', false);
+    158▕ });
+    159▕ 
+    160▕ it('verifies header contains brand logo on the left with uppercase tracking', function () {
+    161▕     $response = $this->get(route('home'));
+
+  [31m────────────────────────────────────────────────────────────────────────────[39m  
+  [41;1m FAILED [49;22m [1mTests\Feature\E2E\Tier1FeatureCoverageTest[22m [90m>[39m it verifies product…    
+[39;1m  Expected: [39;22m[31m<!DOCTYPE html>\n[39m[39;1m
+  [39;22m[31m<html lang="en">[39m[31m\n[39m[39;1m
+  [39;22m[31m<head>[39m[31m\n[39m[39;1m
+  [39;22m[90m... (710 more lines)[39m[39;1m
+
+  To contain: [39;22m[32mStandard Desk Lamp[39m
+
+  at [32mtests/Feature/E2E/Tier1_FeatureCoverageTest.php[39m:[32m492[39m
+    488▕ 
+    489▕     $response = $this->get(route('products.index'));
+    490▕     $response->assertOk();
+    491▕ 
+  ➜ 492▕     $response->assertSee('Standard Desk Lamp');
+    493▕     // Ensure standard desk lamp rendered without hot badge
+    494▕ });
+    495▕ 
+    496▕ it('verifies product card renders svg placeholder fallback when image path is null', function () {
+
+  [31m────────────────────────────────────────────────────────────────────────────[39m  
+  [41;1m FAILED [49;22m [1mTests\Feature\E2E\Tier1FeatureCoverageTest[22m [90m>[39m it verifies product…    
+[39;1m  Expected: [39;22m[31m<!DOCTYPE html>\n[39m[39;1m
+  [39;22m[31m<html lang="en">[39m[31m\n[39m[39;1m
+  [39;22m[31m<head>[39m[31m\n[39m[39;1m
+  [39;22m[90m... (710 more lines)[39m[39;1m
+
+  To contain: [39;22m[32mNull Image Product[39m
+
+  at [32mtests/Feature/E2E/Tier1_FeatureCoverageTest.php[39m:[32m510[39m
+    506▕ 
+    507▕     $response = $this->get(route('products.index'));
+    508▕     $response->assertOk();
+    509▕ 
+  ➜ 510▕     $response->assertSee('Null Image Product');
+    511▕     $response->assertSee('svg', false);
+    512▕ });
+    513▕ 
+    514▕ it('verifies product card renders detail hover bar with xem chi tiet action', function () {
+
+  [31m────────────────────────────────────────────────────────────────────────────[39m  
+  [41;1m FAILED [49;22m [1mTests\Feature\E2E\Tier1FeatureCoverageTest[22m [90m>[39m it verifies product…    
+[39;1m  Expected: [39;22m[31m<!DOCTYPE html>\n[39m[39;1m
+  [39;22m[31m<html lang="en">[39m[31m\n[39m[39;1m
+  [39;22m[31m<head>[39m[31m\n[39m[39;1m
+  [39;22m[90m... (710 more lines)[39m[39;1m
+
+  To contain: [39;22m[32mXem Chi Tiết[39m
+
+  at [32mtests/Feature/E2E/Tier1_FeatureCoverageTest.php[39m:[32m527[39m
+    523▕ 
+    524▕     $response = $this->get(route('products.index'));
+    525▕     $response->assertOk();
+    526▕ 
+  ➜ 527▕     $response->assertSee('Xem Chi Tiết');
+    528▕ });
+    529▕ 
+    530▕ it('verifies product card integrates wishlist button component when customer is authenticated', function () {
+    531▕     $customer = Customer::create([
+
+  [31m────────────────────────────────────────────────────────────────────────────[39m  
+  [41;1m FAILED [49;22m [1mTests\Feature\E2E\Tier1FeatureCoverageTest[22m [90m>[39m it ve… [41;1m ViewException [49;22m  
+[39;1m  Typed property App\Livewire\CartDrawer::$promotionEngine must not be accessed before initialization (View: /app/resources/views/livewire/cart-drawer.blade.php)[39;22m
+
+  at [32mapp/Livewire/CartDrawer.php[39m:[32m263[39m
+    259▕         // [I-01] Use injected engine property — no app() service locator
+    260▕         $customer = auth('customer')->user();
+    261▕         $email = $customer?->email ?? '';
+    262▕ 
+  ➜ 263▕         return $this->promotionEngine->calculateCartDiscounts(
+    264▕             subtotal: $this->subtotal,
+    265▕             cartItems: $this->cartItems,
+    266▕             couponCode: $this->appliedCouponCode,
+    267▕             shippingFee: $this->estimatedShippingFee,
+
+  [33m1   [39m[39;1mapp/Livewire/CartDrawer.php[39;22m:[39;1m263[39;22m
+      [2m+7 vendor frames [22m
+  [33m9   [39m[39;1mstorage/framework/views/1fda67ac933ea45e575d9bae3cb7c5aa.php[39;22m:[39;1m426[39;22m
+
+  [31m────────────────────────────────────────────────────────────────────────────[39m  
+  [41;1m FAILED [49;22m [1mTests\Feature\E2E\Tier1FeatureCoverageTest[22m [90m>[39m it verifies checkout…   
+[39;1m  Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Error: Undefined constant "selectedPaymentMethod" in /app/storage/framework/views/45b63a03c84fd93c6f42f4930a3ba7fe.php:370
+Stack trace:
+#0 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(37): include()
+#1 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(38): App\Livewire\CheckoutFlow->{closure:Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine::evaluatePath():35}()
+#2 /app/vendor/laravel/framework/src/Illuminate/View/Engines/CompilerEngine.php(76): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->evaluatePath('/app/storage/fr...', Array)
+#3 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(16): Illuminate\View\Engines\CompilerEngine->get('/app/resources/...', Array)
+#4 /app/vendor/laravel/framework/src/Illuminate/View/View.php(208): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->get('/app/resources/...', Array)
+#5 /app/vendor/laravel/framework/src/Illuminate/View/View.php(191): Illuminate\View\View->getContents()
+#6 /app/vendor/laravel/framework/src/Illuminate/View/View.php(160): Illuminate\View\View->renderContents()
+#7 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(282): Illuminate\View\View->render(Object(Closure))
+#8 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(326): Livewire\Mechanisms\HandleComponents\HandleComponents->{closure:Livewire\Mechanisms\HandleComponents\HandleComponents::render():274}()
+#9 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(274): Livewire\Mechanisms\HandleComponents\HandleComponents->trackInRenderStack(Object(App\Livewire\CheckoutFlow), Object(Closure))
+#10 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(54): Livewire\Mechanisms\HandleComponents\HandleComponents->render(Object(App\Livewire\CheckoutFlow), '[39;22m[39;1m<div>[39;22m[39;1m</div>[39;22m[39;1m')
+#11 /app/vendor/livewire/livewire/src/LivewireManager.php(73): Livewire\Mechanisms\HandleComponents\HandleComponents->mount('App\\Livewire\\Ch...', Array, NULL)
+#12 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/HandlesPageComponents.php(17): Livewire\LivewireManager->mount('App\\Livewire\\Ch...', Array)
+#13 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/SupportPageComponents.php(117): Livewire\Component->{closure:Livewire\Features\SupportPageComponents\HandlesPageComponents::__invoke():14}()
+#14 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/HandlesPageComponents.php(14): Livewire\Features\SupportPageComponents\SupportPageComponents::interceptTheRenderOfTheComponentAndRetreiveTheLayoutConfiguration(Object(Closure))
+#15 /app/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): Livewire\Component->__invoke()
+#16 /app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(276): Illuminate\Routing\ControllerDispatcher->dispatch(Object(Illuminate\Routing\Route), Object(App\Livewire\CheckoutFlow), '__invoke')
+#17 /app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(216): Illuminate\Routing\Route->runController()
+#18 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\Routing\Route->run()
+#19 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Routing\Router->{closure:Illuminate\Routing\Router::runRouteWithinStack():821}(Object(Illuminate\Http\Request))
+#20 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(52): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#21 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestForgery.php(104): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#23 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestForgery->handle(Object(Illuminate\Http\Request), Object(Closure))
+#24 /app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#25 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\View\Middleware\ShareErrorsFromSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 /app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(120): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#27 /app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(63): Illuminate\Session\Middleware\StartSession->handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\Store), Object(Closure))
+#28 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Session\Middleware\StartSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#29 /app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#30 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse->handle(Object(Illuminate\Http\Request), Object(Closure))
+#31 /app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(74): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#32 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\EncryptCookies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#34 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#35 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#36 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#37 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#38 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#39 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Foundation\Http\Kernel->{closure:Illuminate\Foundation\Http\Kernel::dispatchToRouter():197}(Object(Illuminate\Http\Request))
+#40 /app/vendor/livewire/livewire/src/Features/SupportDisablingBackButtonCache/DisableBackButtonCacheMiddleware.php(19): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#41 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Livewire\Features\SupportDisablingBackButtonCache\DisableBackButtonCacheMiddleware->handle(Object(Illuminate\Http\Request), Object(Closure))
+#42 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#43 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#44 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))
+#45 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#46 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#47 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#48 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#49 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))
+#50 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#51 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))
+#52 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(61): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#53 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))
+#54 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#55 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#56 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#57 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks->handle(Object(Illuminate\Http\Request), Object(Closure))
+#58 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(28): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#59 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding->handle(Object(Illuminate\Http\Request), Object(Closure))
+#60 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#61 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#62 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#63 /app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(638): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#64 /app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(368): Illuminate\Foundation\Testing\TestCase->call('GET', 'http://localhos...', Array, Array, Array, Array)
+#65 /app/tests/Feature/E2E/Tier1_FeatureCoverageTest.php(679): Illuminate\Foundation\Testing\TestCase->get('http://localhos...')
+#66 /app/vendor/pestphp/pest/src/Factories/TestCaseMethodFactory.php(177): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:/app/tests/Feature/E2E/Tier1_FeatureCoverageTest.php:662}()
+#67 [internal function]: P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:Pest\Factories\TestCaseMethodFactory::getClosure():167}()
+#68 /app/vendor/pestphp/pest/src/Concerns/Testable.php(514): call_user_func_array(Object(Closure), Array)
+#69 /app/vendor/pestphp/pest/src/Support/ExceptionTrace.php(26): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:Pest\Concerns\Testable::__callClosure():514}()
+#70 /app/vendor/pestphp/pest/src/Concerns/Testable.php(514): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#71 /app/vendor/pestphp/pest/src/Concerns/Testable.php(336): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__callClosure(Object(Closure), Array)
+#72 /app/vendor/pestphp/pest/src/Factories/TestCaseFactory.php(179) : eval()'d code(659): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__runTest(Object(Closure))
+#73 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(1318): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__pest_evaluable_it_verifies_checkout_page_loads_successfully_when_cart_has_items()
+#74 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(1355): PHPUnit\Framework\TestCase->invokeTestMethod('__pest_evaluabl...', Array)
+#75 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(521): PHPUnit\Framework\TestCase->runTest()
+#76 /app/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php(99): PHPUnit\Framework\TestCase->runBare()
+#77 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(361): PHPUnit\Framework\TestRunner->run(Object(P\Tests\Feature\E2E\Tier1FeatureCoverageTest))
+#78 /app/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestCase->run()
+#79 /app/vendor/phpunit/phpunit/src/TextUI/TestRunner.php(64): PHPUnit\Framework\TestSuite->run()
+#80 /app/vendor/phpunit/phpunit/src/TextUI/Application.php(229): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#81 /app/vendor/pestphp/pest/src/Kernel.php(103): PHPUnit\TextUI\Application->run(Array)
+#82 /app/vendor/pestphp/pest/bin/pest(196): Pest\Kernel->handle(Array, Array)
+#83 /app/vendor/pestphp/pest/bin/pest(204): {closure:/app/vendor/pestphp/pest/bin/pest:19}()
+#84 /app/vendor/bin/pest(119): include('/app/vendor/pes...')
+#85 {main}
+
+Next Illuminate\View\ViewException: Undefined constant "selectedPaymentMethod" (View: /app/resources/views/livewire/checkout-flow.blade.php) in /app/storage/framework/views/45b63a03c84fd93c6f42f4930a3ba7fe.php:370
+Stack trace:
+#0 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(58): Illuminate\View\Engines\CompilerEngine->handleViewException(Object(Error), 2)
+#1 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(40): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->handleViewException(Object(Error), 2)
+#2 /app/vendor/laravel/framework/src/Illuminate/View/Engines/CompilerEngine.php(76): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->evaluatePath('/app/storage/fr...', Array)
+#3 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(16): Illuminate\View\Engines\CompilerEngine->get('/app/resources/...', Array)
+#4 /app/vendor/laravel/framework/src/Illuminate/View/View.php(208): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->get('/app/resources/...', Array)
+#5 /app/vendor/laravel/framework/src/Illuminate/View/View.php(191): Illuminate\View\View->getContents()
+#6 /app/vendor/laravel/framework/src/Illuminate/View/View.php(160): Illuminate\View\View->renderContents()
+#7 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(282): Illuminate\View\View->render(Object(Closure))
+#8 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(326): Livewire\Mechanisms\HandleComponents\HandleComponents->{closure:Livewire\Mechanisms\HandleComponents\HandleComponents::render():274}()
+#9 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(274): Livewire\Mechanisms\HandleComponents\HandleComponents->trackInRenderStack(Object(App\Livewire\CheckoutFlow), Object(Closure))
+#10 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(54): Livewire\Mechanisms\HandleComponents\HandleComponents->render(Object(App\Livewire\CheckoutFlow), '[39;22m[39;1m<div>[39;22m[39;1m</div>[39;22m[39;1m')
+#11 /app/vendor/livewire/livewire/src/LivewireManager.php(73): Livewire\Mechanisms\HandleComponents\HandleComponents->mount('App\\Livewire\\Ch...', Array, NULL)
+#12 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/HandlesPageComponents.php(17): Livewire\LivewireManager->mount('App\\Livewire\\Ch...', Array)
+#13 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/SupportPageComponents.php(117): Livewire\Component->{closure:Livewire\Features\SupportPageComponents\HandlesPageComponents::__invoke():14}()
+#14 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/HandlesPageComponents.php(14): Livewire\Features\SupportPageComponents\SupportPageComponents::interceptTheRenderOfTheComponentAndRetreiveTheLayoutConfiguration(Object(Closure))
+#15 /app/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): Livewire\Component->__invoke()
+#16 /app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(276): Illuminate\Routing\ControllerDispatcher->dispatch(Object(Illuminate\Routing\Route), Object(App\Livewire\CheckoutFlow), '__invoke')
+#17 /app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(216): Illuminate\Routing\Route->runController()
+#18 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\Routing\Route->run()
+#19 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Routing\Router->{closure:Illuminate\Routing\Router::runRouteWithinStack():821}(Object(Illuminate\Http\Request))
+#20 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(52): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#21 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestForgery.php(104): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#23 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestForgery->handle(Object(Illuminate\Http\Request), Object(Closure))
+#24 /app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#25 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\View\Middleware\ShareErrorsFromSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 /app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(120): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#27 /app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(63): Illuminate\Session\Middleware\StartSession->handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\Store), Object(Closure))
+#28 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Session\Middleware\StartSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#29 /app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#30 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse->handle(Object(Illuminate\Http\Request), Object(Closure))
+#31 /app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(74): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#32 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\EncryptCookies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#34 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#35 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#36 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#37 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#38 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#39 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Foundation\Http\Kernel->{closure:Illuminate\Foundation\Http\Kernel::dispatchToRouter():197}(Object(Illuminate\Http\Request))
+#40 /app/vendor/livewire/livewire/src/Features/SupportDisablingBackButtonCache/DisableBackButtonCacheMiddleware.php(19): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#41 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Livewire\Features\SupportDisablingBackButtonCache\DisableBackButtonCacheMiddleware->handle(Object(Illuminate\Http\Request), Object(Closure))
+#42 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#43 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#44 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))
+#45 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#46 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#47 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#48 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#49 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))
+#50 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#51 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))
+#52 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(61): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#53 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))
+#54 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#55 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#56 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#57 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks->handle(Object(Illuminate\Http\Request), Object(Closure))
+#58 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(28): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#59 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding->handle(Object(Illuminate\Http\Request), Object(Closure))
+#60 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#61 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#62 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#63 /app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(638): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#64 /app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(368): Illuminate\Foundation\Testing\TestCase->call('GET', 'http://localhos...', Array, Array, Array, Array)
+#65 /app/tests/Feature/E2E/Tier1_FeatureCoverageTest.php(679): Illuminate\Foundation\Testing\TestCase->get('http://localhos...')
+#66 /app/vendor/pestphp/pest/src/Factories/TestCaseMethodFactory.php(177): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:/app/tests/Feature/E2E/Tier1_FeatureCoverageTest.php:662}()
+#67 [internal function]: P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:Pest\Factories\TestCaseMethodFactory::getClosure():167}()
+#68 /app/vendor/pestphp/pest/src/Concerns/Testable.php(514): call_user_func_array(Object(Closure), Array)
+#69 /app/vendor/pestphp/pest/src/Support/ExceptionTrace.php(26): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:Pest\Concerns\Testable::__callClosure():514}()
+#70 /app/vendor/pestphp/pest/src/Concerns/Testable.php(514): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#71 /app/vendor/pestphp/pest/src/Concerns/Testable.php(336): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__callClosure(Object(Closure), Array)
+#72 /app/vendor/pestphp/pest/src/Factories/TestCaseFactory.php(179) : eval()'d code(659): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__runTest(Object(Closure))
+#73 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(1318): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__pest_evaluable_it_verifies_checkout_page_loads_successfully_when_cart_has_items()
+#74 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(1355): PHPUnit\Framework\TestCase->invokeTestMethod('__pest_evaluabl...', Array)
+#75 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(521): PHPUnit\Framework\TestCase->runTest()
+#76 /app/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php(99): PHPUnit\Framework\TestCase->runBare()
+#77 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(361): PHPUnit\Framework\TestRunner->run(Object(P\Tests\Feature\E2E\Tier1FeatureCoverageTest))
+#78 /app/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestCase->run()
+#79 /app/vendor/phpunit/phpunit/src/TextUI/TestRunner.php(64): PHPUnit\Framework\TestSuite->run()
+#80 /app/vendor/phpunit/phpunit/src/TextUI/Application.php(229): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#81 /app/vendor/pestphp/pest/src/Kernel.php(103): PHPUnit\TextUI\Application->run(Array)
+#82 /app/vendor/pestphp/pest/bin/pest(196): Pest\Kernel->handle(Array, Array)
+#83 /app/vendor/pestphp/pest/bin/pest(204): {closure:/app/vendor/pestphp/pest/bin/pest:19}()
+#84 /app/vendor/bin/pest(119): include('/app/vendor/pes...')
+#85 {main}
+
+----------------------------------------------------------------------------------
+
+Undefined constant "selectedPaymentMethod" (View: /app/resources/views/livewire/checkout-flow.blade.php)[39;22m
+
+  at [32mtests/Feature/E2E/Tier1_FeatureCoverageTest.php[39m:[32m680[39m
+    676▕         ],
+    677▕     ]);
+    678▕ 
+    679▕     $response = $this->get(route('checkout.index'));
+  ➜ 680▕     $response->assertOk();
+    681▕     $response->assertSee('Checkout Test Bed');
+    682▕ });
+    683▕ 
+    684▕ it('verifies guest order placement via checkout pipeline creates order in database', function () {
+
+  [31m────────────────────────────────────────────────────────────────────────────[39m  
+  [41;1m FAILED [49;22m [1mTests\Feature\E2E\Tier1FeatureCoverageTest[22m [90m>[39m it verifies guest or…   
+[39;1m  Expected response status code [201, 301, 302, 303, 307, 308] but received 500.
+Failed asserting that false is true.
+
+The following exception occurred during the last request:
+
+Error: Undefined constant "selectedPaymentMethod" in /app/storage/framework/views/45b63a03c84fd93c6f42f4930a3ba7fe.php:370
+Stack trace:
+#0 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(37): include()
+#1 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(38): App\Livewire\CheckoutFlow->{closure:Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine::evaluatePath():35}()
+#2 /app/vendor/laravel/framework/src/Illuminate/View/Engines/CompilerEngine.php(76): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->evaluatePath('/app/storage/fr...', Array)
+#3 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(16): Illuminate\View\Engines\CompilerEngine->get('/app/resources/...', Array)
+#4 /app/vendor/laravel/framework/src/Illuminate/View/View.php(208): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->get('/app/resources/...', Array)
+#5 /app/vendor/laravel/framework/src/Illuminate/View/View.php(191): Illuminate\View\View->getContents()
+#6 /app/vendor/laravel/framework/src/Illuminate/View/View.php(160): Illuminate\View\View->renderContents()
+#7 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(282): Illuminate\View\View->render(Object(Closure))
+#8 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(326): Livewire\Mechanisms\HandleComponents\HandleComponents->{closure:Livewire\Mechanisms\HandleComponents\HandleComponents::render():274}()
+#9 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(274): Livewire\Mechanisms\HandleComponents\HandleComponents->trackInRenderStack(Object(App\Livewire\CheckoutFlow), Object(Closure))
+#10 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(54): Livewire\Mechanisms\HandleComponents\HandleComponents->render(Object(App\Livewire\CheckoutFlow), '[39;22m[39;1m<div>[39;22m[39;1m</div>[39;22m[39;1m')
+#11 /app/vendor/livewire/livewire/src/LivewireManager.php(73): Livewire\Mechanisms\HandleComponents\HandleComponents->mount('App\\Livewire\\Ch...', Array, NULL)
+#12 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/HandlesPageComponents.php(17): Livewire\LivewireManager->mount('App\\Livewire\\Ch...', Array)
+#13 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/SupportPageComponents.php(117): Livewire\Component->{closure:Livewire\Features\SupportPageComponents\HandlesPageComponents::__invoke():14}()
+#14 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/HandlesPageComponents.php(14): Livewire\Features\SupportPageComponents\SupportPageComponents::interceptTheRenderOfTheComponentAndRetreiveTheLayoutConfiguration(Object(Closure))
+#15 /app/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): Livewire\Component->__invoke()
+#16 /app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(276): Illuminate\Routing\ControllerDispatcher->dispatch(Object(Illuminate\Routing\Route), Object(App\Livewire\CheckoutFlow), '__invoke')
+#17 /app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(216): Illuminate\Routing\Route->runController()
+#18 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\Routing\Route->run()
+#19 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Routing\Router->{closure:Illuminate\Routing\Router::runRouteWithinStack():821}(Object(Illuminate\Http\Request))
+#20 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(52): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#21 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(168): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#23 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(129): Illuminate\Routing\Middleware\ThrottleRequests->handleRequest(Object(Illuminate\Http\Request), Object(Closure), Array)
+#24 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(90): Illuminate\Routing\Middleware\ThrottleRequests->handleRequestUsingNamedLimiter(Object(Illuminate\Http\Request), Object(Closure), 'checkout', Object(Closure))
+#25 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\ThrottleRequests->handle(Object(Illuminate\Http\Request), Object(Closure), 'checkout')
+#26 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestForgery.php(104): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#27 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestForgery->handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 /app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#29 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\View\Middleware\ShareErrorsFromSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 /app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(120): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#31 /app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(63): Illuminate\Session\Middleware\StartSession->handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\Store), Object(Closure))
+#32 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Session\Middleware\StartSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 /app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#34 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse->handle(Object(Illuminate\Http\Request), Object(Closure))
+#35 /app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(74): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#36 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\EncryptCookies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#37 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#38 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#39 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#40 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#41 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#42 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#43 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Foundation\Http\Kernel->{closure:Illuminate\Foundation\Http\Kernel::dispatchToRouter():197}(Object(Illuminate\Http\Request))
+#44 /app/vendor/livewire/livewire/src/Features/SupportDisablingBackButtonCache/DisableBackButtonCacheMiddleware.php(19): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#45 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Livewire\Features\SupportDisablingBackButtonCache\DisableBackButtonCacheMiddleware->handle(Object(Illuminate\Http\Request), Object(Closure))
+#46 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#47 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#48 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))
+#49 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#50 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#51 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#52 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#53 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))
+#54 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#55 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))
+#56 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(61): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#57 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))
+#58 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#59 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#60 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#61 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks->handle(Object(Illuminate\Http\Request), Object(Closure))
+#62 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(28): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#63 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding->handle(Object(Illuminate\Http\Request), Object(Closure))
+#64 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#65 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#66 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#67 /app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(638): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#68 /app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(397): Illuminate\Foundation\Testing\TestCase->call('POST', 'http://localhos...', Array, Array, Array, Array)
+#69 /app/tests/Feature/E2E/Tier1_FeatureCoverageTest.php(701): Illuminate\Foundation\Testing\TestCase->post('http://localhos...', Array)
+#70 /app/vendor/pestphp/pest/src/Factories/TestCaseMethodFactory.php(177): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:/app/tests/Feature/E2E/Tier1_FeatureCoverageTest.php:684}()
+#71 [internal function]: P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:Pest\Factories\TestCaseMethodFactory::getClosure():167}()
+#72 /app/vendor/pestphp/pest/src/Concerns/Testable.php(514): call_user_func_array(Object(Closure), Array)
+#73 /app/vendor/pestphp/pest/src/Support/ExceptionTrace.php(26): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:Pest\Concerns\Testable::__callClosure():514}()
+#74 /app/vendor/pestphp/pest/src/Concerns/Testable.php(514): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#75 /app/vendor/pestphp/pest/src/Concerns/Testable.php(336): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__callClosure(Object(Closure), Array)
+#76 /app/vendor/pestphp/pest/src/Factories/TestCaseFactory.php(179) : eval()'d code(672): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__runTest(Object(Closure))
+#77 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(1318): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__pest_evaluable_it_verifies_guest_order_placement_via_checkout_pipeline_creates_order_in_database()
+#78 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(1355): PHPUnit\Framework\TestCase->invokeTestMethod('__pest_evaluabl...', Array)
+#79 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(521): PHPUnit\Framework\TestCase->runTest()
+#80 /app/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php(99): PHPUnit\Framework\TestCase->runBare()
+#81 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(361): PHPUnit\Framework\TestRunner->run(Object(P\Tests\Feature\E2E\Tier1FeatureCoverageTest))
+#82 /app/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestCase->run()
+#83 /app/vendor/phpunit/phpunit/src/TextUI/TestRunner.php(64): PHPUnit\Framework\TestSuite->run()
+#84 /app/vendor/phpunit/phpunit/src/TextUI/Application.php(229): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#85 /app/vendor/pestphp/pest/src/Kernel.php(103): PHPUnit\TextUI\Application->run(Array)
+#86 /app/vendor/pestphp/pest/bin/pest(196): Pest\Kernel->handle(Array, Array)
+#87 /app/vendor/pestphp/pest/bin/pest(204): {closure:/app/vendor/pestphp/pest/bin/pest:19}()
+#88 /app/vendor/bin/pest(119): include('/app/vendor/pes...')
+#89 {main}
+
+Next Illuminate\View\ViewException: Undefined constant "selectedPaymentMethod" (View: /app/resources/views/livewire/checkout-flow.blade.php) in /app/storage/framework/views/45b63a03c84fd93c6f42f4930a3ba7fe.php:370
+Stack trace:
+#0 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(58): Illuminate\View\Engines\CompilerEngine->handleViewException(Object(Error), 2)
+#1 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(40): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->handleViewException(Object(Error), 2)
+#2 /app/vendor/laravel/framework/src/Illuminate/View/Engines/CompilerEngine.php(76): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->evaluatePath('/app/storage/fr...', Array)
+#3 /app/vendor/livewire/livewire/src/Mechanisms/ExtendBlade/ExtendedCompilerEngine.php(16): Illuminate\View\Engines\CompilerEngine->get('/app/resources/...', Array)
+#4 /app/vendor/laravel/framework/src/Illuminate/View/View.php(208): Livewire\Mechanisms\ExtendBlade\ExtendedCompilerEngine->get('/app/resources/...', Array)
+#5 /app/vendor/laravel/framework/src/Illuminate/View/View.php(191): Illuminate\View\View->getContents()
+#6 /app/vendor/laravel/framework/src/Illuminate/View/View.php(160): Illuminate\View\View->renderContents()
+#7 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(282): Illuminate\View\View->render(Object(Closure))
+#8 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(326): Livewire\Mechanisms\HandleComponents\HandleComponents->{closure:Livewire\Mechanisms\HandleComponents\HandleComponents::render():274}()
+#9 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(274): Livewire\Mechanisms\HandleComponents\HandleComponents->trackInRenderStack(Object(App\Livewire\CheckoutFlow), Object(Closure))
+#10 /app/vendor/livewire/livewire/src/Mechanisms/HandleComponents/HandleComponents.php(54): Livewire\Mechanisms\HandleComponents\HandleComponents->render(Object(App\Livewire\CheckoutFlow), '[39;22m[39;1m<div>[39;22m[39;1m</div>[39;22m[39;1m')
+#11 /app/vendor/livewire/livewire/src/LivewireManager.php(73): Livewire\Mechanisms\HandleComponents\HandleComponents->mount('App\\Livewire\\Ch...', Array, NULL)
+#12 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/HandlesPageComponents.php(17): Livewire\LivewireManager->mount('App\\Livewire\\Ch...', Array)
+#13 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/SupportPageComponents.php(117): Livewire\Component->{closure:Livewire\Features\SupportPageComponents\HandlesPageComponents::__invoke():14}()
+#14 /app/vendor/livewire/livewire/src/Features/SupportPageComponents/HandlesPageComponents.php(14): Livewire\Features\SupportPageComponents\SupportPageComponents::interceptTheRenderOfTheComponentAndRetreiveTheLayoutConfiguration(Object(Closure))
+#15 /app/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): Livewire\Component->__invoke()
+#16 /app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(276): Illuminate\Routing\ControllerDispatcher->dispatch(Object(Illuminate\Routing\Route), Object(App\Livewire\CheckoutFlow), '__invoke')
+#17 /app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(216): Illuminate\Routing\Route->runController()
+#18 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\Routing\Route->run()
+#19 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Routing\Router->{closure:Illuminate\Routing\Router::runRouteWithinStack():821}(Object(Illuminate\Http\Request))
+#20 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(52): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#21 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(168): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#23 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(129): Illuminate\Routing\Middleware\ThrottleRequests->handleRequest(Object(Illuminate\Http\Request), Object(Closure), Array)
+#24 /app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(90): Illuminate\Routing\Middleware\ThrottleRequests->handleRequestUsingNamedLimiter(Object(Illuminate\Http\Request), Object(Closure), 'checkout', Object(Closure))
+#25 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\ThrottleRequests->handle(Object(Illuminate\Http\Request), Object(Closure), 'checkout')
+#26 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestForgery.php(104): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#27 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestForgery->handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 /app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#29 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\View\Middleware\ShareErrorsFromSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 /app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(120): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#31 /app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(63): Illuminate\Session\Middleware\StartSession->handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\Store), Object(Closure))
+#32 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Session\Middleware\StartSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 /app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#34 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse->handle(Object(Illuminate\Http\Request), Object(Closure))
+#35 /app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(74): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#36 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\EncryptCookies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#37 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#38 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#39 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#40 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#41 /app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#42 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#43 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Foundation\Http\Kernel->{closure:Illuminate\Foundation\Http\Kernel::dispatchToRouter():197}(Object(Illuminate\Http\Request))
+#44 /app/vendor/livewire/livewire/src/Features/SupportDisablingBackButtonCache/DisableBackButtonCacheMiddleware.php(19): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#45 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Livewire\Features\SupportDisablingBackButtonCache\DisableBackButtonCacheMiddleware->handle(Object(Illuminate\Http\Request), Object(Closure))
+#46 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#47 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#48 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))
+#49 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#50 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#51 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#52 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#53 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))
+#54 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#55 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))
+#56 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(61): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#57 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))
+#58 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#59 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#60 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#61 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks->handle(Object(Illuminate\Http\Request), Object(Closure))
+#62 /app/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(28): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#63 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding->handle(Object(Illuminate\Http\Request), Object(Closure))
+#64 /app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#65 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#66 /app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#67 /app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(638): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#68 /app/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(397): Illuminate\Foundation\Testing\TestCase->call('POST', 'http://localhos...', Array, Array, Array, Array)
+#69 /app/tests/Feature/E2E/Tier1_FeatureCoverageTest.php(701): Illuminate\Foundation\Testing\TestCase->post('http://localhos...', Array)
+#70 /app/vendor/pestphp/pest/src/Factories/TestCaseMethodFactory.php(177): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:/app/tests/Feature/E2E/Tier1_FeatureCoverageTest.php:684}()
+#71 [internal function]: P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:Pest\Factories\TestCaseMethodFactory::getClosure():167}()
+#72 /app/vendor/pestphp/pest/src/Concerns/Testable.php(514): call_user_func_array(Object(Closure), Array)
+#73 /app/vendor/pestphp/pest/src/Support/ExceptionTrace.php(26): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->{closure:Pest\Concerns\Testable::__callClosure():514}()
+#74 /app/vendor/pestphp/pest/src/Concerns/Testable.php(514): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#75 /app/vendor/pestphp/pest/src/Concerns/Testable.php(336): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__callClosure(Object(Closure), Array)
+#76 /app/vendor/pestphp/pest/src/Factories/TestCaseFactory.php(179) : eval()'d code(672): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__runTest(Object(Closure))
+#77 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(1318): P\Tests\Feature\E2E\Tier1FeatureCoverageTest->__pest_evaluable_it_verifies_guest_order_placement_via_checkout_pipeline_creates_order_in_database()
+#78 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(1355): PHPUnit\Framework\TestCase->invokeTestMethod('__pest_evaluabl...', Array)
+#79 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(521): PHPUnit\Framework\TestCase->runTest()
+#80 /app/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php(99): PHPUnit\Framework\TestCase->runBare()
+#81 /app/vendor/phpunit/phpunit/src/Framework/TestCase.php(361): PHPUnit\Framework\TestRunner->run(Object(P\Tests\Feature\E2E\Tier1FeatureCoverageTest))
+#82 /app/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestCase->run()
+#83 /app/vendor/phpunit/phpunit/src/TextUI/TestRunner.php(64): PHPUnit\Framework\TestSuite->run()
+#84 /app/vendor/phpunit/phpunit/src/TextUI/Application.php(229): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#85 /app/vendor/pestphp/pest/src/Kernel.php(103): PHPUnit\TextUI\Application->run(Array)
+#86 /app/vendor/pestphp/pest/bin/pest(196): Pest\Kernel->handle(Array, Array)
+#87 /app/vendor/pestphp/pest/bin/pest(204): {closure:/app/vendor/pestphp/pest/bin/pest:19}()
+#88 /app/vendor/bin/pest(119): include('/app/vendor/pes...')
+#89 {main}
+
+----------------------------------------------------------------------------------
+
+Undefined constant "selectedPaymentMethod" (View: /app/resources/views/livewire/checkout-flow.blade.php)[39;22m
+
+  at [32mtests/Feature/E2E/Tier1_FeatureCoverageTest.php[39m:[32m710[39m
+    706▕         'payment_method' => 'cod',
+    707▕     ]);
+    708▕ 
+    709▕     $response->assertSessionHasNoErrors();
+  ➜ 710▕     $response->assertRedirect();
+    711▕ 
+    712▕     $this->assertDatabaseHas('orders', [
+    713▕         'customer_name' => 'Alice Nguyen',
+    714▕         'phone' => '0912345678',
+
+
+  [90mTests:[39m    [31;1m8 failed[39;22m[90m,[39m[39m [39m[32;1m43 passed[39;22m[90m (146 assertions)[39m
+  [90mDuration:[39m [39m76.32s[39m
+

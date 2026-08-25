@@ -9,11 +9,11 @@
         <div class="max-w-2xl mx-auto">
             {{-- ── Header ── --}}
             <div class="mb-8">
-                <a href="{{ route("account.profile") }}" class="text-xs uppercase tracking-wider text-[#888888] hover:text-[#23232C] font-medium link-underline inline-block mb-4">
+                <a href="{{ route("account.profile") }}" class="text-xs uppercase tracking-wider text-muted-text hover:text-primary-dark font-medium link-underline inline-block mb-4">
                     ← Quay lại hồ sơ
                 </a>
-                <h1 class="text-2xl font-light text-[#23232C] tracking-wide uppercase">Xác Thực Hai Yếu Tố (2FA)</h1>
-                <p class="text-sm text-[#888888] font-light mt-2">
+                <h1 class="text-2xl font-light text-primary-dark tracking-wide uppercase">Xác Thực Hai Yếu Tố (2FA)</h1>
+                <p class="text-sm text-muted-text font-light mt-2">
                     Tăng cường bảo mật tài khoản bằng mã xác thực từ ứng dụng Authenticator.
                 </p>
             </div>
@@ -32,7 +32,7 @@
 
             @if(!$customer->two_factor_enabled)
                 {{-- ── Enable 2FA ── --}}
-                <div class="bg-white border border-[#E5E5E5] p-6 shadow-sm space-y-6">
+                <div class="bg-white border border-border-subtle p-6 shadow-sm space-y-6">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-12 h-12 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-center shrink-0">
                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -40,25 +40,25 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-medium text-[#23232C]">Bật xác thực hai yếu tố</h3>
-                            <p class="text-sm text-[#888888] font-light">Thêm lớp bảo mật thứ hai cho tài khoản của bạn</p>
+                            <h3 class="text-lg font-medium text-primary-dark">Bật xác thực hai yếu tố</h3>
+                            <p class="text-sm text-muted-text font-light">Thêm lớp bảo mật thứ hai cho tài khoản của bạn</p>
                         </div>
                     </div>
 
-                    <div class="space-y-4 text-sm text-[#888888] leading-relaxed">
-                        <p>1. Tải ứng dụng Authenticator: <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank" class="text-[#23232C] hover:underline">Google Authenticator</a> (Android) hoặc <a href="https://apps.apple.com/app/google-authenticator/id388497605" target="_blank" class="text-[#23232C] hover:underline">iOS</a>, <a href="https://authy.com/download/" target="_blank" class="text-[#23232C] hover:underline">Authy</a>, hoặc <a href="https://www.microsoft.com/en-us/account/authenticator" target="_blank" class="text-[#23232C] hover:underline">Microsoft Authenticator</a>.</p>
+                    <div class="space-y-4 text-sm text-muted-text leading-relaxed">
+                        <p>1. Tải ứng dụng Authenticator: <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2" target="_blank" class="text-primary-dark hover:underline">Google Authenticator</a> (Android) hoặc <a href="https://apps.apple.com/app/google-authenticator/id388497605" target="_blank" class="text-primary-dark hover:underline">iOS</a>, <a href="https://authy.com/download/" target="_blank" class="text-primary-dark hover:underline">Authy</a>, hoặc <a href="https://www.microsoft.com/en-us/account/authenticator" target="_blank" class="text-primary-dark hover:underline">Microsoft Authenticator</a>.</p>
                         <p>2. Quét mã QR bên dưới bằng ứng dụng.</p>
                         <p>3. Nhập mã 6 chữ số từ ứng dụng để xác thực.</p>
                     </div>
 
                     {{-- QR Code --}}
                     @if($customer->two_factor_secret)
-                        <div class="text-center py-4 border border-[#E5E5E5] rounded-lg bg-white">
-                            <p class="text-xs text-[#888888] font-light mb-2">Quét mã QR này:</p>
+                        <div class="text-center py-4 border border-border-subtle rounded-lg bg-white">
+                            <p class="text-xs text-muted-text font-light mb-2">Quét mã QR này:</p>
                             <div class="inline-block p-4 bg-white">
                                 {!! $customer->two_factor_service->generateQrCodeSvg($customer) !!}
                             </div>
-                            <p class="text-xs text-[#888888] font-light mt-2">Hoặc nhập thủ công: <code class="font-mono text-sm bg-[#F5F5F5] px-2 py-1 rounded">{{ $customer->two_factor_secret }}</code></p>
+                            <p class="text-xs text-muted-text font-light mt-2">Hoặc nhập thủ công: <code class="font-mono text-sm bg-[#F5F5F5] px-2 py-1 rounded">{{ $customer->two_factor_secret }}</code></p>
                         </div>
                     @endif
 
@@ -66,10 +66,10 @@
                         @csrf
 
                         <div>
-                            <label for="code" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">Mã xác thực 6 chữ số <span class="text-[#E84444]">*</span></label>
-                            <input type="text" name="code" id="code" maxlength="6" pattern="[0-9]*" inputmode="numeric" required autocomplete="one-time-code" class="input-underline w-full max-w-xs text-center tracking-widest text-xl @error("code") border-[#E84444] @enderror">
+                            <label for="code" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">Mã xác thực 6 chữ số <span class="text-badge-hot">*</span></label>
+                            <input type="text" name="code" id="code" maxlength="6" pattern="[0-9]*" inputmode="numeric" required autocomplete="one-time-code" class="input-underline w-full max-w-xs text-center tracking-widest text-xl @error("code") border-badge-hot @enderror">
                             @error("code")
-                                <span class="text-[#E84444] text-xs mt-1 block">{{ $message }}</span>
+                                <span class="text-badge-hot text-xs mt-1 block">{{ $message }}</span>
                             @enderror
                         </div>
 
@@ -79,7 +79,7 @@
 
             @else
                 {{-- ── 2FA Enabled ── --}}
-                <div class="bg-white border border-[#E5E5E5] p-6 shadow-sm mb-6">
+                <div class="bg-white border border-border-subtle p-6 shadow-sm mb-6">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-center shrink-0">
@@ -88,22 +88,22 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-medium text-[#23232C]">2FA đã được bật</h3>
-                                <p class="text-sm text-[#888888] font-light">Tài khoản của bạn được bảo vệ bởi xác thực hai yếu tố</p>
+                                <h3 class="text-lg font-medium text-primary-dark">2FA đã được bật</h3>
+                                <p class="text-sm text-muted-text font-light">Tài khoản của bạn được bảo vệ bởi xác thực hai yếu tố</p>
                             </div>
                         </div>
                         <span class="text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded">ĐANG BẬT</span>
                     </div>
 
                     <div class="grid sm:grid-cols-2 gap-4 mb-6">
-                        <div class="bg-[#F9F9F9] border border-[#E5E5E5] p-4 rounded-lg">
-                            <p class="text-[10px] uppercase tracking-wider text-[#888888] font-medium mb-2">Mã khôi phục còn lại</p>
-                            <p class="text-2xl font-bold text-[#23232C]">{{ count($customer->two_factor_recovery_codes ?? []) }}</p>
-                            <p class="text-xs text-[#888888] font-light">Mỗi mã chỉ dùng được 1 lần</p>
+                        <div class="bg-[#F9F9F9] border border-border-subtle p-4 rounded-lg">
+                            <p class="text-[10px] uppercase tracking-wider text-muted-text font-medium mb-2">Mã khôi phục còn lại</p>
+                            <p class="text-2xl font-bold text-primary-dark">{{ count($customer->two_factor_recovery_codes ?? []) }}</p>
+                            <p class="text-xs text-muted-text font-light">Mỗi mã chỉ dùng được 1 lần</p>
                         </div>
-                        <div class="bg-[#F9F9F9] border border-[#E5E5E5] p-4 rounded-lg">
-                            <p class="text-[10px] uppercase tracking-wider text-[#888888] font-medium mb-2">Đã xác thực lúc</p>
-                            <p class="text-sm font-medium text-[#23232C]">{{ $customer->two_factor_confirmed_at?->format("d/m/Y H:i") ?? "Chưa xác thực" }}</p>
+                        <div class="bg-[#F9F9F9] border border-border-subtle p-4 rounded-lg">
+                            <p class="text-[10px] uppercase tracking-wider text-muted-text font-medium mb-2">Đã xác thực lúc</p>
+                            <p class="text-sm font-medium text-primary-dark">{{ $customer->two_factor_confirmed_at?->format("d/m/Y H:i") ?? "Chưa xác thực" }}</p>
                         </div>
                     </div>
 
@@ -121,10 +121,10 @@
                     @endif
 
                     {{-- Actions --}}
-                    <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-[#E5E5E5]">
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-border-subtle">
                         <form method="POST" action="{{ route("account.two-factor.regenerate-recovery-codes") }}">
                             @csrf
-                            <button type="submit" class="border border-[#23232C] text-[#23232C] hover:bg-[#23232C] hover:text-white text-xs font-semibold uppercase tracking-wider px-6 py-2.5 transition-colors w-full sm:w-auto"
+                            <button type="submit" class="border border-primary-dark text-primary-dark hover:bg-primary-dark hover:text-white text-xs font-semibold uppercase tracking-wider px-6 py-2.5 transition-colors w-full sm:w-auto"
                                     onclick="return confirm(\"Tạo mã khôi phục mới sẽ vô hiệu hóa các mã cũ. Tiếp tục?\")">
                                 Tạo lại mã khôi phục
                             </button>

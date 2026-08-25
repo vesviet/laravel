@@ -9,7 +9,7 @@
         <div class="max-w-sm mx-auto">
 
             <h1 class="text-2xl font-medium tracking-wide text-center mb-3">Quên Mật Khẩu</h1>
-            <p class="text-sm text-[#888888] font-light text-center mb-10 leading-relaxed">
+            <p class="text-sm text-muted-text font-light text-center mb-10 leading-relaxed">
                 Nhập email của bạn để nhận liên kết đặt lại mật khẩu.
             </p>
 
@@ -20,7 +20,7 @@
             @endif
 
             @if($errors->any())
-                <div class="border border-[#E84444] text-[#E84444] px-4 py-3 text-sm mb-6" role="alert">
+                <div class="border border-badge-hot text-badge-hot px-4 py-3 text-sm mb-6" role="alert">
                     @foreach($errors->all() as $error)
                         <p>{{ $error }}</p>
                     @endforeach
@@ -31,7 +31,7 @@
                 @csrf
 
                 <div>
-                    <label for="email" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
+                    <label for="email" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
                         Địa chỉ email
                     </label>
                     <input id="email"
@@ -40,7 +40,7 @@
                            autocomplete="email"
                            required
                            value="{{ old('email') }}"
-                           class="input-underline w-full @error('email') border-[#E84444] @enderror">
+                           class="input-underline w-full @error('email') border-badge-hot @enderror">
                 </div>
 
                 <button type="submit" class="btn-dark w-full">
@@ -50,7 +50,7 @@
 
             <div class="mt-8 text-center">
                 <a href="{{ route('account.login') }}"
-                   class="text-sm text-[#888888] hover:text-[#1a1a1a] transition-colors font-light">
+                   class="text-sm text-muted-text hover:text-[#1a1a1a] transition-colors font-light">
                     ← Quay lại đăng nhập
                 </a>
             </div>

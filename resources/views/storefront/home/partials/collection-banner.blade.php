@@ -7,9 +7,9 @@
 
         {{-- Centered Section Header --}}
         <div class="text-center max-w-2xl mx-auto mb-12">
-            <span class="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#888888] block mb-2">Curated Spaces</span>
-            <h2 class="text-2xl md:text-3xl font-medium tracking-tight text-[#23232C] mb-3">Bộ Sưu Tập Tiêu Biểu</h2>
-            <p class="text-xs md:text-sm text-[#888888] font-light leading-relaxed">
+            <span class="text-[10px] font-semibold tracking-[0.25em] uppercase text-muted-text block mb-2">Curated Spaces</span>
+            <h2 class="text-2xl md:text-3xl font-medium tracking-tight text-primary-dark mb-3">Bộ Sưu Tập Tiêu Biểu</h2>
+            <p class="text-xs md:text-sm text-muted-text font-light leading-relaxed">
                 Khám phá các thiết kế nội thất Scandinavian tiêu biểu mang phong cách tối giản và ấm cúng
             </p>
         </div>
@@ -26,13 +26,13 @@
                             1 => 'from-[#35353d] to-[#1a1a20]',
                             default => 'from-[#eeeae5] to-[#d5cec6]',
                         };
-                        $bgColor = $isDark ? 'bg-[#23232C]' : ($index === 0 ? 'bg-[#E8E4DF]' : 'bg-[#EAE7E2]');
+                        $bgColor = $isDark ? 'bg-primary-dark' : ($index === 0 ? 'bg-[#E8E4DF]' : 'bg-[#EAE7E2]');
                         $alignBottom = ($index === 1);
                     @endphp
                     <a href="{{ route('banner.click', $banner->id) }}"
                        target="{{ $banner->open_in_new_tab ? '_blank' : '_self' }}"
                        @if($banner->open_in_new_tab) rel="noopener noreferrer" @endif
-                       class="group relative overflow-hidden block h-[380px] md:h-[440px] {{ $bgColor }} focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                       class="group relative overflow-hidden block h-[380px] md:h-[440px] {{ $bgColor }} focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
                        aria-label="Bộ sưu tập {{ $banner->title }}">
                         @if($hasImage)
                             <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
@@ -44,19 +44,19 @@
 
                         <div class="absolute inset-0 flex flex-col items-center {{ $alignBottom ? 'justify-end pb-10' : 'justify-start pt-10' }} text-center px-6 z-10">
                             @if($banner->eyebrow)
-                                <p class="text-[10px] font-semibold tracking-[0.25em] uppercase {{ ($hasImage || $isDark) ? 'text-white/70' : 'text-[#888888]' }} mb-2">
+                                <p class="text-[10px] font-semibold tracking-[0.25em] uppercase {{ ($hasImage || $isDark) ? 'text-white/70' : 'text-muted-text' }} mb-2">
                                     {{ $banner->eyebrow }}
                                 </p>
                             @endif
-                            <h3 class="text-xl md:text-2xl font-medium tracking-wide {{ ($hasImage || $isDark) ? 'text-white' : 'text-[#23232C]' }} mb-2">
+                            <h3 class="text-xl md:text-2xl font-medium tracking-wide {{ ($hasImage || $isDark) ? 'text-white' : 'text-primary-dark' }} mb-2">
                                 {{ $banner->title }}
                             </h3>
                             @if($banner->subtitle)
-                                <p class="text-xs {{ ($hasImage || $isDark) ? 'text-white/80' : 'text-[#888888]' }} font-light mb-4">
+                                <p class="text-xs {{ ($hasImage || $isDark) ? 'text-white/80' : 'text-muted-text' }} font-light mb-4">
                                     {{ $banner->subtitle }}
                                 </p>
                             @endif
-                            <span class="link-underline {{ ($hasImage || $isDark) ? 'text-white border-white' : 'text-[#23232C]' }} text-[10px] tracking-[0.2em] uppercase">
+                            <span class="link-underline {{ ($hasImage || $isDark) ? 'text-white border-white' : 'text-primary-dark' }} text-[10px] tracking-[0.2em] uppercase">
                                 {{ $banner->cta_text ?: 'SEE COLLECTIONS' }}
                             </span>
                         </div>
@@ -68,20 +68,20 @@
             @else
                 {{-- Card 1: Copenhague Desk / Đồ Nội Thất --}}
                 <a href="{{ route('products.index') }}"
-                   class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#E8E4DF] focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                   class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#E8E4DF] focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
                    aria-label="Bộ sưu tập Copenhague Desk — Đồ Nội Thất">
                     <div class="absolute inset-0 bg-gradient-to-b from-[#d8d2cb] to-[#beb5ab] transition-transform duration-700 ease-out group-hover:scale-105"></div>
                     <div class="absolute inset-0 flex flex-col items-center justify-start text-center pt-10 px-6 z-10">
-                        <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#888888] mb-2">Copenhague Desk · Danh Mục 01</p>
-                        <h3 class="text-xl md:text-2xl font-medium tracking-wide text-[#23232C] mb-2">Đồ Nội Thất</h3>
-                        <p class="text-xs text-[#888888] font-light mb-4">Giao hàng miễn phí & lắp đặt tận nơi</p>
-                        <span class="link-underline text-[#23232C] text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
+                        <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-muted-text mb-2">Copenhague Desk · Danh Mục 01</p>
+                        <h3 class="text-xl md:text-2xl font-medium tracking-wide text-primary-dark mb-2">Đồ Nội Thất</h3>
+                        <p class="text-xs text-muted-text font-light mb-4">Giao hàng miễn phí & lắp đặt tận nơi</p>
+                        <span class="link-underline text-primary-dark text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
                     </div>
                 </a>
 
                 {{-- Card 2: Cement Wood Lamp / Trang Trí Nhà --}}
                 <a href="{{ route('products.index') }}"
-                   class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#23232C] focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                   class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-primary-dark focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
                    aria-label="Bộ sưu tập Cement Wood Lamp — Trang Trí Nhà">
                     <div class="absolute inset-0 bg-gradient-to-b from-[#35353d] to-[#1a1a20] transition-transform duration-700 ease-out group-hover:scale-105"></div>
                     <div class="absolute inset-0 flex flex-col items-center justify-end text-center pb-10 px-6 z-10">
@@ -94,14 +94,14 @@
 
                 {{-- Card 3: Arte 60 Stool / Phụ Kiện --}}
                 <a href="{{ route('products.index') }}"
-                   class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#EAE7E2] focus-visible:ring-2 focus-visible:ring-[#23232C] focus-visible:outline-none"
+                   class="group relative overflow-hidden block h-[380px] md:h-[440px] bg-[#EAE7E2] focus-visible:ring-2 focus-visible:ring-primary-dark focus-visible:outline-none"
                    aria-label="Bộ sưu tập Arte 60 Stool — Phụ Kiện">
                     <div class="absolute inset-0 bg-gradient-to-b from-[#eeeae5] to-[#d5cec6] transition-transform duration-700 ease-out group-hover:scale-105"></div>
                     <div class="absolute inset-0 flex flex-col items-center justify-start text-center pt-10 px-6 z-10">
-                        <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-[#888888] mb-2">Arte 60 Stool · Danh Mục 03</p>
-                        <h3 class="text-xl md:text-2xl font-medium tracking-wide text-[#23232C] mb-2">Phụ Kiện</h3>
-                        <p class="text-xs text-[#888888] font-light mb-4">Điểm nhấn nghệ thuật tối giản Bắc Âu</p>
-                        <span class="link-underline text-[#23232C] text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
+                        <p class="text-[10px] font-semibold tracking-[0.25em] uppercase text-muted-text mb-2">Arte 60 Stool · Danh Mục 03</p>
+                        <h3 class="text-xl md:text-2xl font-medium tracking-wide text-primary-dark mb-2">Phụ Kiện</h3>
+                        <p class="text-xs text-muted-text font-light mb-4">Điểm nhấn nghệ thuật tối giản Bắc Âu</p>
+                        <span class="link-underline text-primary-dark text-[10px] tracking-[0.2em] uppercase">SEE COLLECTIONS</span>
                     </div>
                 </a>
             @endif

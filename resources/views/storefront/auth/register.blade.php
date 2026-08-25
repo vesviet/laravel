@@ -20,8 +20,8 @@
 
                 {{-- Name --}}
                 <div>
-                    <label for="name" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                        Họ và tên <span class="text-[#E84444]">*</span>
+                    <label for="name" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                        Họ và tên <span class="text-badge-hot">*</span>
                     </label>
                     <input type="text"
                            name="name"
@@ -30,16 +30,16 @@
                            required
                            autofocus
                            autocomplete="name"
-                           class="input-underline w-full @error('name') border-[#E84444] @enderror">
+                           class="input-underline w-full @error('name') border-badge-hot @enderror">
                     @error('name')
-                        <span class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                        <span class="text-badge-hot text-xs mt-1 block" role="alert">{{ $message }}</span>
                     @enderror
                 </div>
 
                 {{-- Email --}}
                 <div>
-                    <label for="email" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                        Email <span class="text-[#E84444]">*</span>
+                    <label for="email" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                        Email <span class="text-badge-hot">*</span>
                     </label>
                     <input type="email"
                            name="email"
@@ -47,48 +47,48 @@
                            value="{{ old('email') }}"
                            required
                            autocomplete="email"
-                           class="input-underline w-full @error('email') border-[#E84444] @enderror">
+                           class="input-underline w-full @error('email') border-badge-hot @enderror">
                     @error('email')
-                        <span class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                        <span class="text-badge-hot text-xs mt-1 block" role="alert">{{ $message }}</span>
                     @enderror
                 </div>
 
                 {{-- Phone --}}
                 <div>
-                    <label for="phone" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                        Số điện thoại <span class="text-[#888888] text-[9px] normal-case tracking-normal">(tuỳ chọn)</span>
+                    <label for="phone" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                        Số điện thoại <span class="text-muted-text text-[9px] normal-case tracking-normal">(tuỳ chọn)</span>
                     </label>
                     <input type="tel"
                            name="phone"
                            id="phone"
                            value="{{ old('phone') }}"
                            autocomplete="tel"
-                           class="input-underline w-full @error('phone') border-[#E84444] @enderror">
+                           class="input-underline w-full @error('phone') border-badge-hot @enderror">
                     @error('phone')
-                        <span class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                        <span class="text-badge-hot text-xs mt-1 block" role="alert">{{ $message }}</span>
                     @enderror
                 </div>
 
                 {{-- Password --}}
                 <div>
-                    <label for="password" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                        Mật khẩu <span class="text-[#E84444]">*</span>
+                    <label for="password" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                        Mật khẩu <span class="text-badge-hot">*</span>
                     </label>
                     <input type="password"
                            name="password"
                            id="password"
                            required
                            autocomplete="new-password"
-                           class="input-underline w-full @error('password') border-[#E84444] @enderror">
+                           class="input-underline w-full @error('password') border-badge-hot @enderror">
                     @error('password')
-                        <span class="text-[#E84444] text-xs mt-1 block" role="alert">{{ $message }}</span>
+                        <span class="text-badge-hot text-xs mt-1 block" role="alert">{{ $message }}</span>
                     @enderror
                 </div>
 
                 {{-- Confirm password --}}
                 <div>
-                    <label for="password_confirmation" class="block text-[10px] tracking-[0.15em] uppercase text-[#888888] mb-2">
-                        Xác nhận mật khẩu <span class="text-[#E84444]">*</span>
+                    <label for="password_confirmation" class="block text-[10px] tracking-[0.15em] uppercase text-muted-text mb-2">
+                        Xác nhận mật khẩu <span class="text-badge-hot">*</span>
                     </label>
                     <input type="password"
                            name="password_confirmation"
@@ -104,7 +104,7 @@
             </form>
 
             <div class="mt-8 text-center">
-                <p class="text-sm text-[#888888] font-light">
+                <p class="text-sm text-muted-text font-light">
                     Đã có tài khoản?
                     <a href="{{ route('account.login') }}"
                        class="text-[#1a1a1a] hover:opacity-60 transition-opacity ml-1 underline underline-offset-2">

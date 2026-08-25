@@ -3,7 +3,7 @@
     @if($product->variants->count() > 0)
         <div>
             <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-semibold text-[#23232C]">Tùy chọn phiên bản:</span>
+                <span class="text-xs font-semibold text-primary-dark">Tùy chọn phiên bản:</span>
             </div>
             <div class="flex flex-wrap gap-2">
                 @foreach($product->variants as $variant)
@@ -13,8 +13,8 @@
                                value="{{ $variant->id }}"
                                class="sr-only peer">
                         <span class="inline-block border text-xs px-3.5 py-2 transition-all cursor-pointer select-none
-                                     peer-checked:border-[#E84444] peer-checked:text-[#E84444] peer-checked:bg-[#FFF5F5] peer-checked:font-medium
-                                     border-[#E5E5E5] text-[#23232C] bg-white hover:border-[#23232C]">
+                                     peer-checked:border-badge-hot peer-checked:text-badge-hot peer-checked:bg-[#FFF5F5] peer-checked:font-medium
+                                     border-border-subtle text-primary-dark bg-white hover:border-primary-dark">
                             {{ $variant->name }} — {{ number_format($variant->price, 0, ',', '.') }}₫
                         </span>
                     </label>
@@ -26,8 +26,8 @@
     {{-- Số lượng (Quantity Stepper matching user screenshot) --}}
     <div>
         <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-semibold text-[#23232C]">Số lượng</span>
-            <span class="text-xs {{ $product->stock > 0 ? 'text-emerald-600' : 'text-[#E84444]' }}">
+            <span class="text-xs font-semibold text-primary-dark">Số lượng</span>
+            <span class="text-xs {{ $product->stock > 0 ? 'text-emerald-600' : 'text-badge-hot' }}">
                 {{ $product->stock > 0 ? 'Còn hàng (' . $product->stock . ' sp)' : 'Hết hàng' }}
             </span>
         </div>
@@ -69,12 +69,10 @@
             </div>
         @else
             <a href="{{ route('account.login') }}"
-               class="w-12 h-12 flex items-center justify-center border border-[#D1D5DB] bg-white text-[#9CA3AF] hover:text-[#E84444] hover:border-[#E84444] transition-colors shrink-0"
+               class="w-12 h-12 flex items-center justify-center border border-[#D1D5DB] bg-white text-[#9CA3AF] hover:text-badge-hot hover:border-badge-hot transition-colors shrink-0"
                aria-label="Thêm vào danh sách yêu thích"
                title="Yêu thích">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                </svg>
+                <x-icons.heart stroke="1.75" />
             </a>
         @endauth
 
@@ -97,7 +95,7 @@
             @if($product->stock <= 0) disabled @endif
             wire:loading.attr="disabled"
             wire:loading.class="opacity-75"
-            class="flex-1 h-12 flex items-center justify-center font-medium text-sm text-white bg-[#E84444] hover:bg-[#D32F2F] active:bg-[#B71C1C] transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+            class="flex-1 h-12 flex items-center justify-center font-medium text-sm text-white bg-badge-hot hover:bg-[#D32F2F] active:bg-[#B71C1C] transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
         >
             <span wire:loading.remove wire:target="addToCart" class="tracking-wide">Thêm vào giỏ hàng</span>
             <span wire:loading wire:target="addToCart" class="flex items-center justify-center gap-2">
