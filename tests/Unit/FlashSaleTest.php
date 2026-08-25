@@ -34,7 +34,7 @@ it('flash sale price overrides normal price when active', function () {
         'sold_quantity' => 0,
     ]);
 
-    $cartService = new CartService;
+    $cartService = app(CartService::class);
 
     // Before flash sale
     $cartService->add($product->id, null, 1);

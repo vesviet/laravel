@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->engine = new PromotionEngine;
+    $this->engine = app(PromotionEngine::class);
 });
 
 it('applies combo discount for two or more items', function () {

@@ -6,7 +6,7 @@ use App\Services\CartService;
 use Illuminate\Support\Facades\Session;
 
 beforeEach(function () {
-    $this->cartService = new CartService;
+    $this->cartService = app(CartService::class);
     Session::start();
 });
 

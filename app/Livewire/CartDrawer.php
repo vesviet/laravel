@@ -46,9 +46,13 @@ class CartDrawer extends Component
      */
     public float $estimatedShippingFee = 30000.0;
 
-    public function mount(CartService $cartService, PromotionEngine $promotionEngine): void
+    public function boot(PromotionEngine $promotionEngine): void
     {
         $this->promotionEngine = $promotionEngine;
+    }
+
+    public function mount(CartService $cartService): void
+    {
         $this->loadCart($cartService);
 
 

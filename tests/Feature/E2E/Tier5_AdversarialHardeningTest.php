@@ -45,7 +45,7 @@ beforeEach(function () {
 */
 
 it('verifies rapid successive additions of multiple unique products maintain exact cart counts and mathematical subtotal', function () {
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
     $products = [];
     $expectedSubtotal = 0;
     $expectedCount = 0;
@@ -84,7 +84,7 @@ it('verifies rapid successive additions of multiple unique products maintain exa
 });
 
 it('verifies rapid successive additions of same product aggregate atomically without key duplication', function () {
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
     $product = Product::create([
         'name' => 'Atomic Accumulation Stool',
         'slug' => 'atomic-accumulation-stool',
@@ -109,7 +109,7 @@ it('verifies rapid successive additions of same product aggregate atomically wit
 });
 
 it('verifies interleaved rapid add, update, and remove mutations result in consistent cart state', function () {
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
 
     $pA = Product::create(['name' => 'Prod A', 'slug' => 'prod-a', 'price' => 100000, 'stock' => 20, 'status' => 'active']);
     $pB = Product::create(['name' => 'Prod B', 'slug' => 'prod-b', 'price' => 200000, 'stock' => 20, 'status' => 'active']);
@@ -218,7 +218,7 @@ it('verifies cart calculations maintain floating-point precision with flash sale
         'sold_quantity' => 2,
     ]);
 
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
     $cartService->add($regularProduct->id, null, 2); // 2 * 600,000 = 1,200,000
     $cartService->add($flashProduct->id, null, 3);   // 3 * 499,000 = 1,497,000
 
@@ -260,7 +260,7 @@ it('verifies simultaneous operations across product variants create distinct car
         'sku' => 'CHAIR-WALNUT',
     ]);
 
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
     $cartService->add($product->id, $vOak->id, 2);
     $cartService->add($product->id, $vWalnut->id, 3);
     $cartService->add($product->id, null, 1); // Base model without variant
@@ -287,7 +287,7 @@ it('verifies multi-user session cart isolation under rapid parallel requests', f
     Session::put('cart', [
         "{$pA->id}_0" => ['product_id' => $pA->id, 'product_variant_id' => null, 'quantity' => 2],
     ]);
-    $service1 = new CartService();
+    $service1 = app(\App\Services\CartService::class);
     expect($service1->calculateTotal())->toBe(1000000.0);
 
     // User Session 2 (isolated)
@@ -295,7 +295,7 @@ it('verifies multi-user session cart isolation under rapid parallel requests', f
     Session::put('cart', [
         "{$pB->id}_0" => ['product_id' => $pB->id, 'product_variant_id' => null, 'quantity' => 3],
     ]);
-    $service2 = new CartService();
+    $service2 = app(\App\Services\CartService::class);
     expect($service2->calculateTotal())->toBe(2700000.0);
 });
 
@@ -391,7 +391,7 @@ it('verifies zero price and multi-billion VND price format accurately in views a
     $response->assertSee('0₫');
     $response->assertSee('2.500.000.000₫');
 
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
     $cartService->add($freeSample->id, null, 1);
     $cartService->add($billionSofa->id, null, 1);
 
@@ -869,7 +869,7 @@ it('verifies rapid sequential quantity increments and decrements maintain accura
         'status' => 'active',
     ]);
 
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
     $cartService->add($product->id, null, 1);
 
     Livewire::test(CartDrawer::class)
@@ -895,7 +895,7 @@ it('verifies CartDrawer ignores negative or zero quantity mutations without cras
         'status' => 'active',
     ]);
 
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
     $cartService->add($product->id, null, 2);
 
     Livewire::test(CartDrawer::class)
@@ -909,7 +909,7 @@ it('verifies CartDrawer ignores negative or zero quantity mutations without cras
 });
 
 it('verifies CartDrawer handles removal of non-existent items safely', function () {
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
 
     Livewire::test(CartDrawer::class)
         ->call('removeItem', 999999, null)
@@ -922,7 +922,7 @@ it('verifies CartDrawer and CartCount components remain in perfect synchronizati
     $p1 = Product::create(['name' => 'Sync Item 1', 'slug' => 'sync-item-1', 'price' => 200000, 'stock' => 20, 'status' => 'active']);
     $p2 = Product::create(['name' => 'Sync Item 2', 'slug' => 'sync-item-2', 'price' => 500000, 'stock' => 20, 'status' => 'active']);
 
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
     $cartService->add($p1->id, null, 3);
     $cartService->add($p2->id, null, 2);
 
@@ -951,7 +951,7 @@ it('verifies cart session state is preserved across multi-page storefront naviga
         'status' => 'published',
     ]);
 
-    $cartService = new CartService();
+    $cartService = app(\App\Services\CartService::class);
     $cartService->add($pNav->id, null, 2);
 
     // Navigate to Home
