@@ -127,25 +127,7 @@ class Order extends Model
         return in_array($status, [OrderStatus::Pending, OrderStatus::Confirmed]);
     }
 
-    public function getFormattedSubtotalAttribute(): string
-    {
-        return number_format($this->subtotal, 0, ',', '.') . '₫';
-    }
 
-    public function getFormattedDiscountAmountAttribute(): string
-    {
-        return number_format($this->discount_amount, 0, ',', '.') . '₫';
-    }
-
-    public function getFormattedShippingFeeAttribute(): string
-    {
-        return number_format($this->shipping_fee, 0, ',', '.') . '₫';
-    }
-
-    public function getFormattedTotalAmountAttribute(): string
-    {
-        return number_format($this->total_amount, 0, ',', '.') . '₫';
-    }
 
     /**
      * Total count of physical items in order.
