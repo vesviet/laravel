@@ -53,20 +53,20 @@ it("executes full checkout process and creates order with deducted inventory and
     $cartService->clear();
     $cartService->add($this->product->id, null, 2);
 
-    $customerData = [
-        "shippingData" => [
-            "customer_name" => "Nguyen Van A",
-            "phone" => "0912345678",
-            "email" => "nguyenvana@example.com",
-            "address" => "456 Nguyen Hue",
-            "city" => "Ho Chi Minh",
-            "district" => "District 1",
-            "ward" => "Ben Nghe",
-        ],
-        "payment_method" => "cod",
+    $shippingData = [
+        "customer_name" => "Nguyen Van A",
+        "phone" => "0912345678",
+        "email" => "nguyenvana@example.com",
+        "address" => "456 Nguyen Hue",
+        "city" => "Ho Chi Minh",
+        "district" => "District 1",
+        "ward" => "Ben Nghe",
     ];
 
-    $response = $this->post(route("checkout.store"), $customerData);
+    $component = \Livewire\Livewire::test(\App\Livewire\CheckoutFlow::class)
+        ->set('shippingData', $shippingData)
+        ->set('selectedPaymentMethod', 'cod')
+        ->call('submitOrder');
 
     $order = Order::where("email", "nguyenvana@example.com")->first();
     expect($order)->not->toBeNull();
@@ -80,7 +80,7 @@ it("executes full checkout process and creates order with deducted inventory and
     $this->product->refresh();
     expect($this->product->stock)->toBe(8);
 
-    $response->assertRedirect(route("checkout.success", ["order_number" => $order->order_number]));
+    $component->assertRedirect(route("checkout.success", ["order_number" => $order->order_number]));
 });
 
 it("tracks order by order number and phone or email", function () {

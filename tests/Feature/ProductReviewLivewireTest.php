@@ -24,7 +24,7 @@ it('redirects guest to login when attempting to submit review', function () {
         ->set('rating', 5)
         ->set('comment', 'Awesome!')
         ->call('submitReview')
-        ->assertRedirect(route('account.login'));
+        ->assertDispatched('show-login-modal');
 });
 
 it('rejects review if customer has not purchased and received the product', function () {
@@ -101,7 +101,7 @@ it('allows customer with delivered order to submit review and rejects duplicate 
         ->set('comment', 'Awesome product!')
         ->call('submitReview')
         ->assertHasNoErrors()
-        ->assertSee('Đánh giá của bạn đã được gửi thành công');
+        ->assertDispatched('review-submitted');
 
     $this->assertDatabaseHas('product_reviews', [
         'customer_id' => $customer->id,

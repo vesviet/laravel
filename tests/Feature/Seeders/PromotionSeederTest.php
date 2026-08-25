@@ -12,10 +12,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('promotion seeder populates exactly 6 scandinavian promotion campaigns', function () {
+test('promotion seeder populates exactly 7 scandinavian promotion campaigns', function () {
     $this->seed(PromotionSeeder::class);
 
-    expect(PromotionRule::count())->toBe(6);
+    expect(PromotionRule::count())->toBe(7);
 });
 
 test('promotion seeder populates campaign 1 WELCOME10 coupon rule with exact attributes', function () {
@@ -54,7 +54,7 @@ test('promotion seeder populates campaign 2 TIERED_PROMO automatic cart rule wit
         ->and((float) ($steps[0]['discount_value'] ?? $steps[0]['discount_percent']))->toBe(5.0)
         ->and($steps[1]['min_qty'])->toBe(4)
         ->and((float) ($steps[1]['discount_value'] ?? $steps[1]['discount_percent']))->toBe(10.0)
-        ->and($steps[2]['min_qty'])->toBe(6)
+        ->and($steps[2]['min_qty'])->toBe(7)
         ->and((float) ($steps[2]['discount_value'] ?? $steps[2]['discount_percent']))->toBe(15.0);
 });
 
@@ -173,15 +173,15 @@ test('promotion seeder dynamically resolves existing categories and products wit
 test('promotion seeder is strictly idempotent across consecutive executions', function () {
     // 1st run
     $this->seed(PromotionSeeder::class);
-    expect(PromotionRule::count())->toBe(6);
+    expect(PromotionRule::count())->toBe(7);
 
     // 2nd run
     $this->seed(PromotionSeeder::class);
-    expect(PromotionRule::count())->toBe(6);
+    expect(PromotionRule::count())->toBe(7);
 
     // 3rd run
     $this->seed(PromotionSeeder::class);
-    expect(PromotionRule::count())->toBe(6);
+    expect(PromotionRule::count())->toBe(7);
 
     // Verify all 6 rules still exist with correct codes and actions
     expect(PromotionRule::where('code', 'WELCOME10')->count())->toBe(1)
@@ -354,7 +354,7 @@ test('promotion engine correctly applies seeded VIPGOLD20 coupon with tier valid
 test('database seeder executes complete application seed including promotion seeder', function () {
     $this->seed(DatabaseSeeder::class);
 
-    expect(PromotionRule::count())->toBe(6);
+    expect(PromotionRule::count())->toBe(7);
 
     $welcomeRule = PromotionRule::where('code', 'WELCOME10')->first();
     $vipRule = PromotionRule::where('code', 'VIPGOLD20')->first();

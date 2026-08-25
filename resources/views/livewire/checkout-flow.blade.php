@@ -357,7 +357,7 @@
             <div class="w-full lg:w-[40%]">
                 <div class="sticky top-24">
                     <livewire:order-summary
-                        :breakdown="$this->breakdown"
+                        :breakdown="$this->breakdown->toArray()"
                         :subtotal="$subtotal"
                         :shipping-fee="$shippingFee"
                         :show-free-gifts="true"

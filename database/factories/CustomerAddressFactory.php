@@ -22,7 +22,7 @@ class CustomerAddressFactory extends Factory
             "recipient_name" => $this->faker->name(),
             "phone" => $this->faker->numerify("09########"),
             "address_line_1" => $this->faker->streetAddress(),
-            "address_line_2" => $this->faker->optional(0.3)->secondaryAddress(),
+            "address_line_2" => $this->faker->optional(0.3)->buildingNumber(),
             "city" => $this->faker->city(),
             "district" => $this->faker->citySuffix(),
             "ward" => $this->faker->optional(0.5)->streetSuffix(),
