@@ -129,7 +129,7 @@
                                     @if(auth("customer")->check())
                                         <div class="md:col-span-2">
                                             <livewire:address-selector
-                                                :customer="$customer"
+                                                :customer="$this->customer"
                                                 address-type="shipping"
                                                 :selected-address="selectedAddress"
                                                 key="address-selector-shipping"
@@ -164,7 +164,7 @@
                                                 autocomplete="address-level1"
                                                 class="input-underline w-full cursor-pointer @error('shippingData.city') border-badge-hot @enderror">
                                             <option value="">-- Chọn tỉnh/thành --</option>
-                                            @foreach($provinces as $province)
+                                            @foreach($this->provinces as $province)
                                                 <option value="{{ $province->name }}"
                                                         {{ $shippingData["city"] === $province->name ? "selected" : "" }}>
                                                     {{ $province->name }}
@@ -357,7 +357,7 @@
             <div class="w-full lg:w-[40%]">
                 <div class="sticky top-24">
                     <livewire:order-summary
-                        :breakdown="$breakdown"
+                        :breakdown="$this->breakdown"
                         :subtotal="$subtotal"
                         :shipping-fee="$shippingFee"
                         :show-free-gifts="true"
