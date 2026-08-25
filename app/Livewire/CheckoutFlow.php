@@ -60,6 +60,17 @@ class CheckoutFlow extends Component
         );
     }
 
+    public function getSelectedMethodDetails(): array
+    {
+        $methods = [
+            "cod" => ["name" => "Thanh toán khi nhận hàng (COD)", "description" => "Bạn thanh toán bằng tiền mặt khi nhận hàng."],
+            "vnpay" => ["name" => "VNPAY", "description" => "Thanh toán qua ứng dụng VNPAY hoặc ngân hàng trực tuyến."],
+            "momo" => ["name" => "Ví MoMo", "description" => "Thanh toán nhanh qua ví điện tử MoMo."],
+            "banking" => ["name" => "Chuyển khoản ngân hàng", "description" => "Chuyển khoản qua Internet Banking hoặc Mobile Banking."],
+        ];
+        return $methods[$this->selectedPaymentMethod] ?? ["name" => "Chưa chọn", "description" => ""];
+    }
+
     #[Computed]
     public function provinces()
     {

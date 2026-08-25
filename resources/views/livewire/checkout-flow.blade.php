@@ -249,7 +249,7 @@
 
                                 <livewire:payment-method-selector
                                     :available-methods="['cod', 'vnpay', 'momo', 'banking']"
-                                    :selected-method="selectedPaymentMethod"
+                                    :selected-method="$selectedPaymentMethod"
                                 />
 
                                 <div class="flex justify-end pt-4">
@@ -308,22 +308,19 @@
                                         <h3 class="text-xs font-semibold tracking-[0.15em] uppercase text-primary-dark mb-3">Phương thức thanh toán</h3>
                                         <div class="flex items-center gap-3">
                                             <div class="w-12 h-12 bg-surface-bg border border-border-subtle rounded-lg flex items-center justify-center shrink-0">
-                                                <template x-if="selectedPaymentMethod === 'cod'">
+                                                @if($selectedPaymentMethod === "cod")
                                                     <svg class="w-6 h-6 text-muted-text" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                </template>
-                                                <template x-if="selectedPaymentMethod === 'vnpay'">
+                                                @elseif($selectedPaymentMethod === "vnpay")
                                                     <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                                                </template>
-                                                <template x-if="selectedPaymentMethod === 'momo'">
+                                                @elseif($selectedPaymentMethod === "momo")
                                                     <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24"><path d="M17 12c0 2.76-2.24 5-5 5s-5-2.24-5-5 2.24-5 5-5 5 2.24 5 5zm-5 2c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>
-                                                </template>
-                                                <template x-if="selectedPaymentMethod === 'banking'">
+                                                @elseif($selectedPaymentMethod === "banking")
                                                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                </template>
+                                                @endif
                                             </div>
                                             <div>
-                                                <p class="font-medium" x-text="getSelectedMethodDetails().name ?? selectedPaymentMethod"></p>
-                                                <p class="text-xs text-muted-text" x-text="getSelectedMethodDetails().description"></p>
+                                                <p class="font-medium">{{ $this->getSelectedMethodDetails()['name'] ?? $selectedPaymentMethod }}</p>
+                                                <p class="text-xs text-muted-text">{{ $this->getSelectedMethodDetails()['description'] ?? '' }}</p>
                                             </div>
                                         </div>
                                     </div>
