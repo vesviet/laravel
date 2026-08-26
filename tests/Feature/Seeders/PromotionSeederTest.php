@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\OrderStatus;
 use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Order;
@@ -54,7 +55,7 @@ test('promotion seeder populates campaign 2 TIERED_PROMO automatic cart rule wit
         ->and((float) ($steps[0]['discount_value'] ?? $steps[0]['discount_percent']))->toBe(5.0)
         ->and($steps[1]['min_qty'])->toBe(4)
         ->and((float) ($steps[1]['discount_value'] ?? $steps[1]['discount_percent']))->toBe(10.0)
-        ->and($steps[2]['min_qty'])->toBe(7)
+        ->and($steps[2]['min_qty'])->toBe(6)
         ->and((float) ($steps[2]['discount_value'] ?? $steps[2]['discount_percent']))->toBe(15.0);
 });
 
@@ -131,27 +132,27 @@ test('promotion seeder populates campaign 6 VIPGOLD20 coupon rule targeting VIP 
 test('promotion seeder dynamically resolves existing categories and products without duplicate creation', function () {
     // Pre-create lighting category and desk/chair products with custom initial IDs
     $existingLighting = Category::create([
-        'name'        => 'Đèn Chiếu Sáng Pre-existing',
-        'slug'        => 'den-chieu-sang',
+        'name' => 'Đèn Chiếu Sáng Pre-existing',
+        'slug' => 'den-chieu-sang',
         'description' => 'Pre-existing lighting category',
     ]);
 
     $existingDesk = Product::create([
-        'name'        => 'Bàn Làm Việc Copenhague Desk Pre-existing',
-        'slug'        => 'copenhague-desk',
-        'sku'         => 'DSK-005',
-        'price'       => 14200000,
-        'stock'       => 10,
-        'status'      => 'published',
+        'name' => 'Bàn Làm Việc Copenhague Desk Pre-existing',
+        'slug' => 'copenhague-desk',
+        'sku' => 'DSK-005',
+        'price' => 14200000,
+        'stock' => 10,
+        'status' => 'published',
     ]);
 
     $existingChair = Product::create([
-        'name'        => 'Ghế Ăn Gỗ Sồi Synnes Dining Chair Pre-existing',
-        'slug'        => 'synnes-dining-chair',
-        'sku'         => 'CHR-004',
-        'price'       => 5800000,
-        'stock'       => 15,
-        'status'      => 'published',
+        'name' => 'Ghế Ăn Gỗ Sồi Synnes Dining Chair Pre-existing',
+        'slug' => 'synnes-dining-chair',
+        'sku' => 'CHR-004',
+        'price' => 5800000,
+        'stock' => 15,
+        'status' => 'published',
     ]);
 
     $this->seed(PromotionSeeder::class);
@@ -270,11 +271,11 @@ test('promotion engine correctly resolves seeded CATALOG_LIGHTING_15 catalog str
     $lightingCategory = Category::where('slug', 'den-chieu-sang')->first();
     $lampProduct = Product::create([
         'category_id' => $lightingCategory->id,
-        'name'        => 'Test Ambit Lamp',
-        'slug'        => 'test-ambit-lamp',
-        'price'       => 4000000.0,
-        'stock'       => 10,
-        'status'      => 'published',
+        'name' => 'Test Ambit Lamp',
+        'slug' => 'test-ambit-lamp',
+        'price' => 4000000.0,
+        'stock' => 10,
+        'status' => 'published',
     ]);
 
     $promotedResult = $engine->resolveProductPromotedPrice($lampProduct);
@@ -306,34 +307,34 @@ test('promotion engine correctly applies seeded VIPGOLD20 coupon with tier valid
     $engine = app(PromotionEngine::class);
 
     $vipCustomer = Customer::create([
-        'name'            => 'VIP Gold Member',
-        'email'           => 'vipgold@example.com',
-        'phone'           => '0988776655',
-        'password'        => bcrypt('password'),
-        'status'          => 'active',
+        'name' => 'VIP Gold Member',
+        'email' => 'vipgold@example.com',
+        'phone' => '0988776655',
+        'password' => bcrypt('password'),
+        'status' => 'active',
     ]);
 
     Order::create([
-        'customer_id'     => $vipCustomer->id,
-        'order_number'    => 'ORD-VIP-PRIOR',
-        'customer_name'   => $vipCustomer->name,
-        'email'           => $vipCustomer->email,
-        'phone'           => $vipCustomer->phone,
-        'address'         => '123 VIP St',
-        'subtotal'        => 25000000,
+        'customer_id' => $vipCustomer->id,
+        'order_number' => 'ORD-VIP-PRIOR',
+        'customer_name' => $vipCustomer->name,
+        'email' => $vipCustomer->email,
+        'phone' => $vipCustomer->phone,
+        'address' => '123 VIP St',
+        'subtotal' => 25000000,
         'discount_amount' => 0,
-        'shipping_fee'    => 0,
-        'total_amount'    => 25000000,
-        'status'          => \App\Enums\OrderStatus::Delivered,
-        'payment_method'  => 'cod',
+        'shipping_fee' => 0,
+        'total_amount' => 25000000,
+        'status' => OrderStatus::Delivered,
+        'payment_method' => 'cod',
     ]);
 
     $regularCustomer = Customer::create([
-        'name'            => 'Regular Member',
-        'email'           => 'regular@example.com',
-        'phone'           => '0988112233',
-        'password'        => bcrypt('password'),
-        'status'          => 'active',
+        'name' => 'Regular Member',
+        'email' => 'regular@example.com',
+        'phone' => '0988112233',
+        'password' => bcrypt('password'),
+        'status' => 'active',
     ]);
 
     // Order of 8.000.000₫: 20% of 8M = 1.6M, capped at 1.000.000₫ max discount

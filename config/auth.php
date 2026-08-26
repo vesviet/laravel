@@ -23,6 +23,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Admin Panel Roles
+    |--------------------------------------------------------------------------
+    |
+    | Roles that grant access to the Filament admin panel via
+    | User::canAccessPanel(). Keep this list in sync with the roles seeded by
+    | Database\Seeders\RolesAndPermissionsSeeder. An unset, empty, or malformed
+    | AUTH_ADMIN_ROLES value falls back to the defaults below so a bad env edit
+    | can never lock every admin out of the panel. Entries containing '|' are
+    | rejected because Spatie expands pipes into alternate role names, which
+    | would silently widen panel access beyond this list.
+    |
+    */
+
+    'admin_roles' => array_values(array_filter(array_map(
+        trim(...),
+        explode(',', (string) env('AUTH_ADMIN_ROLES', 'super_admin,panel_user')),
+    ), fn (string $role) => $role !== '' && ! str_contains($role, '|')))
+        ?: ['super_admin', 'panel_user'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Guards
     |--------------------------------------------------------------------------
     |
@@ -111,8 +132,8 @@ return [
         // B1: Customer password reset broker — uses same password_reset_tokens table
         'customers' => [
             'provider' => 'customers',
-            'table'    => 'password_reset_tokens',
-            'expire'   => 60,
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
             'throttle' => 60,
         ],
     ],

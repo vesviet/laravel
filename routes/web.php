@@ -11,7 +11,6 @@ use App\Http\Controllers\Storefront\CatalogController;
 use App\Http\Controllers\Storefront\CheckoutController;
 use App\Http\Controllers\Storefront\FeedController;
 use App\Http\Controllers\Storefront\HomepageController;
-use App\Http\Controllers\Storefront\LandingPageController;
 use App\Http\Controllers\Storefront\NewsletterController;
 use App\Http\Controllers\Storefront\NotificationPreferenceController;
 use App\Http\Controllers\Storefront\OrderTrackingController;
@@ -20,6 +19,7 @@ use App\Http\Controllers\Storefront\PrivacyController;
 use App\Http\Controllers\Storefront\ProfileController;
 use App\Http\Controllers\Storefront\ReferralController;
 use App\Http\Controllers\Storefront\SessionController;
+use App\Livewire\CheckoutFlow;
 use App\Livewire\WishlistPage;
 use Illuminate\Support\Facades\Route;
 
@@ -39,8 +39,8 @@ Route::get('/products', [CatalogController::class, 'index'])->name('products.ind
 Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');
 
 // Checkout
-Route::get('/checkout', \App\Livewire\CheckoutFlow::class)->name('checkout.index');
-Route::post('/checkout', \App\Livewire\CheckoutFlow::class)->name('checkout.store')->middleware('throttle:checkout');
+Route::get('/checkout', CheckoutFlow::class)->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store')->middleware('throttle:checkout');
 Route::get('/checkout/success/{order_number}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Order Tracking
@@ -119,9 +119,9 @@ Route::prefix('account')->name('account.')->group(function () {
 });
 
 // Admin Route for PDF — protected by web (Filament) auth guard.
-// Only authenticated admin users (App\Models\User) may download order invoices.
+// Authorization: OrderPolicy::view → 'view_order' permission (super_admin bypasses).
 Route::middleware('auth')->group(function () {
-    Route::get('/admin/orders/{id}/pdf', [OrderPdfController::class, 'download'])->name('admin.orders.pdf');
+    Route::get('/admin/orders/{order}/pdf', [OrderPdfController::class, 'download'])->name('admin.orders.pdf');
 });
 
 // SEO Feeds & XML Sitemaps

@@ -39,7 +39,7 @@
             <td class="right">
                 <strong>Date:</strong> {{ $order->created_at->format('F d, Y') }}<br>
                 <strong>Payment Method:</strong> {{ strtoupper($order->payment_method) }}<br>
-                <strong>Status:</strong> {{ ucfirst($order->status) }}
+                <strong>Status:</strong> {{ ucfirst($order->status->value) }}
             </td>
         </tr>
     </table>

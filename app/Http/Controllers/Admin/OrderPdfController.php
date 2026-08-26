@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 
 class OrderPdfController extends Controller
 {
-    public function download($id)
+    public function download(Order $order)
     {
-        $order = Order::with(['items.product', 'customer'])->findOrFail($id);
+        Gate::authorize('view', $order);
+
+        $order->load(['items.product', 'customer']);
 
         $pdf = Pdf::loadView('admin.orders.pdf', compact('order'));
 

@@ -131,7 +131,7 @@
                                             <livewire:address-selector
                                                 :customer="$this->customer"
                                                 address-type="shipping"
-                                                :selected-address="selectedAddress"
+                                                :selected-address="$selectedAddress"
                                                 key="address-selector-shipping"
                                             />
                                         </div>

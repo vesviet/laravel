@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 class CatalogController extends Controller
 {
     protected const PER_PAGE = 12;
+
     protected const MAX_PER_PAGE = 48;
 
     /**
@@ -17,28 +18,41 @@ class CatalogController extends Controller
      */
     public function index(Request $request)
     {
-        // Validate and sanitize input
+        // Validate and sanitize input.
+        // sort / q / search are sanitized manually below so unknown or
+        // oversized values fall back gracefully instead of erroring.
         $validated = $request->validate([
-            'sort'         => 'sometimes|string|in:newest,oldest,price_asc,price_desc,name_asc,name_desc,featured,best_selling,top_rated,on_sale',
-            'category'     => 'nullable|string|max:255',
-            'q'            => 'nullable|string|max:255',
-            'search'       => 'nullable|string|max:255',
-            'min_price'    => 'nullable|numeric|min:0',
-            'max_price'    => 'nullable|numeric|min:0',
-            'in_stock'     => 'sometimes|boolean',
-            'on_sale'      => 'sometimes|boolean',
+            'sort' => 'sometimes|nullable|string',
+            'category' => 'nullable|string|max:255',
+            'q' => 'nullable|string',
+            'search' => 'nullable|string',
+            'min_price' => 'nullable|numeric|min:0',
+            'max_price' => 'nullable|numeric|min:0',
+            'in_stock' => 'sometimes|boolean',
+            'on_sale' => 'sometimes|boolean',
             'new_arrivals' => 'sometimes|boolean',
-            'tags'         => 'nullable|array',
-            'tags.*'       => 'string|max:50',
-            'attributes'   => 'nullable|array',
-            'per_page'     => 'sometimes|integer|min:1|max:' . self::MAX_PER_PAGE,
-            'page'         => 'sometimes|integer|min:1',
+            'tags' => 'nullable|array',
+            'tags.*' => 'string|max:50',
+            'attributes' => 'nullable|array',
+            'per_page' => 'sometimes|integer|min:1|max:'.self::MAX_PER_PAGE,
+            'page' => 'sometimes|integer|min:1',
         ]);
 
         // Input processing
-        $sort = $validated['sort'] ?? 'newest';
+        $allowedSorts = [
+            'newest', 'oldest', 'price_asc', 'price_desc', 'name_asc',
+            'name_desc', 'featured', 'best_selling', 'top_rated', 'on_sale',
+        ];
+        $rawSort = $validated['sort'] ?? null;
+        $sort = in_array($rawSort, $allowedSorts, true) ? $rawSort : 'newest';
+
+        // Clamp oversized search terms to keep queries bounded.
+        $rawSearch = ($validated['q'] ?? null) ?? ($validated['search'] ?? null);
+        if (is_string($rawSearch)) {
+            $rawSearch = mb_substr(trim($rawSearch), 0, 255);
+        }
         $categorySlug = $validated['category'] ?? null;
-        $searchKeyword = $validated['q'] ?? $validated['search'] ?? null;
+        $searchKeyword = $rawSearch !== null && $rawSearch !== '' ? $rawSearch : null;
         $minPrice = isset($validated['min_price']) ? (float) $validated['min_price'] : null;
         $maxPrice = isset($validated['max_price']) ? (float) $validated['max_price'] : null;
         $inStockOnly = $validated['in_stock'] ?? false;
@@ -68,17 +82,17 @@ class CatalogController extends Controller
         $query = Product::published()
             ->with(['category', 'variants' => function ($q) {
                 $q->where('is_active', true)
-                  ->where('is_purchasable', true)
-                  ->orderBy('position');
+                    ->where('is_purchasable', true)
+                    ->orderBy('position');
             }])
-            ->when(!empty($categoryIds), fn ($q) => $q->whereIn('category_id', $categoryIds))
+            ->when(! empty($categoryIds), fn ($q) => $q->whereIn('category_id', $categoryIds))
             ->search($searchKeyword)
             ->priceRange($minPrice, $maxPrice)
             ->when($inStockOnly, fn ($q) => $q->inStock())
             ->when($onSaleOnly, fn ($q) => $q->onSale())
             ->when($newArrivalsOnly, fn ($q) => $q->newArrivals())
-            ->when(!empty($tags), fn ($q) => $q->withTags($tags))
-            ->when(!empty($attributes), fn ($q) => $q->withAttributes($attributes))
+            ->when(! empty($tags), fn ($q) => $q->withTags($tags))
+            ->when(! empty($attributes), fn ($q) => $q->withAttributes($attributes))
             ->sortedBy($sort);
 
         $products = $query->paginate($perPage)->withQueryString();
@@ -95,7 +109,7 @@ class CatalogController extends Controller
 
         // Price range for slider
         $priceRangeQuery = Product::published()
-            ->when(!empty($categoryIds), fn ($q) => $q->whereIn('category_id', $categoryIds));
+            ->when(! empty($categoryIds), fn ($q) => $q->whereIn('category_id', $categoryIds));
         $priceRange = [
             'min' => (int) $priceRangeQuery->clone()->min('price') ?? 0,
             'max' => (int) $priceRangeQuery->clone()->max('price') ?? 0,
@@ -103,25 +117,41 @@ class CatalogController extends Controller
 
         // Calculate number of active filters
         $activeFiltersCount = 0;
-        if (!empty($categorySlug)) $activeFiltersCount++;
-        if (!empty($searchKeyword)) $activeFiltersCount++;
-        if (!is_null($minPrice) || !is_null($maxPrice)) $activeFiltersCount++;
-        if ($inStockOnly) $activeFiltersCount++;
-        if ($onSaleOnly) $activeFiltersCount++;
-        if ($newArrivalsOnly) $activeFiltersCount++;
-        if (!empty($tags)) $activeFiltersCount++;
-        if (!empty($attributes)) $activeFiltersCount++;
+        if (! empty($categorySlug)) {
+            $activeFiltersCount++;
+        }
+        if (! empty($searchKeyword)) {
+            $activeFiltersCount++;
+        }
+        if (! is_null($minPrice) || ! is_null($maxPrice)) {
+            $activeFiltersCount++;
+        }
+        if ($inStockOnly) {
+            $activeFiltersCount++;
+        }
+        if ($onSaleOnly) {
+            $activeFiltersCount++;
+        }
+        if ($newArrivalsOnly) {
+            $activeFiltersCount++;
+        }
+        if (! empty($tags)) {
+            $activeFiltersCount++;
+        }
+        if (! empty($attributes)) {
+            $activeFiltersCount++;
+        }
 
         // Available sort options
         $sortOptions = [
-            'newest'       => 'Mới nhất',
-            'featured'     => 'Sản phẩm nổi bật',
-            'price_asc'    => 'Giá: Thấp đến cao',
-            'price_desc'   => 'Giá: Cao đến thấp',
-            'name_asc'     => 'Tên: A — Z',
-            'name_desc'    => 'Tên: Z — A',
-            'on_sale'      => 'Đang giảm giá',
-            'top_rated'    => 'Đánh giá cao nhất',
+            'newest' => 'Mới nhất',
+            'featured' => 'Sản phẩm nổi bật',
+            'price_asc' => 'Giá: Thấp đến cao',
+            'price_desc' => 'Giá: Cao đến thấp',
+            'name_asc' => 'Tên: A — Z',
+            'name_desc' => 'Tên: Z — A',
+            'on_sale' => 'Đang giảm giá',
+            'top_rated' => 'Đánh giá cao nhất',
         ];
 
         return view('storefront.products.index', compact(
@@ -156,8 +186,8 @@ class CatalogController extends Controller
             ->with([
                 'variants' => function ($q) {
                     $q->where('is_active', true)
-                      ->where('is_purchasable', true)
-                      ->orderBy('position');
+                        ->where('is_purchasable', true)
+                        ->orderBy('position');
                 },
                 'category',
                 'reviews' => fn ($q) => $q->where('status', 'approved')->latest()->with('customer'),
@@ -185,7 +215,7 @@ class CatalogController extends Controller
         $query = Product::published()
             ->whereNotNull('tags');
 
-        if (!empty($categoryIds)) {
+        if (! empty($categoryIds)) {
             $query->whereIn('category_id', $categoryIds);
         }
 
@@ -193,7 +223,7 @@ class CatalogController extends Controller
 
         $tagCounts = [];
         foreach ($products as $product) {
-            if (!empty($product->tags) && is_array($product->tags) && count($product->tags) > 0) {
+            if (! empty($product->tags) && is_array($product->tags) && count($product->tags) > 0) {
                 foreach ($product->tags as $tag) {
                     $tagCounts[$tag] = ($tagCounts[$tag] ?? 0) + 1;
                 }
@@ -217,8 +247,8 @@ class CatalogController extends Controller
             ->with([
                 'variants' => function ($q) {
                     $q->where('is_active', true)
-                      ->where('is_purchasable', true)
-                      ->orderBy('position');
+                        ->where('is_purchasable', true)
+                        ->orderBy('position');
                 },
                 'category',
             ])

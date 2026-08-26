@@ -311,7 +311,12 @@
          MAIN CONTENT
          ════════════════════════════════════════ --}}
     <main id="main-content" tabindex="-1" class="focus:outline-none min-h-[60vh]">
-        @yield('content')
+        @if (isset($slot))
+            {{-- Livewire full-page component content --}}
+            {{ $slot }}
+        @else
+            @yield('content')
+        @endif
     </main>
 
     {{-- ════════════════════════════════════════

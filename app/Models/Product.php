@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -41,21 +43,21 @@ class Product extends Model
     ];
 
     protected $casts = [
-        'attributes_json'   => 'array',
-        'tags'              => 'array',
-        'structured_data'   => 'array',
-        'price'             => 'integer',
-        'compare_at_price'  => 'integer',
-        'stock'             => 'integer',
+        'attributes_json' => 'array',
+        'tags' => 'array',
+        'structured_data' => 'array',
+        'price' => 'integer',
+        'compare_at_price' => 'integer',
+        'stock' => 'integer',
         'low_stock_threshold' => 'integer',
-        'weight'            => 'integer',
-        'length'            => 'integer',
-        'width'             => 'integer',
-        'height'            => 'integer',
-        'is_featured'       => 'boolean',
-        'is_visible'        => 'boolean',
-        'is_purchasable'    => 'boolean',
-        'published_at'      => 'datetime',
+        'weight' => 'integer',
+        'length' => 'integer',
+        'width' => 'integer',
+        'height' => 'integer',
+        'is_featured' => 'boolean',
+        'is_visible' => 'boolean',
+        'is_purchasable' => 'boolean',
+        'published_at' => 'datetime',
     ];
 
     protected $appends = [
@@ -95,7 +97,7 @@ class Product extends Model
     /**
      * Blog posts referencing this product for contextual commerce.
      */
-    public function posts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function posts(): BelongsToMany
     {
         return $this->belongsToMany(Post::class, 'post_product')
             ->withPivot('sort_order')
@@ -133,8 +135,8 @@ class Product extends Model
 
         return $query->where(function ($q) use ($term) {
             $q->where('name', 'like', "%{$term}%")
-              ->orWhere('sku', 'like', "%{$term}%")
-              ->orWhere('description', 'like', "%{$term}%");
+                ->orWhere('sku', 'like', "%{$term}%")
+                ->orWhere('description', 'like', "%{$term}%");
         });
     }
 
@@ -143,11 +145,11 @@ class Product extends Model
      */
     public function scopePriceRange($query, ?float $minPrice, ?float $maxPrice)
     {
-        if (!is_null($minPrice) && $minPrice > 0) {
+        if (! is_null($minPrice) && $minPrice > 0) {
             $query->where('price', '>=', $minPrice);
         }
 
-        if (!is_null($maxPrice) && $maxPrice > 0) {
+        if (! is_null($maxPrice) && $maxPrice > 0) {
             $query->where('price', '<=', $maxPrice);
         }
 
@@ -212,27 +214,27 @@ class Product extends Model
     public function scopeSortedBy($query, ?string $sort)
     {
         return match ($sort) {
-            'price_asc'     => $query->orderBy('price', 'asc'),
-            'price_desc'    => $query->orderBy('price', 'desc'),
-            'name_asc'      => $query->orderBy('name', 'asc'),
-            'name_desc'     => $query->orderBy('name', 'desc'),
-            'featured'      => $query->orderBy('is_featured', 'desc')->latest(),
-            'newest'        => $query->latest(),
-            'oldest'        => $query->oldest(),
-            'best_selling'  => $query->orderBy('stock', 'asc'), // Placeholder for actual sales count
-            'top_rated'     => $query->whereHas('reviews', fn ($q) => $q->where('status', 'approved'))
-                                        ->withAvg('reviews as avg_rating', 'rating')
-                                        ->orderBy('avg_rating', 'desc'),
-            'on_sale'       => $query->whereNotNull('compare_at_price')
-                                        ->whereRaw('compare_at_price > price'),
-            default         => $query->latest(),
+            'price_asc' => $query->orderBy('price', 'asc'),
+            'price_desc' => $query->orderBy('price', 'desc'),
+            'name_asc' => $query->orderBy('name', 'asc'),
+            'name_desc' => $query->orderBy('name', 'desc'),
+            'featured' => $query->orderBy('is_featured', 'desc')->latest(),
+            'newest' => $query->latest(),
+            'oldest' => $query->oldest(),
+            'best_selling' => $query->orderBy('stock', 'asc'), // Placeholder for actual sales count
+            'top_rated' => $query->whereHas('reviews', fn ($q) => $q->where('status', 'approved'))
+                ->withAvg('reviews as avg_rating', 'rating')
+                ->orderBy('avg_rating', 'desc'),
+            'on_sale' => $query->whereNotNull('compare_at_price')
+                ->whereRaw('compare_at_price > price'),
+            default => $query->latest(),
         };
     }
 
     public function scopeActive($query)
     {
         return $query->whereIn('status', ['active', 'published'])
-                     ->where('is_visible', true);
+            ->where('is_visible', true);
     }
 
     /**
@@ -241,8 +243,8 @@ class Product extends Model
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true)
-                     ->whereIn('status', ['active', 'published'])
-                     ->where('is_visible', true);
+            ->whereIn('status', ['active', 'published'])
+            ->where('is_visible', true);
     }
 
     /**
@@ -251,8 +253,8 @@ class Product extends Model
     public function scopeNewArrivals($query, int $days = 30)
     {
         return $query->where('published_at', '>=', now()->subDays($days))
-                     ->whereIn('status', ['active', 'published'])
-                     ->where('is_visible', true);
+            ->whereIn('status', ['active', 'published'])
+            ->where('is_visible', true);
     }
 
     /**
@@ -261,9 +263,9 @@ class Product extends Model
     public function scopeOnSale($query)
     {
         return $query->whereNotNull('compare_at_price')
-                     ->whereRaw('compare_at_price > price')
-                     ->whereIn('status', ['active', 'published'])
-                     ->where('is_visible', true);
+            ->whereRaw('compare_at_price > price')
+            ->whereIn('status', ['active', 'published'])
+            ->where('is_visible', true);
     }
 
     /**
@@ -272,8 +274,10 @@ class Product extends Model
     public function scopePublished($query)
     {
         return $query->whereIn('status', ['active', 'published'])
-                     ->where('is_visible', true)
-                     ->whereNotNull('published_at');
+            ->where('is_visible', true)
+            ->where(fn ($q) => $q
+                ->whereNull('published_at')
+                ->orWhere('published_at', '<=', now()));
     }
 
     /**
@@ -289,7 +293,7 @@ class Product extends Model
             return $path;
         }
 
-        return \Illuminate\Support\Facades\Storage::url($path);
+        return Storage::url($path);
     }
 
     /**
@@ -297,11 +301,11 @@ class Product extends Model
      */
     public function getPrimaryImageUrlAttribute(): ?string
     {
-        if (!empty($this->image_path)) {
+        if (! empty($this->image_path)) {
             return static::resolveImageUrl($this->image_path);
         }
 
-        if (!empty($this->attributes_json['primary_image'])) {
+        if (! empty($this->attributes_json['primary_image'])) {
             return static::resolveImageUrl($this->attributes_json['primary_image']);
         }
 
@@ -318,7 +322,7 @@ class Product extends Model
             ?? $this->hover_image
             ?? ($this->attributes_json['secondary_image'] ?? null);
 
-        if (!empty($secondary)) {
+        if (! empty($secondary)) {
             return static::resolveImageUrl($secondary);
         }
 
@@ -337,15 +341,15 @@ class Product extends Model
         }
 
         if ($secondary = $this->secondary_image_url) {
-            if (!in_array($secondary, $images)) {
+            if (! in_array($secondary, $images)) {
                 $images[] = $secondary;
             }
         }
 
-        if (!empty($this->attributes_json['gallery']) && is_array($this->attributes_json['gallery'])) {
+        if (! empty($this->attributes_json['gallery']) && is_array($this->attributes_json['gallery'])) {
             foreach ($this->attributes_json['gallery'] as $item) {
                 if ($url = static::resolveImageUrl($item)) {
-                    if (!in_array($url, $images)) {
+                    if (! in_array($url, $images)) {
                         $images[] = $url;
                     }
                 }
@@ -361,24 +365,24 @@ class Product extends Model
      */
     public function getAlbumImagesAttribute(): array
     {
-        if (!empty($this->attributes_json['album']) && is_array($this->attributes_json['album'])) {
+        if (! empty($this->attributes_json['album']) && is_array($this->attributes_json['album'])) {
             $album = [];
             foreach ($this->attributes_json['album'] as $item) {
                 if (is_string($item)) {
                     if ($url = static::resolveImageUrl($item)) {
                         $album[] = [
-                            'url'     => $url,
-                            'title'   => $this->name,
-                            'tag'     => 'Không Gian Sống',
+                            'url' => $url,
+                            'title' => $this->name,
+                            'tag' => 'Không Gian Sống',
                             'caption' => 'Phong cách bài trí nội thất Scandinavian hiện đại',
                         ];
                     }
-                } elseif (is_array($item) && !empty($item['url'])) {
+                } elseif (is_array($item) && ! empty($item['url'])) {
                     $item['url'] = static::resolveImageUrl($item['url']);
                     $album[] = $item;
                 }
             }
-            if (!empty($album)) {
+            if (! empty($album)) {
                 return $album;
             }
         }
@@ -389,9 +393,9 @@ class Product extends Model
         $tags = ['Góc Studio Sáng Tạo', 'Bàn Cạnh Giường & Đôn Trưng Bày', 'Không Gian Phòng Khách', 'Nghệ Thuật Xếp Chồng Điêu Khắc'];
         foreach ($gallery as $index => $imgUrl) {
             $album[] = [
-                'url'     => $imgUrl,
-                'title'   => $this->name . ' — Góc Nhìn ' . ($index + 1),
-                'tag'     => $tags[$index % count($tags)],
+                'url' => $imgUrl,
+                'title' => $this->name.' — Góc Nhìn '.($index + 1),
+                'tag' => $tags[$index % count($tags)],
                 'caption' => 'Thiết kế tối giản kết hợp hoàn hảo trong không gian sống hiện đại.',
             ];
         }
@@ -413,7 +417,7 @@ class Product extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return number_format($this->price, 0, ',', '.') . '₫';
+        return number_format($this->price, 0, ',', '.').'₫';
     }
 
     /**
@@ -422,8 +426,9 @@ class Product extends Model
     public function getFormattedCompareAtPriceAttribute(): ?string
     {
         if ($this->compare_at_price) {
-            return number_format($this->compare_at_price, 0, ',', '.') . '₫';
+            return number_format($this->compare_at_price, 0, ',', '.').'₫';
         }
+
         return null;
     }
 
@@ -440,9 +445,10 @@ class Product extends Model
      */
     public function getDiscountPercentageAttribute(): ?int
     {
-        if (!$this->has_discount || !$this->compare_at_price) {
+        if (! $this->has_discount || ! $this->compare_at_price) {
             return null;
         }
+
         return (int) round((($this->compare_at_price - $this->price) / $this->compare_at_price) * 100);
     }
 
@@ -470,11 +476,11 @@ class Product extends Model
         if ($this->stock <= 0) {
             return 'Hết hàng';
         }
-        
+
         if ($this->is_low_stock) {
             return "Sắp hết hàng (còn {$this->stock})";
         }
-        
+
         return "Còn hàng ({$this->stock})";
     }
 
@@ -486,11 +492,11 @@ class Product extends Model
         if ($this->stock <= 0) {
             return 'text-[#E84444]';
         }
-        
+
         if ($this->is_low_stock) {
             return 'text-amber-600';
         }
-        
+
         return 'text-emerald-600';
     }
 
@@ -502,6 +508,7 @@ class Product extends Model
         if ($this->length && $this->width && $this->height) {
             return "{$this->length} x {$this->width} x {$this->height} cm";
         }
+
         return null;
     }
 
@@ -513,6 +520,7 @@ class Product extends Model
         if ($this->length && $this->width && $this->height) {
             return $this->length * $this->width * $this->height;
         }
+
         return null;
     }
 
@@ -544,7 +552,7 @@ class Product extends Model
             'url' => $url,
             'priceCurrency' => 'VND',
             'price' => (string) $this->price,
-            'availability' => 'https://schema.org/' . ($this->stock > 0 ? 'InStock' : 'OutOfStock'),
+            'availability' => 'https://schema.org/'.($this->stock > 0 ? 'InStock' : 'OutOfStock'),
             'itemCondition' => 'https://schema.org/NewCondition',
         ];
 
@@ -563,7 +571,7 @@ class Product extends Model
             'offers' => $offers,
         ];
 
-        if (!empty($gallery)) {
+        if (! empty($gallery)) {
             $schema['image'] = $gallery;
         }
 

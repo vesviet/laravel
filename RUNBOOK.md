@@ -154,6 +154,43 @@ ls -lh backup_*.sql.gz | tail -5
 
 ---
 
+## Admin Panel Lockout / Granting Panel Access
+
+**Context:** Since the RBAC refactor, `/admin` access requires a DB role (`super_admin` or `panel_user`) — email domain no longer grants access.
+
+**After deploying to an existing environment, provision admins immediately (deploy does NOT do this):**
+
+```bash
+# Grant super_admin to an existing user (idempotent — safe to re-run)
+docker compose -f docker-compose.prod.yml exec app php artisan admin:grant ops@yourdomain.com
+
+# Verify panel access is GRANTED in the command output
+```
+
+**Symptoms:** Admin gets "These credentials do not match our records" or login loops back on `/admin`.
+
+**Triage:**
+
+```bash
+# 1. Check which users hold admin roles
+docker compose -f docker-compose.prod.yml exec app php artisan tinker --execute="
+  \Spatie\Permission\Models\Role::with('users')->get()
+    ->each(fn (\$r) => print(\$r->name.': '.\$r->users->pluck('email')->implode(', ').PHP_EOL));"
+
+# 2. Check configured admin roles match seeded role names
+grep AUTH_ADMIN_ROLES .env   # must contain e.g. super_admin,panel_user
+```
+
+**Common causes + fixes:**
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| User exists but cannot log into panel | No role assigned after RBAC cutover | `php artisan admin:grant <email>` |
+| ALL admins locked out | `AUTH_ADMIN_ROLES` set empty/garbage AND roles renamed | Fix env value; defaults fall back to `super_admin,panel_user` |
+| Role exists but permissions missing | `shield:generate` failed during seed/deploy | Re-run `php artisan shield:generate --all --panel=admin`, check logs |
+
+---
+
 ## Emergency Contacts / Escalation
 
 | Scenario | Action |

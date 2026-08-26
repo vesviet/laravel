@@ -1,6 +1,6 @@
 <div class="space-y-6">
     {{-- ── Saved Addresses ── --}}
-    @if($addresses->count() > 0)
+    @if(count($addresses) > 0)
         <div class="mb-6">
             <h4 class="text-xs font-semibold tracking-[0.15em] uppercase text-muted-text mb-3">
                 Địa chỉ {{ $addressType === "shipping" ? "giao hàng" : "thanh toán" }} đã lưu
@@ -94,7 +94,7 @@
     @endif
 
     {{-- ── Add New Address Button ── --}}
-    @if($addresses->count() > 0)
+    @if(count($addresses) > 0)
         <div class="text-center">
             <button type="button"
                 wire:click="toggleNewAddressForm"

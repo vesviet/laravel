@@ -249,7 +249,7 @@ it('verifies newsletter rejects malformed email format', function () {
 });
 
 it('verifies newsletter rejects email exceeding max length', function () {
-    $longEmail = str_repeat('a', 250) . '@example.com';
+    $longEmail = str_repeat('a', 250).'@example.com';
     $response = $this->post(route('newsletter.subscribe'), [
         'email' => $longEmail,
     ]);

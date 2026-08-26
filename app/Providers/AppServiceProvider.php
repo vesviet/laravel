@@ -6,14 +6,16 @@ use App\Events\OrderPlaced;
 use App\Listeners\SendOrderConfirmationEmail;
 use App\Models\Product;
 use App\Models\PromotionRule;
+use App\Models\User;
 use App\Observers\ProductObserver;
 use App\Observers\PromotionRuleObserver;
+use App\Settings\GeneralSettings;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,9 +37,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Super Admin bypass for all Shield and policy permission gates
-        Gate::before(function ($user, $ability) {
-            return $user->hasRole('super_admin') ? true : null;
+        // Super Admin bypass for all Shield and policy permission gates.
+        // Instance guard: gates may also be evaluated for non-User
+        // authenticatables (e.g. Customer on the customer guard) — they must
+        // fall through to normal policy evaluation instead of fataling.
+        Gate::before(function ($user, $ability): ?bool {
+            if (! $user instanceof User) {
+                return null;
+            }
+
+            return $user->hasRole(config('filament-shield.super_admin.name')) ? true : null;
         });
 
         if (! extension_loaded('intl')) {
@@ -86,7 +95,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Expose settings to all views
         try {
-            \Illuminate\Support\Facades\View::share('globalSettings', app(\App\Settings\GeneralSettings::class));
+            View::share('globalSettings', app(GeneralSettings::class));
         } catch (\Exception $e) {
             // Settings might not be migrated yet
         }

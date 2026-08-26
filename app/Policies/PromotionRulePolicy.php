@@ -10,18 +10,8 @@ class PromotionRulePolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Perform pre-authorization checks.
-     * Grants full unrestricted access to users with the 'super_admin' role.
-     */
-    public function before(User $user, string $ability): ?bool
-    {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
-        return null;
-    }
+    // NOTE: super_admin pre-authorization is handled globally by the
+    // Gate::before callback in AppServiceProvider — do not duplicate it here.
 
     /**
      * Determine whether the user can view any models.

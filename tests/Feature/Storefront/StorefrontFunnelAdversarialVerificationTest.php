@@ -2,25 +2,22 @@
 
 namespace Tests\Feature\Storefront;
 
-use App\Enums\OrderStatus;
+use App\Actions\ProcessCheckoutAction;
 use App\Livewire\CartDrawer;
 use App\Livewire\CouponInput;
 use App\Models\Category;
 use App\Models\Customer;
 use App\Models\FlashSale;
 use App\Models\FlashSaleItem;
-use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\PromotionRule;
 use App\Models\PromotionUsage;
 use App\Services\CartService;
-use App\Services\Promotions\DTOs\PromotedPriceResult;
 use App\Services\Promotions\PromotionEngine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Livewire\Livewire;
 
@@ -31,61 +28,61 @@ beforeEach(function () {
     Session::flush();
 
     $this->category = Category::create([
-        'name'      => 'Nội Thất Scandinavian',
-        'slug'      => 'scandinavian',
+        'name' => 'Nội Thất Scandinavian',
+        'slug' => 'scandinavian',
         'is_active' => true,
     ]);
 
     // Regular product (1,000,000 VND)
     $this->productA = Product::create([
-        'name'        => 'Bàn Ăn Gỗ Sồi Bắc Âu',
-        'slug'        => 'ban-an-go-soi-bac-au',
-        'sku'         => 'TBL-OAK-01',
-        'price'       => 1000000,
-        'stock'       => 50,
+        'name' => 'Bàn Ăn Gỗ Sồi Bắc Âu',
+        'slug' => 'ban-an-go-soi-bac-au',
+        'sku' => 'TBL-OAK-01',
+        'price' => 1000000,
+        'stock' => 50,
         'category_id' => $this->category->id,
-        'status'      => 'published',
+        'status' => 'published',
         'is_featured' => true,
     ]);
 
     // Secondary product (500,000 VND)
     $this->productB = Product::create([
-        'name'        => 'Ghế Thư Giãn Armchair',
-        'slug'        => 'ghe-thu-gian-armchair',
-        'sku'         => 'CHR-ARM-01',
-        'price'       => 500000,
-        'stock'       => 30,
+        'name' => 'Ghế Thư Giãn Armchair',
+        'slug' => 'ghe-thu-gian-armchair',
+        'sku' => 'CHR-ARM-01',
+        'price' => 500000,
+        'stock' => 30,
         'category_id' => $this->category->id,
-        'status'      => 'published',
+        'status' => 'published',
         'is_featured' => false,
     ]);
 
     // Product with variants
     $this->productWithVariants = Product::create([
-        'name'        => 'Đèn Thả Trần Phong Cách Bắc Âu',
-        'slug'        => 'den-tha-tran-bac-au',
-        'sku'         => 'LGT-PEN-01',
-        'price'       => 800000,
-        'stock'       => 20,
+        'name' => 'Đèn Thả Trần Phong Cách Bắc Âu',
+        'slug' => 'den-tha-tran-bac-au',
+        'sku' => 'LGT-PEN-01',
+        'price' => 800000,
+        'stock' => 20,
         'category_id' => $this->category->id,
-        'status'      => 'published',
+        'status' => 'published',
         'is_featured' => false,
     ]);
 
     $this->variantSmall = ProductVariant::create([
         'product_id' => $this->productWithVariants->id,
-        'name'       => 'Size S - 30cm',
-        'sku'        => 'LGT-PEN-01-S',
-        'price'      => 600000,
-        'stock'      => 10,
+        'name' => 'Size S - 30cm',
+        'sku' => 'LGT-PEN-01-S',
+        'price' => 600000,
+        'stock' => 10,
     ]);
 
     $this->variantLarge = ProductVariant::create([
         'product_id' => $this->productWithVariants->id,
-        'name'       => 'Size L - 50cm',
-        'sku'        => 'LGT-PEN-01-L',
-        'price'      => 900000,
-        'stock'      => 10,
+        'name' => 'Size L - 50cm',
+        'sku' => 'LGT-PEN-01-L',
+        'price' => 900000,
+        'stock' => 10,
     ]);
 });
 
@@ -130,15 +127,15 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
     test('Vector 1.2: Percentage Catalog Promotion (15% off) consistency across all touchpoints', function () {
         // Create 15% Catalog Promotion Rule on Scandinavian Category
         PromotionRule::create([
-            'name'           => 'Ưu Đãi Scandinavian 15%',
-            'rule_type'      => PromotionRule::RULE_TYPE_CATALOG,
-            'action_type'    => PromotionRule::ACTION_PERCENTAGE,
+            'name' => 'Ưu Đãi Scandinavian 15%',
+            'rule_type' => PromotionRule::RULE_TYPE_CATALOG,
+            'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 15.0,
-            'conditions'     => [
+            'conditions' => [
                 'category_ids' => [$this->category->id],
             ],
-            'priority'       => 1,
-            'is_active'      => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         $originalPrice = 1000000.0;
@@ -176,15 +173,15 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
         $checkoutResponse->assertSuccessful()
             ->assertSee('2.550.000₫');
 
-        $checkoutAction = app(\App\Actions\ProcessCheckoutAction::class);
+        $checkoutAction = app(ProcessCheckoutAction::class);
         $order = $checkoutAction->execute([
-            'customer_name'  => 'Trần Văn Bình',
-            'phone'          => '0908888999',
-            'email'          => 'binh.tran@example.com',
-            'address'        => '456 Lê Duẩn',
-            'city'           => 'Hồ Chí Minh',
-            'district'       => 'Quận 1',
-            'ward'           => 'Bến Nghé',
+            'customer_name' => 'Trần Văn Bình',
+            'phone' => '0908888999',
+            'email' => 'binh.tran@example.com',
+            'address' => '456 Lê Duẩn',
+            'city' => 'Hồ Chí Minh',
+            'district' => 'Quận 1',
+            'ward' => 'Bến Nghé',
             'payment_method' => 'cod',
         ]);
 
@@ -197,16 +194,16 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
     test('Vector 1.3: Percentage with Cap Catalog Promotion (30% max 200,000đ) consistency', function () {
         // 30% of 1,000,000 = 300,000, but capped at 200,000 -> Promoted price: 800,000₫
         PromotionRule::create([
-            'name'                => 'Giảm 30% Tối Đa 200K',
-            'rule_type'           => PromotionRule::RULE_TYPE_CATALOG,
-            'action_type'         => PromotionRule::ACTION_PERCENTAGE,
-            'discount_value'      => 30.0,
+            'name' => 'Giảm 30% Tối Đa 200K',
+            'rule_type' => PromotionRule::RULE_TYPE_CATALOG,
+            'action_type' => PromotionRule::ACTION_PERCENTAGE,
+            'discount_value' => 30.0,
             'max_discount_amount' => 200000.0,
-            'conditions'          => [
+            'conditions' => [
                 'product_ids' => [$this->productA->id],
             ],
-            'priority'            => 1,
-            'is_active'           => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         $expectedPromotedPrice = 800000.0;
@@ -234,15 +231,15 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
 
     test('Vector 1.4: Fixed Amount Catalog Promotion (Deduct 250,000đ) consistency', function () {
         PromotionRule::create([
-            'name'           => 'Trừ Trực Tiếp 250K',
-            'rule_type'      => PromotionRule::RULE_TYPE_CATALOG,
-            'action_type'    => PromotionRule::ACTION_FIXED_AMOUNT,
+            'name' => 'Trừ Trực Tiếp 250K',
+            'rule_type' => PromotionRule::RULE_TYPE_CATALOG,
+            'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
             'discount_value' => 250000.0,
-            'conditions'     => [
+            'conditions' => [
                 'product_ids' => [$this->productA->id],
             ],
-            'priority'       => 1,
-            'is_active'      => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         $expectedPromotedPrice = 750000.0;
@@ -270,28 +267,28 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
     test('Vector 1.5: Flash Sale price strictly takes precedence over catalog promo rules', function () {
         // 1. Catalog Rule offers 15% off (850,000₫)
         PromotionRule::create([
-            'name'           => 'Catalog Rule 15%',
-            'rule_type'      => PromotionRule::RULE_TYPE_CATALOG,
-            'action_type'    => PromotionRule::ACTION_PERCENTAGE,
+            'name' => 'Catalog Rule 15%',
+            'rule_type' => PromotionRule::RULE_TYPE_CATALOG,
+            'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 15.0,
-            'conditions'     => ['category_ids' => [$this->category->id]],
-            'priority'       => 1,
-            'is_active'      => true,
+            'conditions' => ['category_ids' => [$this->category->id]],
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         // 2. Active Flash Sale offers deep discount (650,000₫)
         $flashSale = FlashSale::create([
-            'name'       => 'Flash Sale Midnight',
+            'name' => 'Flash Sale Midnight',
             'start_time' => now()->subHour(),
-            'end_time'   => now()->addHours(2),
-            'status'     => 'active',
+            'end_time' => now()->addHours(2),
+            'status' => 'active',
         ]);
 
         FlashSaleItem::create([
             'flash_sale_id' => $flashSale->id,
-            'product_id'    => $this->productA->id,
-            'price'         => 650000.0, // Flash sale price
-            'quantity'      => 10,
+            'product_id' => $this->productA->id,
+            'price' => 650000.0, // Flash sale price
+            'quantity' => 10,
             'sold_quantity' => 0,
         ]);
 
@@ -336,13 +333,13 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
     test('Vector 2.1: Quantity increment/decrement instantly updates subtotal, netTotal and Nudge bar without reload', function () {
         // Freeship threshold 1,500,000 VND
         PromotionRule::create([
-            'name'             => 'Freeship Đơn Từ 1.5 Triệu',
-            'rule_type'        => PromotionRule::RULE_TYPE_CART,
-            'action_type'      => PromotionRule::ACTION_FREE_SHIPPING,
-            'discount_value'   => 0.0,
+            'name' => 'Freeship Đơn Từ 1.5 Triệu',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_FREE_SHIPPING,
+            'discount_value' => 0.0,
             'min_order_amount' => 1500000.0,
-            'priority'         => 1,
-            'is_active'        => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         /** @var CartService $cartService */
@@ -394,19 +391,19 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
 
     test('Vector 2.2: Tiered Quantity dynamic step nudge progression (1 sp -> 2 sp -> 4 sp -> 6 sp)', function () {
         PromotionRule::create([
-            'name'           => 'Chiết Khấu Số Lượng Bậc Thang',
-            'rule_type'      => PromotionRule::RULE_TYPE_CART,
-            'action_type'    => PromotionRule::ACTION_TIERED_QUANTITY,
+            'name' => 'Chiết Khấu Số Lượng Bậc Thang',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_TIERED_QUANTITY,
             'discount_value' => 5.0,
-            'conditions'     => [
+            'conditions' => [
                 'tiered_steps' => [
                     ['min_qty' => 2, 'discount_percent' => 5],
                     ['min_qty' => 4, 'discount_percent' => 10],
                     ['min_qty' => 6, 'discount_percent' => 15],
                 ],
             ],
-            'priority'       => 1,
-            'is_active'      => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         /** @var CartService $cartService */
@@ -443,26 +440,26 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
     test('Vector 2.3: 1-Click Available Coupons Tray: eligibility gating, apply, and removal cycle', function () {
         // Voucher 1: Min 1,000,000 VND -> 100K off
         PromotionRule::create([
-            'name'             => 'Voucher 100K Đơn 1 Triệu',
-            'code'             => 'VOUCHER100',
-            'rule_type'        => PromotionRule::RULE_TYPE_CART,
-            'action_type'      => PromotionRule::ACTION_FIXED_AMOUNT,
-            'discount_value'   => 100000.0,
+            'name' => 'Voucher 100K Đơn 1 Triệu',
+            'code' => 'VOUCHER100',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
+            'discount_value' => 100000.0,
             'min_order_amount' => 1000000.0,
-            'priority'         => 1,
-            'is_active'        => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         // Voucher 2: Min 2,000,000 VND -> 200K off
         PromotionRule::create([
-            'name'             => 'Voucher 200K Đơn 2 Triệu',
-            'code'             => 'VOUCHER200',
-            'rule_type'        => PromotionRule::RULE_TYPE_CART,
-            'action_type'      => PromotionRule::ACTION_FIXED_AMOUNT,
-            'discount_value'   => 200000.0,
+            'name' => 'Voucher 200K Đơn 2 Triệu',
+            'code' => 'VOUCHER200',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
+            'discount_value' => 200000.0,
             'min_order_amount' => 2000000.0,
-            'priority'         => 2,
-            'is_active'        => true,
+            'priority' => 2,
+            'is_active' => true,
         ]);
 
         /** @var CartService $cartService */
@@ -542,34 +539,34 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
     test('Vector 3.1: Stacked discounts (Cart Rule 10% + Coupon 50K + Freeship) display as separate labeled line items', function () {
         // 1. Automatic Cart Rule: 10% on whole cart
         $autoRule = PromotionRule::create([
-            'name'           => 'Khuyến Mãi Mùa Thu 10%',
-            'rule_type'      => PromotionRule::RULE_TYPE_CART,
-            'action_type'    => PromotionRule::ACTION_PERCENTAGE,
+            'name' => 'Khuyến Mãi Mùa Thu 10%',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 10.0,
-            'priority'       => 1,
-            'is_active'      => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         // 2. Coupon Rule: Fixed 50,000 VND
         $couponRule = PromotionRule::create([
-            'name'           => 'Voucher Giảm 50K',
-            'code'           => 'SALE50K',
-            'rule_type'      => PromotionRule::RULE_TYPE_CART,
-            'action_type'    => PromotionRule::ACTION_FIXED_AMOUNT,
+            'name' => 'Voucher Giảm 50K',
+            'code' => 'SALE50K',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
             'discount_value' => 50000.0,
-            'priority'       => 2,
-            'is_active'      => true,
+            'priority' => 2,
+            'is_active' => true,
         ]);
 
         // 3. Free Shipping Rule
         $freeshipRule = PromotionRule::create([
-            'name'             => 'Miễn Phí Vận Chuyển 1M',
-            'rule_type'        => PromotionRule::RULE_TYPE_CART,
-            'action_type'      => PromotionRule::ACTION_FREE_SHIPPING,
-            'discount_value'   => 0.0,
+            'name' => 'Miễn Phí Vận Chuyển 1M',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_FREE_SHIPPING,
+            'discount_value' => 0.0,
             'min_order_amount' => 1000000.0,
-            'priority'         => 3,
-            'is_active'        => true,
+            'priority' => 3,
+            'is_active' => true,
         ]);
 
         /** @var CartService $cartService */
@@ -620,19 +617,21 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
         $response->assertSee('-50.000₫');
         $response->assertSee('Mã coupon');
         $response->assertSee('Miễn phí'); // Shipping
-        $response->assertSee('-230.000₫'); // Total discount
+        // Pre-shipping page stage: item + coupon discounts (150k + 50k).
+        // The 30k shipping waiver applies once an address sets the fee.
+        $response->assertSee('-200.000₫'); // Total discount
         $response->assertSee('1.300.000₫'); // Final total
     });
 
     test('Vector 3.2: Livewire CouponInput component on checkout page applies coupon and sets session', function () {
         PromotionRule::create([
-            'name'           => 'Voucher Giảm 100K',
-            'code'           => 'VIP100',
-            'rule_type'      => PromotionRule::RULE_TYPE_CART,
-            'action_type'    => PromotionRule::ACTION_FIXED_AMOUNT,
+            'name' => 'Voucher Giảm 100K',
+            'code' => 'VIP100',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
             'discount_value' => 100000.0,
-            'priority'       => 1,
-            'is_active'      => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         /** @var CartService $cartService */
@@ -658,22 +657,22 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
     test('Vector 3.3: Buy X Get Y promotion deduction in applied promotions list', function () {
         // Buy Product A -> Get Product B free
         PromotionRule::create([
-            'name'           => 'Mua Bàn Tặng Ghế',
-            'rule_type'      => PromotionRule::RULE_TYPE_CART,
-            'action_type'    => PromotionRule::ACTION_BUY_X_GET_Y,
+            'name' => 'Mua Bàn Tặng Ghế',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_BUY_X_GET_Y,
             'discount_value' => 0.0,
-            'conditions'     => [
+            'conditions' => [
                 'bxgy_config' => [
-                    'buy_product_id'   => $this->productA->id,
-                    'buy_quantity'     => 1,
-                    'get_product_id'   => $this->productB->id,
-                    'get_quantity'     => 1,
-                    'is_free'          => true,
-                    'max_rewards'      => 1,
+                    'buy_product_id' => $this->productA->id,
+                    'buy_quantity' => 1,
+                    'get_product_id' => $this->productB->id,
+                    'get_quantity' => 1,
+                    'is_free' => true,
+                    'max_rewards' => 1,
                 ],
             ],
-            'priority'       => 1,
-            'is_active'      => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         /** @var CartService $cartService */
@@ -689,37 +688,37 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
 
     test('Vector 3.4: Complete checkout execution persists accurate order financial breakdown and usage rows', function () {
         $autoRule = PromotionRule::create([
-            'name'           => 'Khuyến Mãi Mùa Thu 10%',
-            'rule_type'      => PromotionRule::RULE_TYPE_CART,
-            'action_type'    => PromotionRule::ACTION_PERCENTAGE,
+            'name' => 'Khuyến Mãi Mùa Thu 10%',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 10.0,
-            'priority'       => 1,
-            'is_active'      => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         $couponRule = PromotionRule::create([
-            'name'           => 'Voucher Giảm 50K',
-            'code'           => 'VOUCHER50K',
-            'rule_type'      => PromotionRule::RULE_TYPE_CART,
-            'action_type'    => PromotionRule::ACTION_FIXED_AMOUNT,
+            'name' => 'Voucher Giảm 50K',
+            'code' => 'VOUCHER50K',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
             'discount_value' => 50000.0,
-            'priority'       => 2,
-            'is_active'      => true,
+            'priority' => 2,
+            'is_active' => true,
         ]);
 
         /** @var CartService $cartService */
         $cartService = app(CartService::class);
         $cartService->add($this->productA->id, null, 1); // 1.000.000₫
 
-        $checkoutAction = app(\App\Actions\ProcessCheckoutAction::class);
+        $checkoutAction = app(ProcessCheckoutAction::class);
         $order = $checkoutAction->execute([
-            'customer_name'  => 'Hoàng Minh Tuấn',
-            'phone'          => '0912345678',
-            'email'          => 'tuan.hoang@example.com',
-            'address'        => '789 Nguyễn Huệ',
-            'city'           => 'Hồ Chí Minh',
-            'district'       => 'Quận 1',
-            'ward'           => 'Bến Nghé',
+            'customer_name' => 'Hoàng Minh Tuấn',
+            'phone' => '0912345678',
+            'email' => 'tuan.hoang@example.com',
+            'address' => '789 Nguyễn Huệ',
+            'city' => 'Hồ Chí Minh',
+            'district' => 'Quận 1',
+            'ward' => 'Bến Nghé',
             'payment_method' => 'cod',
         ], 'VOUCHER50K');
 
@@ -750,13 +749,13 @@ describe('Pillar 4: Adversarial Stress Vectors & Edge Case Mining', function () 
 
     test('Vector 4.1: Extreme cart subtotal (100,000,000₫) with percentage discount and upper cap', function () {
         PromotionRule::create([
-            'name'                => 'Mega Sale 20% Capped 2M',
-            'rule_type'           => PromotionRule::RULE_TYPE_CART,
-            'action_type'         => PromotionRule::ACTION_PERCENTAGE,
-            'discount_value'      => 20.0,
+            'name' => 'Mega Sale 20% Capped 2M',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_PERCENTAGE,
+            'discount_value' => 20.0,
             'max_discount_amount' => 2000000.0, // 2 Million max
-            'priority'            => 1,
-            'is_active'           => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         /** @var CartService $cartService */
@@ -788,14 +787,14 @@ describe('Pillar 4: Adversarial Stress Vectors & Edge Case Mining', function () 
 
     test('Vector 4.3: Customer Tier gating: VIP-only coupon rejection for guest customer', function () {
         PromotionRule::create([
-            'name'                 => 'VIP Gold Exclusive 25%',
-            'code'                 => 'VIPGOLD25',
-            'rule_type'            => PromotionRule::RULE_TYPE_CART,
-            'action_type'          => PromotionRule::ACTION_PERCENTAGE,
-            'discount_value'       => 25.0,
+            'name' => 'VIP Gold Exclusive 25%',
+            'code' => 'VIPGOLD25',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_PERCENTAGE,
+            'discount_value' => 25.0,
             'target_customer_tier' => PromotionRule::TIER_GOLD,
-            'priority'             => 1,
-            'is_active'            => true,
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         /** @var CartService $cartService */
@@ -813,26 +812,26 @@ describe('Pillar 4: Adversarial Stress Vectors & Edge Case Mining', function () 
     test('Vector 4.4: Inactive and Expired coupons produce user-safe clear error messages', function () {
         // Expired rule
         PromotionRule::create([
-            'name'           => 'Expired Promo',
-            'code'           => 'EXPIRED2025',
-            'rule_type'      => PromotionRule::RULE_TYPE_CART,
-            'action_type'    => PromotionRule::ACTION_PERCENTAGE,
+            'name' => 'Expired Promo',
+            'code' => 'EXPIRED2025',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 20.0,
-            'starts_at'      => now()->subMonths(3),
-            'ends_at'        => now()->subMonth(),
-            'priority'       => 1,
-            'is_active'      => true,
+            'starts_at' => now()->subMonths(3),
+            'ends_at' => now()->subMonth(),
+            'priority' => 1,
+            'is_active' => true,
         ]);
 
         // Inactive rule
         PromotionRule::create([
-            'name'           => 'Inactive Promo',
-            'code'           => 'INACTIVE2026',
-            'rule_type'      => PromotionRule::RULE_TYPE_CART,
-            'action_type'    => PromotionRule::ACTION_PERCENTAGE,
+            'name' => 'Inactive Promo',
+            'code' => 'INACTIVE2026',
+            'rule_type' => PromotionRule::RULE_TYPE_CART,
+            'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 20.0,
-            'priority'       => 1,
-            'is_active'      => false,
+            'priority' => 1,
+            'is_active' => false,
         ]);
 
         /** @var CartService $cartService */

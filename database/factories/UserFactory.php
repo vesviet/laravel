@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 /**
  * @extends Factory<User>
@@ -41,5 +42,31 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Assign the super_admin role after creation.
+     */
+    public function superAdmin(): static
+    {
+        return $this->withAdminRole(config('filament-shield.super_admin.name'));
+    }
+
+    /**
+     * Assign the panel_user role after creation.
+     */
+    public function panelUser(): static
+    {
+        return $this->withAdminRole(config('filament-shield.panel_user.name'));
+    }
+
+    /**
+     * Create (if needed) and assign an admin-panel role after creation.
+     */
+    protected function withAdminRole(string $roleName): static
+    {
+        return $this->afterCreating(function (User $user) use ($roleName) {
+            $user->assignRole(Role::findOrCreate($roleName, 'web'));
+        });
     }
 }
