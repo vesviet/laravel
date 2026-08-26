@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Traits\BelongsToSeller;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToSeller;
 
     protected $fillable = [
         'category_id',
@@ -33,7 +34,10 @@ class Product extends Model
         'is_purchasable',
         'published_at',
         'attributes_json',
+        'options_json',
         'tags',
+        'seller_id',
+        'show_on_marketplace',
         'structured_data',
         'seo_title',
         'seo_description',
@@ -58,6 +62,8 @@ class Product extends Model
         'is_visible' => 'boolean',
         'is_purchasable' => 'boolean',
         'published_at' => 'datetime',
+        'options_json' => 'array',
+        'show_on_marketplace' => 'boolean',
     ];
 
     protected $appends = [

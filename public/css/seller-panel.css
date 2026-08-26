@@ -1,0 +1,65 @@
+/* Mobile Bottom Bar Navigation for Filament Seller Panel */
+@media (max-width: 768px) {
+    /* Hide the default sidebar on mobile, or keep it hidden and use the bottom bar instead */
+    .fi-sidebar {
+        display: none !important; /* Force hide default sidebar on mobile if we use bottom bar, though Filament handles it nicely. Wait, Filament uses an off-canvas menu. We'll just style the navigation. */
+    }
+
+    /* We will inject a custom bottom bar via Render Hooks */
+    .seller-mobile-bottom-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background-color: white;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 50;
+        box-shadow: 0 -1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .dark .seller-mobile-bottom-bar {
+        background-color: #18181b; /* Zinc 900 */
+        border-top-color: #27272a; /* Zinc 800 */
+    }
+
+    .seller-mobile-bottom-bar a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+        text-decoration: none;
+        font-size: 0.75rem;
+        flex: 1;
+        height: 100%;
+    }
+    
+    .dark .seller-mobile-bottom-bar a {
+        color: #a1a1aa;
+    }
+
+    .seller-mobile-bottom-bar a.active {
+        color: #f59e0b; /* Amber 500 */
+    }
+    
+    .seller-mobile-bottom-bar a svg {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 2px;
+    }
+    
+    /* Adjust main content padding to account for bottom bar */
+    .fi-main {
+        padding-bottom: 80px !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .seller-mobile-bottom-bar {
+        display: none !important;
+    }
+}

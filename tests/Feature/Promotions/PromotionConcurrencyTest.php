@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Session;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    \Illuminate\Support\Facades\Event::fake([\App\Events\OrderPlaced::class]);
+});
+
 test('pessimistic concurrency lock prevents over-redemption on global usage limit', function () {
     $product = Product::create([
         'name'        => 'Concurrency Test Product',

@@ -49,6 +49,7 @@ it('provides real-time cart summary and stock validation', function () {
 });
 
 it('executes full checkout process and creates order with deducted inventory and combo discount', function () {
+    \Illuminate\Support\Facades\Event::fake([\App\Events\OrderPlaced::class]);
     $cartService = app(CartService::class);
     $cartService->clear();
     $cartService->add($this->product->id, null, 2);

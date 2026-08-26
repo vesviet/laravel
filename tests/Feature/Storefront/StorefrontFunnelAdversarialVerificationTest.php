@@ -24,6 +24,7 @@ use Livewire\Livewire;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    \Illuminate\Support\Facades\Event::fake([\App\Events\OrderPlaced::class]);
     Cache::flush();
     Session::flush();
 

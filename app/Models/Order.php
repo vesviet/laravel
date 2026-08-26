@@ -5,13 +5,15 @@ namespace App\Models;
 use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\BelongsToSeller;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToSeller;
 
     protected $fillable = [
         'customer_id',
+        'seller_id',
         'order_number',
         'status',
         'waybill_id',
