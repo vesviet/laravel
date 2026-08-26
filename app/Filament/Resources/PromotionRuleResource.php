@@ -23,7 +23,7 @@ class PromotionRuleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
 
-    protected static ?string $navigationGroup = 'Marketing & Khuyến Mãi';
+    protected static ?string $navigationGroup = 'Marketing';
 
     protected static ?string $navigationLabel = 'Chương Trình Khuyến Mãi';
 
