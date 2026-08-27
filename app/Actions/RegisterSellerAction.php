@@ -26,9 +26,13 @@ class RegisterSellerAction
             return DB::transaction(function () use ($data) {
                 $user = auth()->user();
 
+                if (! $user && isset($data['user_id'])) {
+                    $user = User::find($data['user_id']);
+                }
+
                 if (! $user) {
                     $user = User::firstOrCreate(
-                        ['phone' => $data['phone']],
+                        ['email' => $data['email'] ?? null],
                         [
                             'name' => $data['shop_name'],
                             'password' => bcrypt(Str::random(12)),

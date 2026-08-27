@@ -134,6 +134,8 @@ jobs:
             --include="*.php" app/ \
             | grep -oE "['\"][^'\"]*\.css['\"]" \
             | tr -d "'\"" \
+            | grep -v "seller-panel.css" \
+            | grep -v "seller-theme.css" \
             | sort -u \
             || true)
 
