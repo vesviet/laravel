@@ -6,6 +6,7 @@ use App\Filament\Seller\Pages\Auth\Register;
 use App\Filament\Seller\Resources\SellerOrderResource;
 use App\Filament\Seller\Resources\SellerPageResource;
 use App\Filament\Seller\Resources\SimpleProductResource;
+use App\Models\SellerProfile;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -66,6 +67,10 @@ class SellerPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->tenant(SellerProfile::class, ownershipRelationship: 'sellerProfile', slugAttribute: 'subdomain')
+            ->tenantMiddleware([
+                \App\Http\Middleware\SyncSpatieTenantWithFilament::class,
             ])
             ->renderHook(
                 PanelsRenderHook::BODY_END,

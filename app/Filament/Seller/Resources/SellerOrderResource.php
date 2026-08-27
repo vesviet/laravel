@@ -115,10 +115,7 @@ class SellerOrderResource extends Resource
             ]);
     }
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
-    {
-        return parent::getEloquentQuery()->where('seller_id', auth()->user()?->sellerProfile?->id);
-    }
+
 
     public static function getRelations(): array
     {

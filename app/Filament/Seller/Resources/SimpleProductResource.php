@@ -48,12 +48,7 @@ class SimpleProductResource extends Resource
                             ->unique(
                                 Product::class,
                                 'slug',
-                                ignoreRecord: true,
-                                modifyRuleUsing: function ($rule) {
-                                    $sellerId = auth()->user()?->sellerProfile?->id;
-
-                                    return $rule->where('seller_id', $sellerId);
-                                }
+                                ignoreRecord: true
                             ),
 
                         Forms\Components\FileUpload::make('image_path')
@@ -62,7 +57,7 @@ class SimpleProductResource extends Resource
                             ->imageResizeMode('cover')
                             ->imageResizeTargetWidth('1200')
                             ->imageResizeTargetHeight('1200')
-                            ->directory(fn () => 'sellers/'.(auth()->user()?->sellerProfile?->id ?? 'default').'/products')
+                            ->directory(fn () => 'sellers/'.(\Filament\Facades\Filament::getTenant()?->id ?? 'default').'/products')
                             ->visibility('public'),
 
                         Forms\Components\RichEditor::make('description')
@@ -184,14 +179,7 @@ class SimpleProductResource extends Resource
             ]);
     }
 
-    /**
-     * Tenant scope is intentionally KEPT. The previous implementation used
-     * withoutGlobalScopes() which broke ADR-S3 (cross-tenant data exposure).
-     */
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery();
-    }
+
 
     public static function getRelations(): array
     {
