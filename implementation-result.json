@@ -1,37 +1,32 @@
 {
   "contract_type": "implementation-result",
-  "slice_id": "seller-center-refactor",
-  "delivery_plan_ref": "seller-center-native-multi-tenancy",
+  "slice_id": "seller-storefront-router",
+  "delivery_plan_ref": "seller-storefront-initialization",
   "feature_ticket_ref": "none",
   "adr_refs": [],
   "files_changed": [
     {
-      "path": "app/Models/User.php",
+      "path": "app/Tenancy/TenantFinders/SubdomainOrSlugTenantFinder.php",
       "action": "modified",
-      "summary": "Implemented HasTenants interface for Filament native multi-tenancy."
+      "summary": "Updated to properly support extracting subdomains on localhost without failing."
     },
     {
-      "path": "app/Http/Middleware/SyncSpatieTenantWithFilament.php",
+      "path": "routes/web.php",
+      "action": "modified",
+      "summary": "Added subdomain routing group with Spatie NeedsTenant middleware and preview route."
+    },
+    {
+      "path": "app/Http/Controllers/Storefront/SellerStorefrontController.php",
       "action": "created",
-      "summary": "Created middleware to sync Filament active tenant to Spatie Tenant::current()."
+      "summary": "Created controller for rendering the published storefront and draft preview."
     },
     {
-      "path": "app/Providers/Filament/SellerPanelProvider.php",
-      "action": "modified",
-      "summary": "Enabled native multi-tenancy with tenant(SellerProfile::class) and injected syncing middleware."
-    },
-    {
-      "path": "app/Filament/Seller/Resources/SellerOrderResource.php",
-      "action": "modified",
-      "summary": "Removed manual getEloquentQuery filtering; handled automatically by Filament."
-    },
-    {
-      "path": "app/Filament/Seller/Resources/SimpleProductResource.php",
-      "action": "modified",
-      "summary": "Removed manual getEloquentQuery filtering and updated unique rule and directory logic to use native Filament tenant."
+      "path": "resources/views/storefront/seller/index.blade.php",
+      "action": "created",
+      "summary": "Created Blade view to dynamically render SellerPage blocks and theme."
     }
   ],
-  "architecture_impact": "Migrated from ad-hoc query scoping to native Filament 3 multi-tenancy, fixing cross-tenant data exposure.",
+  "architecture_impact": "Established the storefront subdomain architecture. Subdomain requests are routed to SellerStorefrontController and scoped via Spatie's Tenant model.",
   "breaking_changes": false,
   "contracts_changed": [],
   "validation_run": {
@@ -43,13 +38,10 @@
   },
   "observability_added": false,
   "observability_notes": null,
-  "residual_risks": [
-    "Need to ensure that Spatie's Tenant::current() works as expected for all actions used within the Seller panel."
-  ],
+  "residual_risks": [],
   "qa_focus_areas": [
-    "Verify seller can only see their own orders, products, and pages.",
-    "Verify product creation works and slug uniqueness is validated per-tenant.",
-    "Verify storefront QuickCheckout still works unaffected."
+    "Verify the live preview iframe inside the Seller Panel renders without 404.",
+    "Verify visiting a seller's subdomain renders their published page."
   ],
   "operational_notes": "None.",
   "open_questions": []

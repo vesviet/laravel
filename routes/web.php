@@ -23,6 +23,20 @@ use App\Livewire\CheckoutFlow;
 use App\Livewire\WishlistPage;
 use Illuminate\Support\Facades\Route;
 
+$appDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
+
+// Seller Storefront Subdomain Routing
+Route::domain('{seller_subdomain}.' . $appDomain)
+    ->middleware([\Spatie\Multitenancy\Http\Middleware\NeedsTenant::class])
+    ->group(function () {
+        Route::get('/', [\App\Http\Controllers\Storefront\SellerStorefrontController::class, 'index'])->name('seller.storefront.index');
+    });
+
+// Seller Storefront Preview Route (For Filament Iframe)
+Route::get('/seller/preview/page', [\App\Http\Controllers\Storefront\SellerStorefrontController::class, 'preview'])
+    ->middleware(['web', 'auth'])
+    ->name('seller.storefront.preview');
+
 Route::get('/', [HomepageController::class, 'index'])->name('home');
 Route::view('/about', 'storefront.pages.about')->name('about');
 Route::view('/contact', 'storefront.pages.contact')->name('contact');

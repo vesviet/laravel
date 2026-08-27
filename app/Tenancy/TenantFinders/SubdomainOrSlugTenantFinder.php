@@ -12,12 +12,10 @@ class SubdomainOrSlugTenantFinder extends TenantFinder
     {
         $host = $request->getHost();
         
-        // Extract subdomain (assuming primary domain is something like domain.com)
-        $domainParts = explode('.', $host);
-        
-        // If host has at least 3 parts (e.g. shop.domain.com) and is not www
-        if (count($domainParts) >= 3 && $domainParts[0] !== 'www') {
-            $subdomain = $domainParts[0];
+        $mainHost = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
+
+        if ($host !== $mainHost && str_ends_with($host, '.' . $mainHost)) {
+            $subdomain = str_replace('.' . $mainHost, '', $host);
             $tenant = Tenant::where('subdomain', $subdomain)->first();
             
             if ($tenant) {
