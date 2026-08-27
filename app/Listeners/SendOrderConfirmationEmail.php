@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Multitenancy\Jobs\NotTenantAware;
 
 /**
  * A1/A3: Send order confirmation email asynchronously via the database queue.
@@ -17,8 +18,11 @@ use Illuminate\Support\Facades\Mail;
  * background via `php artisan queue:work` — checkout response is not blocked by SMTP.
  *
  * ADR-03: database queue driver — no Redis required, works on shared hosting.
+ *
+ * `NotTenantAware` because the order's email is a property of the order
+ * itself; we do not need a current tenant to deliver a transactional email.
  */
-class SendOrderConfirmationEmail implements ShouldQueue
+class SendOrderConfirmationEmail implements ShouldQueue, NotTenantAware
 {
     use InteractsWithQueue;
 

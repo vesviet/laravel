@@ -7,8 +7,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Spatie\Multitenancy\Jobs\NotTenantAware;
 
-class SendSellerTelegramNotification implements ShouldQueue
+/**
+ * Telegram notification for Seller-side orders.
+ *
+ * `NotTenantAware` because the seller identity is carried in the event
+ * payload itself; the listener does not need a current tenant to send
+ * a notification to the seller's own Telegram chat.
+ */
+class SendSellerTelegramNotification implements ShouldQueue, NotTenantAware
 {
     use InteractsWithQueue;
 
