@@ -11,15 +11,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
- * Owns Seller-side order creation logic. Has NO DB::transaction() of its own
- * (ADR-S2). The caller (Action) is responsible for opening the transaction
- * and dispatching SellerOrderPlaced AFTER the transaction commits.
+ * Owns Seller-side order creation logic. Has NO transaction of its own
+ * (ADR-S2). The caller (Action) is responsible for opening the tx
+ * boundary and dispatching SellerOrderPlaced AFTER the commit.
  */
 class SellerOrderService
 {
     /**
      * Create an Order + OrderItem for a quick checkout on a Seller's one-page store.
-     * MUST be called within an active DB::transaction() boundary.
+     * MUST be called within an active tx boundary.
      *
      * @param  array  $data  Validated payload from StoreSellerQuickOrderRequest
      *
