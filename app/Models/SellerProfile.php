@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\HasName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Spatie\Multitenancy\Models\Tenant;
 
-class SellerProfile extends Tenant
+class SellerProfile extends Tenant implements HasName
 {
     use HasFactory, SoftDeletes;
 
@@ -91,5 +92,10 @@ class SellerProfile extends Tenant
         }
 
         return $slug;
+    }
+
+    public function getFilamentName(): string
+    {
+        return $this->shop_name;
     }
 }
