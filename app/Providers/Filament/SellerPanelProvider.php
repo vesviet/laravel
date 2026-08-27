@@ -69,6 +69,7 @@ class SellerPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->tenant(SellerProfile::class, ownershipRelationship: 'sellerProfile', slugAttribute: 'subdomain')
+            ->tenantNameAttribute('shop_name')
             ->tenantMiddleware([
                 \App\Http\Middleware\SyncSpatieTenantWithFilament::class,
             ])
