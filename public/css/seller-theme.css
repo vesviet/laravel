@@ -1,0 +1,30 @@
+/* Custom Filament Seller Theme — pre-built static CSS */
+/* (See resources/css/filament/seller/theme.css for the source.) */
+.seller-panel-wrap {
+    min-height: 100vh;
+    background-color: #f9fafb;
+}
+
+.seller-status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.seller-status-pill-active {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.seller-status-pill-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.seller-status-pill-suspended {
+    background-color: #ffe4e6;
+    color: #9f1239;
+}

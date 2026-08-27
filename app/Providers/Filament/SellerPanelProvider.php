@@ -83,8 +83,7 @@ class SellerPanelProvider extends PanelProvider
                         </div>
                     @endif
                 ')
-            )
-            ->viteTheme('resources/css/filament/seller/theme.css');
+            );
     }
 
     public function boot(): void
@@ -92,6 +91,16 @@ class SellerPanelProvider extends PanelProvider
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
             fn (): string => '<link rel="stylesheet" href="/css/seller-panel.css" />',
+        );
+
+        // Seller theme CSS is injected via direct link tag instead of
+        // viteTheme() to avoid Vite manifest coupling — the theme is
+        // a small Tailwind layer and shipping it as a plain CSS file
+        // (pre-built and committed to public/css/) removes the build
+        // dependency for Filament rendering.
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::HEAD_END,
+            fn (): string => '<link rel="stylesheet" href="/css/seller-theme.css" />',
         );
     }
 }

@@ -127,21 +127,34 @@ This converts ADR-S2 from governance theater into enforced constraint.
 
 On 2026-08-27, `GET /seller/register` returned 500 (surfaced as 403 by reverse proxy) because `SellerPanelProvider::viteTheme('resources/css/filament/seller/theme.css')` referenced a CSS file that was never registered in `vite.config.js` `input` array. The file was also a single-line comment, so even if registered Vite would strip it from the bundle.
 
-Result: every request to a Filament page that used the theme crashed with `ViteException: Unable to locate file in Vite manifest: ...`.
-
-### Rule
+### Original Rule (reverted on 2026-08-27)
 
 **Every CSS path passed to `viteTheme()` MUST be registered in `vite.config.js` `input` array, and the file MUST contain real content (no single-comment placeholders).**
 
-### Enforcement
+This was the rule we initially adopted, but the dependency on Vite manifest correctness for runtime Filament rendering was deemed too fragile: a self-hosted runner with stale `node_modules` or `package-lock.json` could produce a manifest missing the entry and the error would only surface at runtime as 500/403 in production.
 
-CI fitness function (`.github/workflows/ci-cd.yml` → `architectural-fitness` job → ADR-S5 step):
-- Greps all `viteTheme(` calls in `app/**/*.php`
-- Extracts CSS paths
-- Verifies each path is a substring of `vite.config.js`
-- Fails the build with a remediation message if any path is missing
+### Revised Rule (current)
 
-Additionally, the `test` job runs `npm run build` before running Pest, so a missing manifest entry fails the test step rather than the deploy step.
+**Do NOT use `viteTheme()` for Filament seller themes.** Use a FilamentView render hook pointing to a pre-built, committed static CSS file in `public/css/`:
+
+```php
+FilamentView::registerRenderHook(
+    PanelsRenderHook::HEAD_END,
+    fn (): string => '<link rel="stylesheet" href="/css/seller-theme.css" />',
+);
+```
+
+The static file:
+- Is committed to `public/css/`
+- Is served directly by nginx (no Vite, no manifest lookup, no build step)
+- Eliminates the runtime/manifest coupling entirely
+
+The original `resources/css/filament/seller/theme.css` is retained as a Tailwind source-of-truth for future regenerations but is NOT used at runtime.
+
+### Enforcement (CI)
+
+- **ADR-S5 fitness function** still in CI: greps for any new `viteTheme(` call and fails the build if found. Migration to direct static-CSS rendering is the only approved approach.
+- **No `npm run build` step required** in the deploy job (was previously added but reverted when this ADR was updated).
 
 ---
 

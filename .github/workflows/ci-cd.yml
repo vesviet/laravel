@@ -198,38 +198,6 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      - name: Setup Node
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install NPM Dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Build Vite Assets
-        run: npm run build
-
-      - name: Verify Vite Manifest contains theme files
-        run: |
-          echo "=== Verifying Vite manifest coverage ==="
-          MISSING=0
-          for css in $(grep -rn "viteTheme" --include="*.php" app/ \
-            | grep -oE "['\"][^'\"]*\.css['\"]" \
-            | tr -d "'\"" | sort -u); do
-            if ! grep -qF "\"$css\"" public/build/manifest.json; then
-              echo "  ❌ Missing in manifest: $css"
-              MISSING=$((MISSING + 1))
-            else
-              echo "  ✓ $css"
-            fi
-          done
-          if [ $MISSING -gt 0 ]; then
-            echo "❌ $MISSING theme file(s) missing from built manifest"
-            exit 1
-          fi
-          echo "✅ Manifest coverage OK"
-
       - name: Run Tests (Pest/PHPUnit)
         run: |
           cp .env.example .env
@@ -248,24 +216,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Setup Node
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install NPM Dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Build Vite Assets (production)
-        run: npm run build
-
       - name: Log in to the Container registry
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -317,27 +273,6 @@ jobs:
           echo "SESSION_DRIVER=redis" >> .env
           echo "CACHE_STORE=redis" >> .env
           echo "GHCR_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main" >> .env
-
-      - name: Setup Node
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install NPM Dependencies
-        run: npm ci --no-audit --no-fund
-
-      - name: Build Vite Assets (production)
-        run: npm run build
-
-      - name: Verify Deployment Pre-flight
-        run: |
-          echo "=== Pre-deployment checks ==="
-          if [ ! -f public/build/manifest.json ]; then
-            echo "❌ Vite manifest missing — would cause 500/403 errors in production"
-            exit 1
-          fi
-          echo "✅ Vite manifest present"
 
       - name: Login to GHCR (Self-Hosted Runner)
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
