@@ -1,1 +1,31 @@
+@import 'tailwindcss';
+
+@source '../../../../app/Filament/Seller/**/*.php';
+@source '../../../../app/Livewire/Seller/**/*.php';
+@source '../../../../resources/views/filament/seller/**/*.blade.php';
+@source '../../../../resources/views/livewire/seller/**/*.blade.php';
+
 /* Custom Filament Seller Theme */
+@layer base {
+    .seller-panel-wrap {
+        @apply min-h-screen bg-gray-50;
+    }
+}
+
+@layer components {
+    .seller-status-pill {
+        @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    }
+
+    .seller-status-pill-active {
+        @apply bg-emerald-100 text-emerald-800;
+    }
+
+    .seller-status-pill-pending {
+        @apply bg-amber-100 text-amber-800;
+    }
+
+    .seller-status-pill-suspended {
+        @apply bg-rose-100 text-rose-800;
+    }
+}
