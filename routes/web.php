@@ -41,6 +41,14 @@ Route::get('/', [HomepageController::class, 'index'])->name('home');
 Route::view('/about', 'storefront.pages.about')->name('about');
 Route::view('/contact', 'storefront.pages.contact')->name('contact');
 
+Route::get('/debug-tenant', function () {
+    $user = \App\Models\User::orderBy('id', 'desc')->first();
+    return response()->json([
+        'user' => $user,
+        'sellerProfile' => $user->sellerProfile,
+    ]);
+});
+
 // Fallback login route for auth middleware
 Route::get('/login', fn () => redirect()->route('account.login'))->name('login');
 
