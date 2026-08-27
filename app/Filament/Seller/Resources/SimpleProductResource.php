@@ -15,11 +15,14 @@ use Illuminate\Support\Str;
 class SimpleProductResource extends Resource
 {
     protected static ?string $model = Product::class;
-    
+
     protected static ?string $modelLabel = 'Sản phẩm';
+
     protected static ?string $pluralModelLabel = 'Sản phẩm';
-    
+
     protected static ?string $navigationIcon = 'heroicon-o-cube';
+
+    protected static ?string $navigationGroup = 'Sản phẩm';
 
     public static function form(Form $form): Form
     {
@@ -32,61 +35,97 @@ class SimpleProductResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                            
+                            ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                                if ($operation === 'create') {
+                                    $set('slug', Str::slug($state));
+                                }
+                            }),
+
                         Forms\Components\TextInput::make('slug')
                             ->label('Đường dẫn (Slug)')
                             ->required()
                             ->maxLength(255)
-                            ->unique(Product::class, 'slug', ignoreRecord: true, modifyRuleUsing: function ($rule) {
-                                return $rule->where('seller_id', auth()->user()->sellerProfile->id);
-                            }),
-                            
+                            ->unique(
+                                Product::class,
+                                'slug',
+                                ignoreRecord: true,
+                                modifyRuleUsing: function ($rule) {
+                                    $sellerId = auth()->user()?->sellerProfile?->id;
+
+                                    return $rule->where('seller_id', $sellerId);
+                                }
+                            ),
+
                         Forms\Components\FileUpload::make('image_path')
                             ->label('Ảnh sản phẩm')
                             ->image()
                             ->imageResizeMode('cover')
                             ->imageResizeTargetWidth('1200')
                             ->imageResizeTargetHeight('1200')
-                            ->directory('sellers/' . auth()->user()->sellerProfile->id . '/products')
+                            ->directory(fn () => 'sellers/'.(auth()->user()?->sellerProfile?->id ?? 'default').'/products')
                             ->visibility('public'),
-                            
+
                         Forms\Components\RichEditor::make('description')
                             ->label('Mô tả sản phẩm')
                             ->hintAction(
                                 Forms\Components\Actions\Action::make('ai_copywriter')
                                     ->label('✨ AI Viết hộ')
                                     ->icon('heroicon-o-sparkles')
-                                    ->action(function (Forms\Set $set, $state, Forms\Get $get) {
+                                    ->action(function (Forms\Set $set, Forms\Get $get) {
                                         $productName = $get('name');
-                                        if (!$productName) {
+                                        if (! $productName) {
                                             return;
                                         }
-                                        
+
                                         $service = app(\App\Services\AiCopywriterService::class);
-                                        $content = $service->generateProductDescription($productName);
-                                        $set('description', $content);
+                                        $set('description', $service->generateProductDescription($productName));
                                     })
                             ),
                     ]),
-                    
+
                 Forms\Components\Section::make('Giá & Kho')
                     ->schema([
                         Forms\Components\TextInput::make('price')
                             ->label('Giá bán (VND)')
                             ->numeric()
                             ->required(),
-                            
+
                         Forms\Components\TextInput::make('compare_at_price')
                             ->label('Giá gốc gạch ngang (VND)')
                             ->numeric(),
-                            
+
                         Forms\Components\TextInput::make('stock')
                             ->label('Số lượng có sẵn')
                             ->numeric()
                             ->default(100)
                             ->required(),
                     ]),
+
+                Forms\Components\Section::make('Hiển thị & Trạng thái')
+                    ->schema([
+                        Forms\Components\Toggle::make('is_visible')
+                            ->label('Hiển thị trên trang bán hàng')
+                            ->helperText('Tắt để ẩn sản phẩm khỏi trang của bạn')
+                            ->default(true),
+
+                        Forms\Components\Select::make('status')
+                            ->label('Trạng thái')
+                            ->options([
+                                'draft' => 'Bản nháp',
+                                'published' => 'Đã xuất bản',
+                                'archived' => 'Đã lưu trữ',
+                            ])
+                            ->default('published')
+                            ->required(),
+
+                        Forms\Components\Toggle::make('is_purchasable')
+                            ->label('Cho phép mua hàng')
+                            ->default(true),
+
+                        Forms\Components\Toggle::make('is_featured')
+                            ->label('Sản phẩm nổi bật')
+                            ->default(false),
+                    ])->columns(2),
             ]);
     }
 
@@ -108,14 +147,35 @@ class SimpleProductResource extends Resource
                 Tables\Columns\TextColumn::make('stock')
                     ->label('Kho')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Trạng thái')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'published' => 'success',
+                        'archived' => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'draft' => 'Bản nháp',
+                        'published' => 'Đã xuất bản',
+                        'archived' => 'Đã lưu trữ',
+                        default => $state,
+                    }),
                 Tables\Columns\ToggleColumn::make('is_visible')
                     ->label('Hiển thị'),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'draft' => 'Bản nháp',
+                        'published' => 'Đã xuất bản',
+                        'archived' => 'Đã lưu trữ',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -123,13 +183,14 @@ class SimpleProductResource extends Resource
                 ]),
             ]);
     }
-    
+
+    /**
+     * Tenant scope is intentionally KEPT. The previous implementation used
+     * withoutGlobalScopes() which broke ADR-S3 (cross-tenant data exposure).
+     */
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->withoutGlobalScopes();
-        // Since we are using TenantAware/TenantSellerScope, the global scope applies automatically.
-        // Or if we strictly use Filament's query, we can keep the default. 
-        // For safety, rely on the global scope or apply it here if needed.
+        return parent::getEloquentQuery();
     }
 
     public static function getRelations(): array

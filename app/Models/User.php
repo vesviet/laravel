@@ -9,6 +9,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -35,6 +36,32 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
+        $panelId = $this->safePanelId($panel);
+
+        if ($panelId === 'seller') {
+            return $this->sellerProfile !== null && $this->sellerProfile->status === 'active';
+        }
+
+        if ($panelId === null) {
+            // Default panel access for tools that resolve a bare Panel instance
+            // (e.g. `app(Panel::class)` outside the Filament registry).
+            return $this->hasAnyRole((array) config('auth.admin_roles', []));
+        }
+
         return $this->hasAnyRole((array) config('auth.admin_roles', []));
+    }
+
+    private function safePanelId(Panel $panel): ?string
+    {
+        try {
+            return $panel->getId();
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    public function sellerProfile(): HasOne
+    {
+        return $this->hasOne(SellerProfile::class);
     }
 }

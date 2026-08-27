@@ -2,43 +2,44 @@
 
 namespace App\Actions;
 
+use App\Exceptions\SellerActionException;
 use App\Models\SellerPage;
 use App\Models\SellerProfile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use RuntimeException;
-use Exception;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class PublishSellerPageAction
 {
     /**
      * Publish or unpublish seller's page and clear relevant cache.
-     * Enforces ADR-S2 transactional safety.
+     * ADR-S2: this Action owns the only DB::transaction() boundary.
      *
-     * @param SellerProfile $seller
-     * @param bool $publish
-     * @return SellerPage
-     * @throws RuntimeException
+     * @throws SellerActionException
      */
     public function execute(SellerProfile $seller, bool $publish = true): SellerPage
     {
         try {
             return DB::transaction(function () use ($seller, $publish) {
                 $page = $seller->pages()->first();
-                if (!$page) {
-                    throw new RuntimeException('Trang web chưa được khởi tạo.');
+
+                if (! $page) {
+                    throw SellerActionException::pageNotInitialized();
                 }
 
                 $page->is_published = $publish;
                 $page->save();
 
-                // Clear cache for this subdomain
-                Cache::forget("seller_page_{$seller->subdomain}");
-
                 return $page;
             });
-        } catch (Exception $e) {
-            throw new RuntimeException('Không thể cập nhật trạng thái trang: ' . $e->getMessage());
+        } catch (SellerActionException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            throw SellerActionException::pageUpdateFailed($e);
+        } finally {
+            // Cache invalidation runs even when transaction rolls back,
+            // ensuring stale state is never served to the next request.
+            Cache::forget(SellerPage::cacheKeyFor($seller->subdomain));
         }
     }
 }

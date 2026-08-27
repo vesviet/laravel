@@ -6,13 +6,20 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Multitenancy\Models\Traits\UsesTenantConnection;
+use Spatie\Multitenancy\Models\Concerns\UsesTenantConnection;
 
 class SellerPage extends Model
 {
     use HasFactory, SoftDeletes, UsesTenantConnection;
 
-    protected $guarded = ['id'];
+    public const CACHE_KEY_PREFIX = 'seller_page_';
+
+    protected $fillable = [
+        'seller_id',
+        'theme_config',
+        'blocks',
+        'is_published',
+    ];
 
     protected $casts = [
         'theme_config' => 'array',
@@ -23,5 +30,10 @@ class SellerPage extends Model
     public function sellerProfile(): BelongsTo
     {
         return $this->belongsTo(SellerProfile::class, 'seller_id');
+    }
+
+    public static function cacheKeyFor(string $subdomain): string
+    {
+        return self::CACHE_KEY_PREFIX.$subdomain;
     }
 }
