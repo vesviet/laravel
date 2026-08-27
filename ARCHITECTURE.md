@@ -119,6 +119,32 @@ This converts ADR-S2 from governance theater into enforced constraint.
 
 ---
 
+## ADR-S5 — Vite Manifest Coverage (CI Enforcement)
+
+> Adopted: 2026-08-27 | Status: **Active** | Trigger: `/seller/register` 500/403 incident
+
+### Context
+
+On 2026-08-27, `GET /seller/register` returned 500 (surfaced as 403 by reverse proxy) because `SellerPanelProvider::viteTheme('resources/css/filament/seller/theme.css')` referenced a CSS file that was never registered in `vite.config.js` `input` array. The file was also a single-line comment, so even if registered Vite would strip it from the bundle.
+
+Result: every request to a Filament page that used the theme crashed with `ViteException: Unable to locate file in Vite manifest: ...`.
+
+### Rule
+
+**Every CSS path passed to `viteTheme()` MUST be registered in `vite.config.js` `input` array, and the file MUST contain real content (no single-comment placeholders).**
+
+### Enforcement
+
+CI fitness function (`.github/workflows/ci-cd.yml` → `architectural-fitness` job → ADR-S5 step):
+- Greps all `viteTheme(` calls in `app/**/*.php`
+- Extracts CSS paths
+- Verifies each path is a substring of `vite.config.js`
+- Fails the build with a remediation message if any path is missing
+
+Additionally, the `test` job runs `npm run build` before running Pest, so a missing manifest entry fails the test step rather than the deploy step.
+
+---
+
 ## ADR-B1 — Customer Tier Domain Ownership
 
 > Adopted: 2026-08-21 | Status: **Active**
