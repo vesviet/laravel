@@ -9,8 +9,13 @@ services:
       - .env
     environment:
       - APP_ENV=production
+    # Bind-mount the public/ directory so newly added static files
+    # (e.g. public/css/seller-theme.css) appear immediately on deploy
+    # without requiring a custom Docker image rebuild. The previous
+    # public_data named volume masked all new files because it was
+    # created on first deploy and never re-synced.
     volumes:
-      - public_data:/var/www/html/public
+      - ./public:/var/www/html/public
 
   web:
     image: nginx:alpine
@@ -18,7 +23,7 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - public_data:/var/www/html/public
+      - ./public:/var/www/html/public
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
