@@ -121,8 +121,8 @@ class SellerPageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('sellerProfile.shop_name')
-                    ->label('Tên Shop'),
+                Tables\Columns\TextColumn::make('seller.shop_name')
+                    ->label('Cửa hàng'),
                 Tables\Columns\IconColumn::make('is_published')
                     ->label('Trạng thái')
                     ->boolean(),
@@ -134,7 +134,7 @@ class SellerPageResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('view_live')
                     ->label('Xem trang trực tiếp')
-                    ->url(fn (SellerPage $record): string => 'https://' . $record->sellerProfile->subdomain . '.' . config('app.url'))
+                    ->url(fn (SellerPage $record): string => 'https://' . $record->seller->subdomain . '.' . config('app.url'))
                     ->openUrlInNewTab(),
             ])
             ->bulkActions([]);

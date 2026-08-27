@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Multitenancy\Models\Concerns\UsesTenantConnection;
+use App\Models\Traits\BelongsToSeller;
 
 class SellerPage extends Model
 {
-    use HasFactory, SoftDeletes, UsesTenantConnection;
+    use HasFactory, SoftDeletes, UsesTenantConnection, BelongsToSeller;
 
     public const CACHE_KEY_PREFIX = 'seller_page_';
 
@@ -27,10 +28,7 @@ class SellerPage extends Model
         'is_published' => 'boolean',
     ];
 
-    public function sellerProfile(): BelongsTo
-    {
-        return $this->belongsTo(SellerProfile::class, 'seller_id');
-    }
+    // seller() relationship is provided by BelongsToSeller trait
 
     public static function cacheKeyFor(string $subdomain): string
     {
