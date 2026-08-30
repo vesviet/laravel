@@ -94,7 +94,7 @@ class Register extends BaseRegister
                 app(RegisterSellerAction::class)->execute($user, [
                     'shop_name' => $data['shop_name'],
                     'phone'     => $data['phone'],
-                    'email'     => $data['email'] ?? null,
+                    'email'     => $user->email, // Use User's email, not form data (Wizard may not expose it in $data)
                 ]);
 
                 return $user;
