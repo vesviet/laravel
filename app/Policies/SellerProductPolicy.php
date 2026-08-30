@@ -117,13 +117,22 @@ class SellerProductPolicy
     // ─── Private helpers ────────────────────────────────────────────────────
 
     /**
-     * Returns true only when evaluated inside the Seller Filament Panel.
-     * This prevents SellerProductPolicy from overriding admin panel behavior
-     * for non-super_admin admin users who have standard Spatie permissions.
+     * Returns true only when evaluated inside the Seller Filament Panel,
+     * OR when no Filament panel is active (CLI / test / queue context).
+     *
+     * The admin panel always registers its panel ID as 'admin' — it will
+     * never be null when an admin is browsing. null means we are in a
+     * non-HTTP context (Pest, tinker, queue worker) where seller logic
+     * is the correct scope for this policy class.
      */
     private function isSellerPanel(): bool
     {
-        return Filament::getCurrentPanel()?->getId() === 'seller';
+        $panel = Filament::getCurrentPanel();
+
+        // null     → test / CLI / queue — apply seller ownership logic
+        // 'seller' → Seller Filament Panel — apply seller ownership logic
+        // 'admin'  → Admin Filament Panel — fall through to Spatie can() checks
+        return $panel === null || $panel->getId() === 'seller';
     }
 
     /**

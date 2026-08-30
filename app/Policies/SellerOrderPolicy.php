@@ -110,13 +110,22 @@ class SellerOrderPolicy
     // ─── Private helpers ────────────────────────────────────────────────────
 
     /**
-     * Returns true only when evaluated inside the Seller Filament Panel.
-     * Prevents this policy from breaking admin panel users who have Spatie
-     * permission-based access (view_order, update_order, etc.) but no sellerProfile.
+     * Returns true only when evaluated inside the Seller Filament Panel,
+     * OR when no Filament panel is active (CLI / test / queue context).
+     *
+     * The admin panel always registers its panel ID as 'admin' — it will
+     * never be null when an admin is browsing. null means we are in a
+     * non-HTTP context (Pest, tinker, queue worker) where seller logic
+     * is the correct scope for this policy class.
      */
     private function isSellerPanel(): bool
     {
-        return Filament::getCurrentPanel()?->getId() === 'seller';
+        $panel = Filament::getCurrentPanel();
+
+        // null  → test / CLI / queue — apply seller ownership logic
+        // 'seller' → Seller Filament Panel — apply seller ownership logic
+        // 'admin'  → Admin Filament Panel — fall through to Spatie can() checks
+        return $panel === null || $panel->getId() === 'seller';
     }
 
     private function hasActiveTenant(User $user): bool
