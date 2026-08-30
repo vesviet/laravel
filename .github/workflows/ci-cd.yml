@@ -272,6 +272,7 @@ jobs:
           echo "REDIS_PASSWORD=null" >> .env
           echo "REDIS_PORT=6379" >> .env
           echo "APP_URL=https://demo.tanhdev.com" >> .env
+          echo "SESSION_DOMAIN=.demo.tanhdev.com" >> .env
           echo "SESSION_DRIVER=redis" >> .env
           echo "CACHE_STORE=redis" >> .env
           echo "GHCR_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main" >> .env
