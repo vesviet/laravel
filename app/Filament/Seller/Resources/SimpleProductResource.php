@@ -4,6 +4,8 @@ namespace App\Filament\Seller\Resources;
 
 use App\Filament\Seller\Resources\SimpleProductResource\Pages;
 use App\Models\Product;
+use App\Policies\SellerProductPolicy;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,6 +14,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
+/**
+ * Simple Product Resource for the Seller Panel.
+ *
+ * Authorization: SellerProductPolicy (registered in AppServiceProvider via Gate::policy)
+ * Tenant Scoping: TenantSellerScope applied globally via BelongsToSeller trait,
+ *   plus explicit getEloquentQuery() override for defense-in-depth (SF-10).
+ *
+ * ADR-S3 Trust Zone: Standard
+ */
 class SimpleProductResource extends Resource
 {
     protected static ?string $model = Product::class;
@@ -179,7 +190,29 @@ class SimpleProductResource extends Resource
             ]);
     }
 
+    /**
+     * Explicitly scope the resource query to the current Filament tenant.
+     *
+     * Defense-in-depth (SF-10): TenantSellerScope already filters by seller_id
+     * when a Spatie Tenant is current, but this override ensures that even if
+     * the global scope is bypassed or no tenant is set, the resource never leaks
+     * cross-seller product data.
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
 
+        $tenantId = Filament::getTenant()?->id;
+
+        if ($tenantId !== null) {
+            $query->where('seller_id', $tenantId);
+        } else {
+            // No active tenant — return empty result set rather than leaking all products.
+            $query->whereRaw('1 = 0');
+        }
+
+        return $query;
+    }
 
     public static function getRelations(): array
     {
@@ -191,9 +224,9 @@ class SimpleProductResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSimpleProducts::route('/'),
+            'index'  => Pages\ListSimpleProducts::route('/'),
             'create' => Pages\CreateSimpleProduct::route('/create'),
-            'edit' => Pages\EditSimpleProduct::route('/{record}/edit'),
+            'edit'   => Pages\EditSimpleProduct::route('/{record}/edit'),
         ];
     }
 }

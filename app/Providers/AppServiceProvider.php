@@ -4,9 +4,12 @@ namespace App\Providers;
 
 use App\Events\OrderPlaced;
 use App\Listeners\SendOrderConfirmationEmail;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\PromotionRule;
 use App\Models\User;
+use App\Policies\SellerOrderPolicy;
+use App\Policies\SellerProductPolicy;
 use App\Observers\ProductObserver;
 use App\Observers\PromotionRuleObserver;
 use App\Settings\GeneralSettings;
@@ -58,6 +61,12 @@ class AppServiceProvider extends ServiceProvider
                 return number_format((float) $number, $decimals, '.', ',');
             });
         }
+
+        // Seller Panel authorization policies (SF-01, SF-02)
+        // SellerProductPolicy — scopes products to active seller tenant
+        // SellerOrderPolicy   — prevents order deletion, scopes to seller tenant
+        Gate::policy(Product::class, SellerProductPolicy::class);
+        Gate::policy(Order::class, SellerOrderPolicy::class);
 
         // A1: Domain Event bindings
         // OrderPlaced fires after ProcessCheckoutAction or ProcessLandingOrderAction commits.
