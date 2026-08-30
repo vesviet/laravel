@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * SF-05 fix: Previously, this page saved SellerProfile directly via Eloquent,
  * bypassing transaction boundaries, cache invalidation, and field whitelist enforcement.
  * Now handleRecordUpdate() routes through UpdateSellerProfileAction which:
- *   - Wraps the save in a DB::transaction()
+ *   - Wraps the save in an atomic transaction (via Action)
  *   - Invalidates the storefront page cache
  *   - Filters only allowed fields (subdomain cannot be changed)
  */
