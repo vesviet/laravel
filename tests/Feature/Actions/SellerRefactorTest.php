@@ -11,6 +11,7 @@ use App\Models\SellerProfile;
 use App\Models\User;
 use App\Policies\SellerOrderPolicy;
 use App\Policies\SellerProductPolicy;
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
@@ -37,15 +38,19 @@ test('SF-01: SellerOrderPolicy allows viewing own orders', function () {
     $user = User::factory()->create();
     $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
     $order = Order::factory()->create(['seller_id' => $seller->id]);
-
-    // Refresh to ensure the sellerProfile relationship is loaded from DB
-    // (Eloquent caches relationships; after factory create the relation is not yet eager-loaded)
     $user->refresh();
+
+    // Set Filament panel context to 'seller' so isSellerPanel() returns true.
+    // During testing, Filament bootstraps and sets 'admin' as the current panel;
+    // without this, the policy falls through to Spatie permission checks.
+    Filament::setCurrentPanel(Filament::getPanel('seller'));
 
     $policy = new SellerOrderPolicy();
 
     expect($policy->view($user, $order))->toBeTrue()
         ->and($policy->update($user, $order))->toBeTrue();
+
+    Filament::setCurrentPanel(null);
 });
 
 test('SF-01: SellerOrderPolicy denies cross-seller order access', function () {
@@ -75,9 +80,10 @@ test('SF-02: SellerProductPolicy allows seller to manage own products', function
     $seller->makeCurrent();
 
     $product = Product::factory()->create(['seller_id' => $seller->id]);
-
-    // Refresh to ensure the sellerProfile relationship is loaded from DB
     $user->refresh();
+
+    // Set Filament panel context to 'seller' so isSellerPanel() returns true.
+    Filament::setCurrentPanel(Filament::getPanel('seller'));
 
     $policy = new SellerProductPolicy();
 
@@ -85,6 +91,8 @@ test('SF-02: SellerProductPolicy allows seller to manage own products', function
         ->and($policy->update($user, $product))->toBeTrue()
         ->and($policy->delete($user, $product))->toBeTrue()
         ->and($policy->create($user))->toBeTrue();
+
+    Filament::setCurrentPanel(null);
 });
 
 test('SF-02: SellerProductPolicy denies access to other seller products', function () {
