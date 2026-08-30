@@ -38,6 +38,10 @@ test('SF-01: SellerOrderPolicy allows viewing own orders', function () {
     $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
     $order = Order::factory()->create(['seller_id' => $seller->id]);
 
+    // Refresh to ensure the sellerProfile relationship is loaded from DB
+    // (Eloquent caches relationships; after factory create the relation is not yet eager-loaded)
+    $user->refresh();
+
     $policy = new SellerOrderPolicy();
 
     expect($policy->view($user, $order))->toBeTrue()
@@ -71,6 +75,9 @@ test('SF-02: SellerProductPolicy allows seller to manage own products', function
     $seller->makeCurrent();
 
     $product = Product::factory()->create(['seller_id' => $seller->id]);
+
+    // Refresh to ensure the sellerProfile relationship is loaded from DB
+    $user->refresh();
 
     $policy = new SellerProductPolicy();
 
