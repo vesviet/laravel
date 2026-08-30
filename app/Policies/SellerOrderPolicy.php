@@ -130,12 +130,14 @@ class SellerOrderPolicy
 
     private function hasActiveTenant(User $user): bool
     {
-        return $user->sellerProfile !== null && $user->sellerProfile->isActive();
+        $profile = $user->sellerProfile()->withoutGlobalScopes()->first();
+
+        return $profile !== null && $profile->isActive();
     }
 
     private function ownsOrder(User $user, Order $order): bool
     {
-        $profile = $user->sellerProfile;
+        $profile = $user->sellerProfile()->withoutGlobalScopes()->first();
 
         if ($profile === null || ! $profile->isActive()) {
             return false;

@@ -141,7 +141,7 @@ class SellerProductPolicy
      */
     private function hasActiveTenant(User $user): bool
     {
-        $profile = $user->sellerProfile;
+        $profile = $user->sellerProfile()->withoutGlobalScopes()->first();
 
         return $profile !== null && $profile->isActive();
     }
@@ -152,7 +152,7 @@ class SellerProductPolicy
      */
     private function ownsTenant(User $user, Product $product): bool
     {
-        $profile = $user->sellerProfile;
+        $profile = $user->sellerProfile()->withoutGlobalScopes()->first();
 
         if ($profile === null || ! $profile->isActive()) {
             return false;
