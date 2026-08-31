@@ -7,8 +7,10 @@ use App\Listeners\SendOrderConfirmationEmail;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\PromotionRule;
+use App\Models\SellerPage;
 use App\Models\User;
 use App\Policies\SellerOrderPolicy;
+use App\Policies\SellerPagePolicy;
 use App\Policies\SellerProductPolicy;
 use App\Observers\ProductObserver;
 use App\Observers\PromotionRuleObserver;
@@ -62,11 +64,13 @@ class AppServiceProvider extends ServiceProvider
             });
         }
 
-        // Seller Panel authorization policies (SF-01, SF-02)
+        // Seller Panel authorization policies (SF-01, SF-02, P1-03)
         // SellerProductPolicy — scopes products to active seller tenant
         // SellerOrderPolicy   — prevents order deletion, scopes to seller tenant
+        // SellerPagePolicy    — prevents cross-seller page access (P1-03)
         Gate::policy(Product::class, SellerProductPolicy::class);
         Gate::policy(Order::class, SellerOrderPolicy::class);
+        Gate::policy(SellerPage::class, SellerPagePolicy::class);
 
         // A1: Domain Event bindings
         // OrderPlaced fires after ProcessCheckoutAction or ProcessLandingOrderAction commits.

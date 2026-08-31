@@ -64,7 +64,7 @@ class SellerOrderResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('status')
                             ->label('Trạng thái')
-                            ->options(function (?App\Models\Order $record) {
+                            ->options(function (?Order $record) {
                                 if (! $record || ! $record->status instanceof OrderStatus) {
                                     // Fallback (create page, or status not cast yet)
                                     return collect(OrderStatus::cases())

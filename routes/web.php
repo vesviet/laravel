@@ -25,11 +25,24 @@ use Illuminate\Support\Facades\Route;
 
 $appDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
 
-// Seller Storefront Subdomain Routing
+// ─────────────────────────────────────────────────────────────────────────────
+// Seller Storefront Routing (ADR-SC1)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Path-based (canonical / primary) — works in ALL environments (local, staging, production)
+// ADR-SC1: ->where constraint is MANDATORY — prevents path traversal and XSS.
+// EnsureSellerTenantForgotten::terminate() cleans up Spatie tenant context after response.
+Route::get('/shop/{shop_slug}', [\App\Http\Controllers\Storefront\SellerStorefrontController::class, 'shopPath'])
+    ->name('seller.storefront.shop')
+    ->where('shop_slug', '[a-z0-9\-]+')
+    ->middleware([\App\Http\Middleware\EnsureSellerTenantForgotten::class]);
+
+// Subdomain-based (secondary) — only works on production with wildcard DNS.
+// 301 redirect to /shop canonical. Stateless — no render, no cache.
 Route::domain('{seller_subdomain}.' . $appDomain)
     ->middleware([\Spatie\Multitenancy\Http\Middleware\NeedsTenant::class])
     ->group(function () {
-        Route::get('/', [\App\Http\Controllers\Storefront\SellerStorefrontController::class, 'index'])->name('seller.storefront.index');
+        Route::get('/', [\App\Http\Controllers\Storefront\SellerStorefrontController::class, 'subdomainRedirect'])->name('seller.storefront.index');
     });
 
 // Seller Storefront Preview Route (For Filament Iframe)

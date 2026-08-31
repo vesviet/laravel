@@ -25,6 +25,7 @@ class SellerProfile extends Tenant implements HasName
         'user_id',
         'shop_name',
         'subdomain',
+        'shop_slug',   // Slice 1: path-based storefront slug — Admin-managed via AdminUpdateSellerSlugAction
         'phone',
         'email',
         'status',

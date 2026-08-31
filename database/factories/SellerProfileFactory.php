@@ -12,13 +12,16 @@ class SellerProfileFactory extends Factory
 
     public function definition(): array
     {
+        $subdomain = $this->faker->unique()->slug();
+
         return [
-            'user_id' => User::factory(),
-            'shop_name' => $this->faker->company(),
-            'subdomain' => $this->faker->unique()->slug(),
-            'phone' => $this->faker->phoneNumber(),
-            'email' => $this->faker->companyEmail(),
-            'status' => 'active',
+            'user_id'          => User::factory(),
+            'shop_name'        => $this->faker->company(),
+            'subdomain'        => $subdomain,
+            'shop_slug'        => $subdomain, // Slice 1: default = subdomain (mirrors migration backfill)
+            'phone'            => $this->faker->phoneNumber(),
+            'email'            => $this->faker->companyEmail(),
+            'status'           => 'active',
             'telegram_chat_id' => $this->faker->randomNumber(8, true),
         ];
     }

@@ -52,8 +52,9 @@ class UpdateSellerProfileAction
      */
     public function execute(SellerProfile $seller, array $data): SellerProfile
     {
-        // Capture old subdomain before any update for cache invalidation.
-        $subdomain = $seller->subdomain;
+        // Slice 0 / P0-B: Capture seller_id (stable) before update — not subdomain (immutable
+        // but string-typed; using int id is consistent with ADR-SC1 cache key contract).
+        $sellerId = $seller->id;
 
         try {
             return DB::transaction(function () use ($seller, $data) {
@@ -73,7 +74,7 @@ class UpdateSellerProfileAction
             );
         } finally {
             // Invalidate storefront cache — runs even on rollback to prevent stale state.
-            Cache::forget(\App\Models\SellerPage::cacheKeyFor($subdomain));
+            Cache::forget(\App\Models\SellerPage::cacheKeyFor($sellerId));
         }
     }
 }

@@ -33,7 +33,16 @@ class SellerProfileResource extends Resource
                 Forms\Components\TextInput::make('subdomain')
                     ->required()
                     ->maxLength(255)
-                    ->label('Subdomain'),
+                    ->label('Subdomain (cố định)')
+                    ->disabled()
+                    ->helperText('Subdomain không thể thay đổi sau khi tạo (dùng bởi Spatie tenant resolution).'),
+                Forms\Components\TextInput::make('shop_slug')
+                    ->label('Shop Slug (/shop/{slug})')
+                    ->required()
+                    ->regex('/^[a-z0-9][a-z0-9\-]{0,61}[a-z0-9]$|^[a-z0-9]{1,63}$/')
+                    ->unique(table: 'seller_profiles', column: 'shop_slug', ignoreRecord: true)
+                    ->maxLength(63)
+                    ->helperText('Admin only. Chỉ a-z, 0-9, dấu gạch nối (-). URL: demo.tanhdev.com/shop/{slug}'),
                 Forms\Components\TextInput::make('phone')
                     ->tel()
                     ->maxLength(255)
@@ -78,6 +87,11 @@ class SellerProfileResource extends Resource
                 Tables\Columns\TextColumn::make('subdomain')
                     ->searchable()
                     ->label('Subdomain'),
+                Tables\Columns\TextColumn::make('shop_slug')
+                    ->searchable()
+                    ->label('Shop Slug (/shop/...)')
+                    ->copyable()
+                    ->copyMessage('Đã sao chép!'),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable()
                     ->label('Số điện thoại'),

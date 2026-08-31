@@ -34,7 +34,8 @@ class UpdateSellerPageAction
      */
     public function execute(SellerProfile $seller, array $data): SellerPage
     {
-        $cacheKey = SellerPage::cacheKeyFor($seller->subdomain);
+        // Slice 0 / P0-B: cache key uses seller_id (stable) — not subdomain (mutable).
+        $cacheKey = SellerPage::cacheKeyFor($seller->id);
 
         try {
             $page = DB::transaction(function () use ($seller, $data) {

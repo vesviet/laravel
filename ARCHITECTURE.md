@@ -233,3 +233,25 @@ Cart state is stored in PHP Session, not a database table or Redis. This is inte
 ### COD-Only Checkout (no payment gateway)
 
 `composer.json` has no Stripe/PayPal package. All orders use Cash on Delivery (`PAYMENT_METHOD=cod`). The `stripe_customer_id` field on `Customer` is a placeholder for a future integration — it is intentionally excluded from `$fillable` until an integration ADR is approved.
+
+### Seller Center: Shared-Database Multi-Tenancy (not `UsesTenantConnection`)
+
+The `SellerProfile` model extends `Spatie\Multitenancy\Models\Tenant` to participate in Spatie's Multitenancy package lifecycle (tenant resolution, `makeCurrent()`, `SubdomainTenantFinder`). However, **`UsesTenantConnection` is intentionally NOT used**.
+
+**Why:** `UsesTenantConnection` switches the DB connection to a per-tenant database or schema. This project uses **shared-database multi-tenancy** — all sellers share the same tables, isolated by `seller_id` foreign keys and a `BelongsToSeller` global scope trait.
+
+**Pattern used:**
+
+```
+SellerProfile (extends Tenant) — resolves via SubdomainTenantFinder
+  → makeCurrent() sets the "active tenant" context in memory
+  → BelongsToSeller trait applies a global scope: WHERE seller_id = $activeTenantId
+  → Filament::getTenant() is the authoritative accessor for the active tenant in UI code
+```
+
+**Consequence for code authors:**
+- Any `Product`, `Order`, `SellerPage` query inside the Seller Panel is automatically scoped by `seller_id` via the `BelongsToSeller` global scope — no manual `where('seller_id', ...)` needed.
+- For cross-tenant queries (e.g. admin panel, background jobs), use `->withoutGlobalScopes()` explicitly to bypass the scope.
+- Never rely on `auth()->user()->sellerProfile` for write operations — use `Filament::getTenant()`. The Eloquent relation traversal does not guarantee it matches the active Filament tenant (P0-01).
+
+**If you see `UsesTenantConnection`** in a future PR: that is a **P0 architectural violation** requiring explicit ADR approval before merging.

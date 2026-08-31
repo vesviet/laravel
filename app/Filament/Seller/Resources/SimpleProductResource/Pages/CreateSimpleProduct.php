@@ -4,6 +4,7 @@ namespace App\Filament\Seller\Resources\SimpleProductResource\Pages;
 
 use App\Filament\Seller\Resources\SimpleProductResource;
 use Filament\Actions;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,10 @@ class CreateSimpleProduct extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $sellerProfile = auth()->user()?->sellerProfile;
+        // P0-01: Use Filament::getTenant() — the authoritative active tenant context.
+        // auth()->user()->sellerProfile traverses the Eloquent relation which may not
+        // match the active Filament tenant in edge cases (e.g. multi-profile scenarios).
+        $sellerProfile = Filament::getTenant();
 
         if (! $sellerProfile) {
             Notification::make()
@@ -23,7 +27,7 @@ class CreateSimpleProduct extends CreateRecord
                 ->body('Vui lòng tạo Seller Profile trước khi thêm sản phẩm.')
                 ->danger()
                 ->send();
-            throw new RuntimeException('User does not have an associated SellerProfile.');
+            throw new RuntimeException('No active seller tenant found. Cannot create product.');
         }
 
         $data['seller_id'] = $sellerProfile->id;

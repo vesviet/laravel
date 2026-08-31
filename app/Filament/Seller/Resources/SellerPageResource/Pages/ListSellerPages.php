@@ -3,6 +3,7 @@
 namespace App\Filament\Seller\Resources\SellerPageResource\Pages;
 
 use App\Filament\Seller\Resources\SellerPageResource;
+use Filament\Facades\Filament;
 use Filament\Resources\Pages\ListRecords;
 
 class ListSellerPages extends ListRecords
@@ -13,7 +14,10 @@ class ListSellerPages extends ListRecords
     {
         parent::mount();
 
-        $page = auth()->user()?->sellerProfile?->pages()->first();
+        // P1-04: Use Filament::getTenant() — the authoritative active tenant context.
+        // auth()->user()->sellerProfile may not match the active Filament tenant.
+        $seller = Filament::getTenant();
+        $page   = $seller?->pages()->first();
 
         if ($page) {
             $this->redirect(SellerPageResource::getUrl('edit', ['record' => $page->id]));

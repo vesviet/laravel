@@ -39,7 +39,8 @@ class PublishSellerPageAction
         } finally {
             // Cache invalidation runs even when transaction rolls back,
             // ensuring stale state is never served to the next request.
-            Cache::forget(SellerPage::cacheKeyFor($seller->subdomain));
+            // Slice 0 / P0-B: cache key uses seller_id (stable) — not subdomain (mutable).
+            Cache::forget(SellerPage::cacheKeyFor($seller->id));
         }
     }
 }
