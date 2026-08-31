@@ -86,10 +86,16 @@ class CheckoutFlow extends Component
         return $methods[$this->selectedPaymentMethod] ?? ['name' => 'Chưa chọn', 'description' => ''];
     }
 
-    #[Computed(persist: true)]
+    #[Computed]
     public function provinces()
     {
-        return Province::orderBy('name')->get();
+        // PERF-01: Cache via Cache facade (not Livewire persist) — Livewire persist
+        // serializes Eloquent Collections to plain arrays which breaks ->name access in views.
+        return \Illuminate\Support\Facades\Cache::remember(
+            'provinces_list',
+            now()->addHours(24),
+            fn () => Province::orderBy('name')->get()
+        );
     }
 
     #[Computed]
