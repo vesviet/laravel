@@ -93,7 +93,9 @@ test('SellerProfile generates unique non-reserved subdomains', function () {
 });
 
 test('SellerPage cache key uses CACHE_KEY_PREFIX constant', function () {
-    expect(SellerPage::cacheKeyFor('my-shop'))->toBe('seller_page_my-shop');
+    // ADR-SC1: cache key uses seller_id (stable int), not subdomain (mutable string).
+    // Format: 'storefront:page:{seller_id}'
+    expect(SellerPage::cacheKeyFor(42))->toBe('storefront:page:42');
 });
 
 test('SellerProfile hasCompleteBankInfo requires all three fields', function () {
