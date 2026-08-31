@@ -86,7 +86,7 @@ class CheckoutFlow extends Component
         return $methods[$this->selectedPaymentMethod] ?? ['name' => 'Chưa chọn', 'description' => ''];
     }
 
-    #[Computed]
+    #[Computed(persist: true)]
     public function provinces()
     {
         return Province::orderBy('name')->get();
@@ -160,7 +160,10 @@ class CheckoutFlow extends Component
         try {
             $totalWeight = 0;
             foreach ($this->cart as $item) {
-                $productWeight = (int) ($item['product']->weight ?? 500);
+                // [BUG-01 FIX] CartService::getCartItemsDetails() returns a plain array,
+                // NOT an Eloquent model. There is no 'product' key — use default weight 500g.
+                // ProductWeight would need to be added to CartService output to use real weights.
+                $productWeight = 500; // default 500g per item
                 $qty = (int) ($item['quantity'] ?? 1);
                 $totalWeight += max(100, $productWeight) * $qty;
             }
@@ -191,7 +194,7 @@ class CheckoutFlow extends Component
         $code = strtoupper(trim($this->couponCode));
 
         if (empty($code)) {
-            $this->couponError = 'Vui long nhap ma giam gia.';
+            $this->couponError = 'Vui lòng nhập mã giảm giá.';
 
             return;
         }
@@ -218,12 +221,12 @@ class CheckoutFlow extends Component
                 ->first();
 
             if (! $couponRule) {
-                $this->couponError = "Ma giam gia [{$code}] khong ton tai hoac da het han.";
+                $this->couponError = "Mã giảm giá [{$code}] không tồn tại hoặc đã hết hạn.";
             } elseif ($couponRule->min_order_amount > 0 && $this->subtotal < (float) $couponRule->min_order_amount) {
                 $gap = (float) $couponRule->min_order_amount - $this->subtotal;
-                $this->couponError = "Ma [{$code}] yeu cau don toi thieu ".number_format($couponRule->min_order_amount, 0, ',', '.').'VND (Can them '.number_format($gap, 0, ',', '.').'VND).';
+                $this->couponError = "Mã [{$code}] yêu cầu đơn tối thiểu ".number_format($couponRule->min_order_amount, 0, ',', '.').'đ (Cần thêm '.number_format($gap, 0, ',', '.').'đ).';
             } else {
-                $this->couponError = "Ma giam gia [{$code}] khong du dieu kien ap dung.";
+                $this->couponError = "Mã giảm giá [{$code}] không đủ điều kiện áp dụng.";
             }
 
             $this->couponDiscount = 0;
@@ -308,6 +311,40 @@ class CheckoutFlow extends Component
         $this->calculateShippingFee();
     }
 
+    /**
+     * [BUG-03 FIX] Sync payment method from PaymentMethodSelector child component.
+     * PaymentMethodSelector dispatches 'payment-method-changed' on every selection.
+     */
+    #[On('payment-method-changed')]
+    public function onPaymentMethodChanged(string $method): void
+    {
+        $allowed = ['cod', 'vnpay', 'momo', 'banking'];
+        if (in_array($method, $allowed)) {
+            $this->selectedPaymentMethod = $method;
+        }
+    }
+
+    /**
+     * [BUG-04 FIX] Sync coupon state from CouponInput child component.
+     * CouponInput dispatches 'coupon-applied' and 'coupon-removed'.
+     */
+    #[On('coupon-applied')]
+    public function onCouponApplied(float $discount): void
+    {
+        $this->couponDiscount = $discount;
+        $this->couponApplied = session()->get('coupon');
+        // Invalidate cached breakdown so order summary recalculates with new coupon
+        unset($this->breakdown);
+    }
+
+    #[On('coupon-removed')]
+    public function onCouponRemoved(): void
+    {
+        $this->couponDiscount = 0;
+        $this->couponApplied = null;
+        unset($this->breakdown);
+    }
+
     public function submitOrder(): void
     {
         $this->validateCurrentStep();
@@ -342,42 +379,7 @@ class CheckoutFlow extends Component
                 'exception' => get_class($e),
                 'message' => $e->getMessage(),
             ]);
-            $this->errorMessage = 'Loi xu ly don hang. Vui long thu lai hoac lien he ho tro.';
-        } finally {
-            $this->isProcessing = false;
-        }
-    }
-
-    public function store(array $customerData): void
-    {
-        $this->isProcessing = true;
-        $this->errorMessage = null;
-
-        try {
-            if (Auth::guard('customer')->check()) {
-                $customerData['customer_id'] = Auth::guard('customer')->id();
-            }
-
-            $couponCode = session()->get('coupon');
-
-            $processCheckout = app(ProcessCheckoutAction::class);
-            $order = $processCheckout->execute($customerData, $couponCode);
-
-            session()->forget('coupon');
-
-            session()->flash('checkout_completed', $order->order_number);
-
-            $this->redirectRoute('checkout.success', ['order_number' => $order->order_number]);
-        } catch (CommerceException $e) {
-            $this->errorMessage = $e->getMessage();
-            $this->addError('payment_method', $e->getMessage());
-        } catch (\Throwable $e) {
-            Log::error('Checkout failed', [
-                'exception' => get_class($e),
-                'message' => $e->getMessage(),
-            ]);
-            $this->errorMessage = 'Loi xu ly don hang. Vui long thu lai hoac lien he ho tro.';
-            $this->addError('payment_method', 'Loi xu ly don hang. Vui long thu lai hoac lien he ho tro.');
+            $this->errorMessage = 'Lỗi xử lý đơn hàng. Vui lòng thử lại hoặc liên hệ hỗ trợ.';
         } finally {
             $this->isProcessing = false;
         }

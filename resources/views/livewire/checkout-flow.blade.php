@@ -1,4 +1,12 @@
-<div class="py-10 md:py-16">
+<div
+    class="py-10 md:py-16"
+    x-data="{
+        currentStep: @entangle('currentStep'),
+        isProcessing: @entangle('isProcessing'),
+        shippingData: @entangle('shippingData'),
+        selectedPaymentMethod: @entangle('selectedPaymentMethod'),
+    }"
+>
     <div class="section-wrapper">
 
         {{-- Page heading --}}
@@ -64,7 +72,7 @@
             {{-- LEFT (60%): Form Steps --}}
             <div class="w-full lg:w-[60%]">
                 {{-- Shipping Step --}}
-                <div x-show="currentStep === 'shipping'" x-transition>
+                <div x-show="currentStep === 'shipping'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0">
                     <div wire:key="shipping-step">
                         <form wire:submit.prevent="nextStep" class="space-y-8" @submit.prevent="return false">
 
@@ -238,7 +246,7 @@
                 </div>
 
                 {{-- Payment Step --}}
-                <div x-show="currentStep === 'payment'" x-transition>
+                <div x-show="currentStep === 'payment'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0">
                     <div wire:key="payment-step">
                         <form wire:submit.prevent="nextStep" class="space-y-8" @submit.prevent="return false">
 
@@ -270,7 +278,7 @@
                 </div>
 
                 {{-- Review Step --}}
-                <div x-show="currentStep === 'review'" x-transition>
+                <div x-show="currentStep === 'review'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-4" x-transition:enter-end="opacity-100 translate-x-0">
                     <div wire:key="review-step">
                         <form wire:submit.prevent="submitOrder" class="space-y-8" @submit.prevent="return false">
 
@@ -380,11 +388,4 @@
     </div>
 </div>
 
-<script>
-    // Sync Alpine.js with Livewire
-    document.addEventListener("livewire:initialized", () => {
-        Livewire.on("currentStep", (step) => {
-            window.currentStep = step;
-        });
-    });
-</script>
+{{-- Alpine data is entangled with Livewire via x-data on wrapper — no extra JS needed --}}
