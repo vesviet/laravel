@@ -82,8 +82,8 @@ class AddressSelector extends Component
     public function selectAddress(array $address): void
     {
         $this->selectedAddress = $address;
+        // Livewire v3: dispatch() broadcasts to all components (replaces emitUp)
         $this->dispatch("address-changed", address: $address);
-        $this->emitUp("address-changed", $address);
     }
 
     public function onAddressSelected(array $address): void
