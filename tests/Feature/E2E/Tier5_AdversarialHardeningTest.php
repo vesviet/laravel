@@ -180,7 +180,7 @@ it('verifies database pessimistic lock prevents overselling under simulated conc
 
     // Order 2 attempts deduction when stock is 0 -> Exception
     expect(fn() => $inventoryService->deductStock($order2))
-        ->toThrow(Exception::class, 'KhÃ´ng Ä‘á»§ tá»“n kho cho sáº£n pháº©m');
+        ->toThrow(Exception::class, 'Không đủ tồn kho cho sản phẩm');
 
     // Confirm product stock never dropped into negative numbers
     expect($product->fresh()->stock)->toBe(0);
@@ -307,33 +307,33 @@ it('verifies multi-user session cart isolation under rapid parallel requests', f
 
 it('verifies catalog and product cards render complex UTF-8 diacritics, Asian scripts, Cyrillic, and emoji without corruption', function () {
     $category = Category::create([
-        'name' => 'Äá»“ Ná»™i Tháº¥t Cao Cáº¥p ðŸŒŸ',
+        'name' => 'Đồ Nội Thất Cao Cấp 🌟',
         'slug' => 'do-noi-that-cao-cap',
     ]);
 
     $testProducts = [
         [
-            'name' => 'BÃ n TrÃ  Gá»— Sá»“i 100% Tá»± NhiÃªn (Äáº·c Biá»‡t: áº¯, áº±, áº³, áºµ, áº·, áº¥, áº§, áº©, áº«, áº­, Ä‘, Ä)',
+            'name' => 'Bàn Trà Gỗ Sồi 100% Tự Nhiên (Đặc Biệt: ắ, ằ, ẳ, ẵ, ặ, ấ, ầ, ẩ, ẫ, ậ, đ, Đ)',
             'slug' => 'ban-tra-go-soi-dac-biet-diacritics',
             'price' => 1850000,
         ],
         [
-            'name' => 'ðŸ›‹ï¸ Sofa Da BÃ² Báº¯c Ã‚u Scandinavian ðŸŒŸ BÃ n TrÃ  ðŸª‘ ÄÃ¨n ðŸ’¡',
+            'name' => '🛋️ Sofa Da Bò Bắc Âu Scandinavian 🌟 Bàn Trà 🪑 Đèn 💡',
             'slug' => 'sofa-da-bo-emoji-decor',
             'price' => 15500000,
         ],
         [
-            'name' => 'Ù…Ø¬Ù…ÙˆØ¹Ø© Ø§Ù„Ø£Ø«Ø§Ø« Ø§Ù„ÙØ§Ø®Ø±Ø© - ×‘×“×™×§×ª ×¢×‘×¨×™×ª RTL Mixed Test',
+            'name' => 'مجموعة الأثاث الفاخرة - בדיקת עברית RTL Mixed Test',
             'slug' => 'arabic-hebrew-rtl-furniture-set',
             'price' => 9900000,
         ],
         [
-            'name' => 'Ð­Ð»Ð¸Ñ‚Ð½Ð°Ñ Ð¼ÐµÐ±ÐµÐ»ÑŒ Ð¸Ð· Ð´ÑƒÐ±Ð° é«˜ç´šå®¶å…· 2026 Edition',
+            'name' => 'Элитная мебель из дуба 高級家具 2026 Edition',
             'slug' => 'cyrillic-asian-luxury-furniture',
             'price' => 12800000,
         ],
         [
-            'name' => "BÃ n\u{200B}Gá»—\u{00A0}Sá»“i\u{200D}2026 NonBreaking ZeroWidth",
+            'name' => "Bàn\u{200B}Gỗ\u{00A0}Sồi\u{200D}2026 NonBreaking ZeroWidth",
             'slug' => 'zero-width-non-breaking-table',
             'price' => 3200000,
         ],
@@ -354,10 +354,10 @@ it('verifies catalog and product cards render complex UTF-8 diacritics, Asian sc
     $response->assertOk();
 
     // Verify catalog rendered all UTF-8 strings safely
-    $response->assertSee('Äáº·c Biá»‡t: áº¯, áº±, áº³, áºµ, áº·, áº¥, áº§, áº©, áº«, áº­, Ä‘, Ä', false);
-    $response->assertSee('ðŸ›‹ï¸', false);
-    $response->assertSee('Ð­Ð»Ð¸Ñ‚Ð½Ð°Ñ Ð¼ÐµÐ±ÐµÐ»ÑŒ', false);
-    $response->assertSee('é«˜ç´šå®¶å…·', false);
+    $response->assertSee('Đặc Biệt: ắ, ằ, ẳ, ẵ, ặ, ấ, ầ, ẩ, ẫ, ậ, đ, Đ', false);
+    $response->assertSee('🛋️', false);
+    $response->assertSee('Элитная мебель', false);
+    $response->assertSee('高級家具', false);
 
     // Update to published for product show endpoint check
     $pShow = Product::where('slug', 'ban-tra-go-soi-dac-biet-diacritics')->first();
@@ -365,7 +365,7 @@ it('verifies catalog and product cards render complex UTF-8 diacritics, Asian sc
 
     $showResp = $this->get(route('products.show', 'ban-tra-go-soi-dac-biet-diacritics'));
     $showResp->assertOk();
-    $showResp->assertSee('BÃ n TrÃ  Gá»— Sá»“i 100% Tá»± NhiÃªn');
+    $showResp->assertSee('Bàn Trà Gỗ Sồi 100% Tự Nhiên');
 });
 
 it('verifies zero price and multi-billion VND price format accurately in views and cart calculations', function () {
@@ -388,8 +388,8 @@ it('verifies zero price and multi-billion VND price format accurately in views a
     $response = $this->get(route('products.index'));
     $response->assertOk();
 
-    $response->assertSee('0â‚«');
-    $response->assertSee('2.500.000.000â‚«');
+    $response->assertSee('0₫');
+    $response->assertSee('2.500.000.000₫');
 
     $cartService = app(\App\Services\CartService::class);
     $cartService->add($freeSample->id, null, 1);
@@ -532,26 +532,26 @@ it('verifies checkout pipeline validates and handles extreme customer inputs saf
 
     // 1. Invalid phone number format fails
     $badPhoneResp = $this->post(route('checkout.store'), [
-        'customer_name' => 'Nguyá»…n VÄƒn A',
+        'customer_name' => 'Nguyễn Văn A',
         'phone' => '12345678', // Invalid non-VN phone
-        'address' => '123 ÄÆ°á»ng B',
+        'address' => '123 Đường B',
         'payment_method' => 'cod',
     ]);
     $badPhoneResp->assertSessionHasErrors('phone');
 
     // 2. Valid checkout with Vietnamese diacritics and long formatted address
     $validResp = $this->post(route('checkout.store'), [
-        'customer_name' => 'Tráº§n Thá»‹ Má»¹ DuyÃªn â€” KhÃ¡ch HÃ ng VIP',
+        'customer_name' => 'Trần Thị Mỹ Duyên — Khách Hàng VIP',
         'phone' => '0901234567',
         'email' => 'myduyen.tran@myshop.vn',
-        'address' => 'Sá»‘ 999 ÄÆ°á»ng Nguyá»…n Há»¯u Cáº£nh, PhÆ°á»ng 22, Quáº­n BÃ¬nh Tháº¡nh, ThÃ nh Phá»‘ Há»“ ChÃ­ Minh',
-        'notes' => 'Giao hÃ ng giá» hÃ nh chÃ­nh, gá»i trÆ°á»›c 30 phÃºt. <tag>KhÃ´ng báº¥m chuÃ´ng</tag>',
+        'address' => 'Số 999 Đường Nguyễn Hữu Cảnh, Phường 22, Quận Bình Thạnh, Thành Phố Hồ Chí Minh',
+        'notes' => 'Giao hàng giờ hành chính, gọi trước 30 phút. <tag>Không bấm chuông</tag>',
         'payment_method' => 'cod',
     ]);
 
     $validResp->assertSessionHasNoErrors();
     $this->assertDatabaseHas('orders', [
-        'customer_name' => 'Tráº§n Thá»‹ Má»¹ DuyÃªn â€” KhÃ¡ch HÃ ng VIP',
+        'customer_name' => 'Trần Thị Mỹ Duyên — Khách Hàng VIP',
         'phone' => '0901234567',
     ]);
 });
@@ -563,7 +563,7 @@ it('verifies order tracking handles SQL characters, non-existent orders, and bou
         'contact_info' => '0912345678',
     ]);
     $resp1->assertOk();
-    $resp1->assertSee('KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng');
+    $resp1->assertSee('Không tìm thấy đơn hàng');
 
     // 2. SQL injection payload in tracking search
     $resp2 = $this->followingRedirects()->post(route('track-order.track'), [
@@ -571,20 +571,20 @@ it('verifies order tracking handles SQL characters, non-existent orders, and bou
         'contact_info' => "' OR '1'='1' --",
     ]);
     $resp2->assertOk();
-    $resp2->assertSee('KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng');
+    $resp2->assertSee('Không tìm thấy đơn hàng');
 
     // 3. Valid order tracking
     $order = Order::create([
         'order_number' => 'ORD-TRACK-VALID-2026',
-        'customer_name' => 'LÃª HoÃ ng Long',
+        'customer_name' => 'Lê Hoàng Long',
         'phone' => '0912345678',
-        'address' => 'HÃ  Ná»™i',
+        'address' => 'Hà Nội',
         'subtotal' => 1500000,
         'total_amount' => 1500000,
         'status' => 'pending',
     ]);
     $order->items()->create([
-        'product_name' => 'Gháº¿ Ä‚n Gá»— Sá»“i Tá»± NhiÃªn',
+        'product_name' => 'Ghế Ăn Gỗ Sồi Tự Nhiên',
         'price_at_purchase' => 1500000,
         'quantity' => 1,
     ]);
@@ -595,8 +595,8 @@ it('verifies order tracking handles SQL characters, non-existent orders, and bou
     ]);
     $resp3->assertOk();
     $resp3->assertSee('ORD-TRACK-VALID-2026');
-    $resp3->assertSee('Gháº¿ Ä‚n Gá»— Sá»“i Tá»± NhiÃªn');
-    $resp3->assertSee('1.500.000â‚«');
+    $resp3->assertSee('Ghế Ăn Gỗ Sồi Tự Nhiên');
+    $resp3->assertSee('1.500.000₫');
 });
 
 /*
@@ -630,11 +630,11 @@ it('verifies desktop navigation renders hidden on mobile and flex on desktop', f
     $response->assertSee('hidden md:flex items-center gap-10', false);
 
     // Required 5 navigation destinations
-    $response->assertSee('Trang Chá»§');
-    $response->assertSee('Sáº£n Pháº©m');
-    $response->assertSee('Giá»›i Thiá»‡u');
-    $response->assertSee('LiÃªn Há»‡');
-    $response->assertSee('Tra Cá»©u');
+    $response->assertSee('Trang Chủ');
+    $response->assertSee('Sản Phẩm');
+    $response->assertSee('Giới Thiệu');
+    $response->assertSee('Liên Hệ');
+    $response->assertSee('Tra Cứu');
 });
 
 it('verifies mobile hamburger trigger and slide-out drawer meet accessibility and responsive standards', function () {
@@ -644,12 +644,12 @@ it('verifies mobile hamburger trigger and slide-out drawer meet accessibility an
     // Mobile trigger button must have md:hidden and aria-label
     $response->assertSee('md:hidden flex items-center justify-center', false);
     $response->assertSee('@click="mobileMenuOpen = true"', false);
-    $response->assertSee('aria-label="Má»Ÿ menu"', false);
+    $response->assertSee('aria-label="Mở menu"', false);
 
     // Mobile drawer dialog container
     $response->assertSee('role="dialog"', false);
     $response->assertSee('aria-modal="true"', false);
-    $response->assertSee('aria-label="Menu Ä‘iá»u hÆ°á»›ng"', false);
+    $response->assertSee('aria-label="Menu điều hướng"', false);
     $response->assertSee('x-show="mobileMenuOpen"', false);
 });
 
@@ -659,14 +659,14 @@ it('verifies search modal dialog renders with required z-index backdrop and esca
 
     // Search modal trigger
     $response->assertSee('@click="searchOpen = true"', false);
-    $response->assertSee('aria-label="TÃ¬m kiáº¿m"', false);
+    $response->assertSee('aria-label="Tìm kiếm"', false);
 
     // Search modal dialog attributes & backdrop
     $response->assertSee('x-show="searchOpen"', false);
     $response->assertSee('@keydown.window.escape="searchOpen = false"', false);
     $response->assertSee('role="dialog"', false);
     $response->assertSee('aria-modal="true"', false);
-    $response->assertSee('aria-label="TÃ¬m kiáº¿m sáº£n pháº©m"', false);
+    $response->assertSee('aria-label="Tìm kiếm sản phẩm"', false);
 });
 
 it('verifies z-index stacking order across header, mobile drawer, search modal, and toasts prevents UI collision', function () {
@@ -713,10 +713,10 @@ it('verifies homepage renders all 7 sections in exact chronological sequence', f
     $posHero = strpos($content, 'SHOP NOW');
     $posPromo = strpos($content, 'Lighting on Express');
     $posIntro = strpos($content, 'Great Design In Your Home');
-    $posFeatured = strpos($content, 'Sáº£n Pháº©m Ná»•i Báº­t');
-    $posArrivals = strpos($content, 'Sáº£n Pháº©m Má»›i');
+    $posFeatured = strpos($content, 'Sản Phẩm Nổi Bật');
+    $posArrivals = strpos($content, 'Sản Phẩm Mới');
     $posCollections = strpos($content, 'Copenhague Desk');
-    $posTrust = strpos($content, 'Miá»…n PhÃ­ Váº­n Chuyá»ƒn');
+    $posTrust = strpos($content, 'Miễn Phí Vận Chuyển');
     $posFooter = strpos($content, 'Newsletter');
 
     expect($posHero)->toBeLessThan($posPromo)
@@ -803,15 +803,15 @@ it('verifies search modal suggestion links have valid encoded Vietnamese paramet
     $response->assertOk();
 
     // Suggestion pills on storefront search modal
-    $response->assertSee(route('products.index', ['search' => 'BÃ n']), false);
-    $response->assertSee(route('products.index', ['search' => 'Gháº¿']), false);
-    $response->assertSee(route('products.index', ['search' => 'ÄÃ¨n']), false);
+    $response->assertSee(route('products.index', ['search' => 'Bàn']), false);
+    $response->assertSee(route('products.index', ['search' => 'Ghế']), false);
+    $response->assertSee(route('products.index', ['search' => 'Đèn']), false);
     $response->assertSee(route('products.index', ['search' => 'Sofa']), false);
-    $response->assertSee(route('products.index', ['search' => 'Tá»§']), false);
+    $response->assertSee(route('products.index', ['search' => 'Tủ']), false);
 
     // Visiting each pill endpoint succeeds with 200 OK
-    $this->get(route('products.index', ['search' => 'BÃ n']))->assertOk();
-    $this->get(route('products.index', ['search' => 'Gháº¿']))->assertOk();
+    $this->get(route('products.index', ['search' => 'Bàn']))->assertOk();
+    $this->get(route('products.index', ['search' => 'Ghế']))->assertOk();
 });
 
 /*
@@ -967,5 +967,5 @@ it('verifies cart session state is preserved across multi-page storefront naviga
     $checkoutResp = $this->get(route('checkout.index'));
     $checkoutResp->assertOk();
     $checkoutResp->assertSee('Persistent Cart Armchair');
-    $checkoutResp->assertSee('7.200.000â‚«');
+    $checkoutResp->assertSee('7.200.000₫');
 });

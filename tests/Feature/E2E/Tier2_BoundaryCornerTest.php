@@ -27,8 +27,8 @@ it('verifies homepage handles zero products gracefully without errors', function
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    $response->assertSee('ChÆ°a cÃ³ sáº£n pháº©m ná»•i báº­t');
-    $response->assertSee('ChÆ°a cÃ³ sáº£n pháº©m nÃ o.');
+    $response->assertSee('Chưa có sản phẩm nổi bật');
+    $response->assertSee('Chưa có sản phẩm nào.');
 });
 
 it('verifies products catalog handles empty category gracefully', function () {
@@ -39,13 +39,13 @@ it('verifies products catalog handles empty category gracefully', function () {
 
     $response = $this->get(route('products.index', ['category' => $category->slug]));
     $response->assertOk();
-    $response->assertSee('KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m nÃ o.');
+    $response->assertSee('Không tìm thấy sản phẩm nào.');
 });
 
 it('verifies products catalog handles non-existent category slug without 500 error', function () {
     $response = $this->get(route('products.index', ['category' => 'non-existent-category-slug-999']));
     $response->assertOk();
-    $response->assertSee('KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m nÃ o.');
+    $response->assertSee('Không tìm thấy sản phẩm nào.');
 });
 
 it('verifies product card handles null image path with svg placeholder fallback', function () {
@@ -82,7 +82,7 @@ it('verifies product card handles product with no category without null pointer 
 });
 
 it('verifies product card handles extreme long product name properly', function () {
-    $longName = 'BÃ n TrÃ  Sofa Scandinavian Gá»— Sá»“i Tá»± NhiÃªn Cao Cáº¥p Phá»§ SÆ¡n PU BÃ³ng Má» KhÃ¡ng NÆ°á»›c Chá»‘ng Tráº§y XÆ°á»›c 2026';
+    $longName = 'Bàn Trà Sofa Scandinavian Gỗ Sồi Tự Nhiên Cao Cấp Phủ Sơn PU Bóng Mờ Kháng Nước Chống Trầy Xước 2026';
     $product = Product::create([
         'name' => $longName,
         'slug' => 'extreme-long-name-table',
@@ -98,7 +98,7 @@ it('verifies product card handles extreme long product name properly', function 
 });
 
 it('verifies product card escapes special characters quotes and html entities safely', function () {
-    $specialName = 'Gháº¿ "Armchair" Vintage & ÄÃ¨n <Gá»—>';
+    $specialName = 'Ghế "Armchair" Vintage & Đèn <Gỗ>';
     $product = Product::create([
         'name' => $specialName,
         'slug' => 'special-char-product',
@@ -126,7 +126,7 @@ it('verifies product card formats zero price cleanly', function () {
     $response = $this->get(route('products.index'));
     $response->assertOk();
 
-    $response->assertSee('0â‚«');
+    $response->assertSee('0₫');
 });
 
 it('verifies product card formats large price with vnd thousands separator', function () {
@@ -141,7 +141,7 @@ it('verifies product card formats large price with vnd thousands separator', fun
     $response = $this->get(route('products.index'));
     $response->assertOk();
 
-    $response->assertSee('125.000.000â‚«');
+    $response->assertSee('125.000.000₫');
 });
 
 it('verifies draft and archived products are excluded from homepage and catalog', function () {
@@ -221,7 +221,7 @@ it('verifies skip to content accessibility link is present with proper attribute
     $response->assertOk();
 
     $response->assertSee('sr-only', false);
-    $response->assertSee('Bá» qua Ä‘iá»u hÆ°á»›ng');
+    $response->assertSee('Bỏ qua điều hướng');
 });
 
 /*
@@ -377,7 +377,7 @@ it('verifies cart drawer calculates subtotal accurately with multiple quantities
 
     // Subtotal = (250000 * 2) + (100000 * 3) = 800000
     Livewire::test(CartDrawer::class)
-        ->assertSee('800.000â‚«');
+        ->assertSee('800.000₫');
 });
 
 it('verifies add to cart is blocked when product stock is zero', function () {
@@ -468,14 +468,14 @@ it('verifies order tracking page loads cleanly with no query param', function ()
     $response = $this->get(route('track-order.index'));
     $response->assertOk();
 
-    $response->assertSee('Tra Cá»©u ÄÆ¡n HÃ ng');
+    $response->assertSee('Tra Cứu Đơn Hàng');
 });
 
 it('verifies order tracking handles non-existent order number gracefully', function () {
     $response = $this->get(route('track-order.index', ['order_number' => 'ORD-NON-EXISTENT-999']));
     $response->assertOk();
 
-    $response->assertSee('KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng vá»›i mÃ£');
+    $response->assertSee('Không tìm thấy đơn hàng với mã');
     $response->assertSee('ORD-NON-EXISTENT-999');
 });
 
@@ -495,8 +495,8 @@ it('verifies order tracking displays complete order details for valid order', fu
     $response->assertOk();
 
     $response->assertSee('ORD-TRACK-12345');
-    $response->assertSee('1.500.000â‚«');
-    $response->assertSee('Chá» xÃ¡c nháº­n');
+    $response->assertSee('1.500.000₫');
+    $response->assertSee('Chờ xác nhận');
 });
 
 it('verifies order tracking post endpoint validates required order number', function () {

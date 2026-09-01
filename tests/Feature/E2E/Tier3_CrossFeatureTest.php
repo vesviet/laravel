@@ -50,10 +50,10 @@ it('verifies add to cart synchronizes livewire cart count and cart drawer conten
         ->assertSet('count', 2)
         ->assertSee('2');
 
-    // 3. Verify CartDrawer displays the product name and 7.000.000â‚« subtotal
+    // 3. Verify CartDrawer displays the product name and 7.000.000₫ subtotal
     Livewire::test(CartDrawer::class)
         ->assertSee('Cross Sync Dining Table')
-        ->assertSee('7.000.000â‚«');
+        ->assertSee('7.000.000₫');
 });
 
 /*
@@ -103,7 +103,7 @@ it('verifies cart drawer item removal synchronizes cart count and subtotal', fun
         ->assertDispatched('cart-updated')
         ->assertSee('Cross Product A')
         ->assertDontSee('Cross Product B')
-        ->assertSee('500.000â‚«');
+        ->assertSee('500.000₫');
 
     // Updated count is 1 item
     Livewire::test(CartCount::class)->assertSet('count', 1);
@@ -129,12 +129,12 @@ it('verifies newsletter subscription flash message persists across homepage layo
     $followResponse->assertOk();
 
     // Verify flash message
-    $followResponse->assertSee('Cáº£m Æ¡n! Báº¡n Ä‘Ã£ Ä‘Äƒng kÃ½ nháº­n báº£n tin thÃ nh cÃ´ng.');
+    $followResponse->assertSee('Cảm ơn! Bạn đã đăng ký nhận bản tin thành công.');
 
     // Verify surrounding layout remains intact
     $followResponse->assertSee('MYSHOP');
     $followResponse->assertSee('Hero banner', false);
-    $followResponse->assertSee('Vá»€ MYSHOP');
+    $followResponse->assertSee('VỀ MYSHOP');
 });
 
 /*
@@ -285,7 +285,7 @@ it('verifies homepage featured to product detail to checkout navigation flow', f
     $checkoutResponse = $this->get(route('checkout.index'));
     $checkoutResponse->assertOk();
     $checkoutResponse->assertSee('Copenhague Desk Classic');
-    $checkoutResponse->assertSee('4.200.000â‚«');
+    $checkoutResponse->assertSee('4.200.000₫');
 });
 
 /*
@@ -331,7 +331,7 @@ it('verifies footer customer service navigation to order tracking and lookup pip
     $resultPage->assertOk();
     $resultPage->assertSee('ORD-CROSS-778899');
     $resultPage->assertSee('Minimalist Coffee Table');
-    $resultPage->assertSee('2.800.000â‚«');
+    $resultPage->assertSee('2.800.000₫');
 });
 
 /*
@@ -401,11 +401,11 @@ it('verifies multi-variant product add to cart creates distinct line items in dr
         ],
     ]);
 
-    // Subtotal = (5200000 * 1) + (5500000 * 2) = 16.200.000â‚«
+    // Subtotal = (5200000 * 1) + (5500000 * 2) = 16.200.000₫
     Livewire::test(CartDrawer::class)
         ->assertSee('Beige Fabric')
         ->assertSee('Charcoal Gray')
-        ->assertSee('16.200.000â‚«');
+        ->assertSee('16.200.000₫');
 });
 
 /*
@@ -477,7 +477,7 @@ it('verifies hero and promo banner cta links target working catalog routes', fun
     $response = $this->get(route('products.index'));
     $response->assertOk();
     $response->assertSee('Banner Target Armchair');
-    $response->assertSee('Táº¥t Cáº£ Sáº£n Pháº©m');
+    $response->assertSee('Tất Cả Sản Phẩm');
 });
 
 /*
@@ -528,13 +528,13 @@ it('verifies customer product review submission pipeline', function () {
     Livewire::actingAs($customer, 'customer')
         ->test(ProductReviews::class, ['product' => $product])
         ->set('rating', 5)
-        ->set('comment', 'Thiáº¿t káº¿ Ä‘áº¹p máº¯t, giao hÃ ng nhanh chÃ³ng!')
+        ->set('comment', 'Thiết kế đẹp mắt, giao hàng nhanh chóng!')
         ->call('submitReview');
 
     $this->assertDatabaseHas('product_reviews', [
         'customer_id' => $customer->id,
         'product_id' => $product->id,
         'rating' => 5,
-        'comment' => 'Thiáº¿t káº¿ Ä‘áº¹p máº¯t, giao hÃ ng nhanh chÃ³ng!',
+        'comment' => 'Thiết kế đẹp mắt, giao hàng nhanh chóng!',
     ]);
 });

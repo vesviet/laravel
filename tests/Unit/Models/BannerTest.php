@@ -35,12 +35,12 @@ test('can create and persist banner with full fillable attributes and casts', fu
 
     $banner = Banner::create([
         'position'        => Banner::POSITION_HERO_SLIDER,
-        'title'           => 'Bá»™ SÆ°u Táº­p Báº¯c Ã‚u 2026',
+        'title'           => 'Bộ Sưu Tập Bắc Âu 2026',
         'eyebrow'         => 'SCANDINAVIAN MINIMALISM',
-        'subtitle'        => 'Tinh hoa ná»™i tháº¥t gá»— sá»“i tá»± nhiÃªn cho khÃ´ng gian sá»‘ng hiá»‡n Ä‘áº¡i.',
+        'subtitle'        => 'Tinh hoa nội thất gỗ sồi tự nhiên cho không gian sống hiện đại.',
         'image'           => 'banners/hero-nordic.webp',
         'link'            => '/catalog?category=living-room',
-        'cta_text'        => 'KhÃ¡m PhÃ¡ Ngay',
+        'cta_text'        => 'Khám Phá Ngay',
         'open_in_new_tab' => 1,
         'status' => 'published',
         'starts_at'       => $startsAt,
@@ -52,12 +52,12 @@ test('can create and persist banner with full fillable attributes and casts', fu
     expect($banner->exists)->toBeTrue();
     expect($banner->id)->toBeGreaterThan(0);
     expect($banner->position)->toBe(Banner::POSITION_HERO_SLIDER);
-    expect($banner->title)->toBe('Bá»™ SÆ°u Táº­p Báº¯c Ã‚u 2026');
+    expect($banner->title)->toBe('Bộ Sưu Tập Bắc Âu 2026');
     expect($banner->eyebrow)->toBe('SCANDINAVIAN MINIMALISM');
-    expect($banner->subtitle)->toBe('Tinh hoa ná»™i tháº¥t gá»— sá»“i tá»± nhiÃªn cho khÃ´ng gian sá»‘ng hiá»‡n Ä‘áº¡i.');
+    expect($banner->subtitle)->toBe('Tinh hoa nội thất gỗ sồi tự nhiên cho không gian sống hiện đại.');
     expect($banner->image)->toBe('banners/hero-nordic.webp');
     expect($banner->link)->toBe('/catalog?category=living-room');
-    expect($banner->cta_text)->toBe('KhÃ¡m PhÃ¡ Ngay');
+    expect($banner->cta_text)->toBe('Khám Phá Ngay');
 
     // Cast assertions
     expect($banner->open_in_new_tab)->toBeBool()->toBeTrue();
@@ -71,7 +71,7 @@ test('can create and persist banner with full fillable attributes and casts', fu
     $this->assertDatabaseHas('banners', [
         'id'           => $banner->id,
         'position'     => 'hero_slider',
-        'title'        => 'Bá»™ SÆ°u Táº­p Báº¯c Ã‚u 2026',
+        'title'        => 'Bộ Sưu Tập Bắc Âu 2026',
         'sort_order'   => 5,
         'clicks_count' => 42,
     ]);

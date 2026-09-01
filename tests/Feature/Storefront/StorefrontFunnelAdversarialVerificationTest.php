@@ -29,14 +29,14 @@ beforeEach(function () {
     Session::flush();
 
     $this->category = Category::create([
-        'name' => 'Ná»™i Tháº¥t Scandinavian',
+        'name' => 'Nội Thất Scandinavian',
         'slug' => 'scandinavian',
         'is_active' => true,
     ]);
 
     // Regular product (1,000,000 VND)
     $this->productA = Product::create([
-        'name' => 'BÃ n Ä‚n Gá»— Sá»“i Báº¯c Ã‚u',
+        'name' => 'Bàn Ăn Gỗ Sồi Bắc Âu',
         'slug' => 'ban-an-go-soi-bac-au',
         'sku' => 'TBL-OAK-01',
         'price' => 1000000,
@@ -48,7 +48,7 @@ beforeEach(function () {
 
     // Secondary product (500,000 VND)
     $this->productB = Product::create([
-        'name' => 'Gháº¿ ThÆ° GiÃ£n Armchair',
+        'name' => 'Ghế Thư Giãn Armchair',
         'slug' => 'ghe-thu-gian-armchair',
         'sku' => 'CHR-ARM-01',
         'price' => 500000,
@@ -60,7 +60,7 @@ beforeEach(function () {
 
     // Product with variants
     $this->productWithVariants = Product::create([
-        'name' => 'ÄÃ¨n Tháº£ Tráº§n Phong CÃ¡ch Báº¯c Ã‚u',
+        'name' => 'Đèn Thả Trần Phong Cách Bắc Âu',
         'slug' => 'den-tha-tran-bac-au',
         'sku' => 'LGT-PEN-01',
         'price' => 800000,
@@ -99,14 +99,14 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
 
         // 1. Product Card
         $cardView = $this->blade('<x-product-card :product="$product" />', ['product' => $this->productA]);
-        $cardView->assertSee('1.000.000â‚«')
+        $cardView->assertSee('1.000.000₫')
             ->assertDontSee('% PROMO')
             ->assertDontSee('line-through');
 
         // 2. Product Detail Page
         $detailResponse = $this->get(route('products.show', $this->productA->slug));
         $detailResponse->assertSuccessful()
-            ->assertSee('1.000.000â‚«')
+            ->assertSee('1.000.000₫')
             ->assertDontSee('line-through')
             ->assertSee('"price": "1000000"', false);
 
@@ -122,13 +122,13 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
         // 4. Checkout Page Line Item Price
         $checkoutResponse = $this->get(route('checkout.index'));
         $checkoutResponse->assertSuccessful()
-            ->assertSee('2.000.000â‚«'); // Line subtotal for 2x 1.000.000â‚«
+            ->assertSee('2.000.000₫'); // Line subtotal for 2x 1.000.000₫
     });
 
     test('Vector 1.2: Percentage Catalog Promotion (15% off) consistency across all touchpoints', function () {
         // Create 15% Catalog Promotion Rule on Scandinavian Category
         PromotionRule::create([
-            'name' => 'Æ¯u ÄÃ£i Scandinavian 15%',
+            'name' => 'Ưu Đãi Scandinavian 15%',
             'rule_type' => PromotionRule::RULE_TYPE_CATALOG,
             'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 15.0,
@@ -145,18 +145,18 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
         // 1. Product Card
         $cardView = $this->blade('<x-product-card :product="$product" />', ['product' => $this->productA]);
         $cardView->assertSee('-15% PROMO')
-            ->assertSee('850.000â‚«')
-            ->assertSee('1.000.000â‚«')
+            ->assertSee('850.000₫')
+            ->assertSee('1.000.000₫')
             ->assertSee('line-through');
 
         // 2. Product Detail Page
         $detailResponse = $this->get(route('products.show', $this->productA->slug));
         $detailResponse->assertSuccessful()
             ->assertSee('-15% PROMO')
-            ->assertSee('CTKM: Æ¯u ÄÃ£i Scandinavian 15%')
-            ->assertSee('850.000â‚«')
-            ->assertSee('1.000.000â‚«')
-            ->assertSee('Tiáº¿t kiá»‡m: 150.000â‚«')
+            ->assertSee('CTKM: Ưu Đãi Scandinavian 15%')
+            ->assertSee('850.000₫')
+            ->assertSee('1.000.000₫')
+            ->assertSee('Tiết kiệm: 150.000₫')
             ->assertSee('"price": "850000"', false);
 
         // 3. Cart Service Unit Price
@@ -172,17 +172,17 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
         // 4. Checkout Line Item & ProcessCheckoutAction OrderItem Persistence
         $checkoutResponse = $this->get(route('checkout.index'));
         $checkoutResponse->assertSuccessful()
-            ->assertSee('2.550.000â‚«');
+            ->assertSee('2.550.000₫');
 
         $checkoutAction = app(ProcessCheckoutAction::class);
         $order = $checkoutAction->execute([
-            'customer_name' => 'Tráº§n VÄƒn BÃ¬nh',
+            'customer_name' => 'Trần Văn Bình',
             'phone' => '0908888999',
             'email' => 'binh.tran@example.com',
-            'address' => '456 LÃª Duáº©n',
-            'city' => 'Há»“ ChÃ­ Minh',
-            'district' => 'Quáº­n 1',
-            'ward' => 'Báº¿n NghÃ©',
+            'address' => '456 Lê Duẩn',
+            'city' => 'Hồ Chí Minh',
+            'district' => 'Quận 1',
+            'ward' => 'Bến Nghé',
             'payment_method' => 'cod',
         ]);
 
@@ -192,10 +192,10 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
         expect((float) $orderItem->subtotal)->toBe(2550000.0);
     });
 
-    test('Vector 1.3: Percentage with Cap Catalog Promotion (30% max 200,000Ä‘) consistency', function () {
-        // 30% of 1,000,000 = 300,000, but capped at 200,000 -> Promoted price: 800,000â‚«
+    test('Vector 1.3: Percentage with Cap Catalog Promotion (30% max 200,000đ) consistency', function () {
+        // 30% of 1,000,000 = 300,000, but capped at 200,000 -> Promoted price: 800,000₫
         PromotionRule::create([
-            'name' => 'Giáº£m 30% Tá»‘i Äa 200K',
+            'name' => 'Giảm 30% Tối Đa 200K',
             'rule_type' => PromotionRule::RULE_TYPE_CATALOG,
             'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 30.0,
@@ -211,15 +211,15 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
 
         // 1. Product Card
         $cardView = $this->blade('<x-product-card :product="$product" />', ['product' => $this->productA]);
-        $cardView->assertSee('800.000â‚«')
-            ->assertSee('1.000.000â‚«');
+        $cardView->assertSee('800.000₫')
+            ->assertSee('1.000.000₫');
 
         // 2. Product Detail
         $detailResponse = $this->get(route('products.show', $this->productA->slug));
         $detailResponse->assertSuccessful()
-            ->assertSee('800.000â‚«')
-            ->assertSee('1.000.000â‚«')
-            ->assertSee('Tiáº¿t kiá»‡m: 200.000â‚«')
+            ->assertSee('800.000₫')
+            ->assertSee('1.000.000₫')
+            ->assertSee('Tiết kiệm: 200.000₫')
             ->assertSee('"price": "800000"', false);
 
         // 3. Cart Service Unit Price
@@ -230,9 +230,9 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
         expect($items[0]['price'])->toBe($expectedPromotedPrice);
     });
 
-    test('Vector 1.4: Fixed Amount Catalog Promotion (Deduct 250,000Ä‘) consistency', function () {
+    test('Vector 1.4: Fixed Amount Catalog Promotion (Deduct 250,000đ) consistency', function () {
         PromotionRule::create([
-            'name' => 'Trá»« Trá»±c Tiáº¿p 250K',
+            'name' => 'Trừ Trực Tiếp 250K',
             'rule_type' => PromotionRule::RULE_TYPE_CATALOG,
             'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
             'discount_value' => 250000.0,
@@ -247,15 +247,15 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
 
         // 1. Card
         $cardView = $this->blade('<x-product-card :product="$product" />', ['product' => $this->productA]);
-        $cardView->assertSee('750.000â‚«')
-            ->assertSee('1.000.000â‚«');
+        $cardView->assertSee('750.000₫')
+            ->assertSee('1.000.000₫');
 
         // 2. Detail
         $detailResponse = $this->get(route('products.show', $this->productA->slug));
         $detailResponse->assertSuccessful()
-            ->assertSee('750.000â‚«')
-            ->assertSee('1.000.000â‚«')
-            ->assertSee('Tiáº¿t kiá»‡m: 250.000â‚«');
+            ->assertSee('750.000₫')
+            ->assertSee('1.000.000₫')
+            ->assertSee('Tiết kiệm: 250.000₫');
 
         // 3. Cart Service Unit Price
         /** @var CartService $cartService */
@@ -266,7 +266,7 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
     });
 
     test('Vector 1.5: Flash Sale price strictly takes precedence over catalog promo rules', function () {
-        // 1. Catalog Rule offers 15% off (850,000â‚«)
+        // 1. Catalog Rule offers 15% off (850,000₫)
         PromotionRule::create([
             'name' => 'Catalog Rule 15%',
             'rule_type' => PromotionRule::RULE_TYPE_CATALOG,
@@ -277,7 +277,7 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
             'is_active' => true,
         ]);
 
-        // 2. Active Flash Sale offers deep discount (650,000â‚«)
+        // 2. Active Flash Sale offers deep discount (650,000₫)
         $flashSale = FlashSale::create([
             'name' => 'Flash Sale Midnight',
             'start_time' => now()->subHour(),
@@ -334,7 +334,7 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
     test('Vector 2.1: Quantity increment/decrement instantly updates subtotal, netTotal and Nudge bar without reload', function () {
         // Freeship threshold 1,500,000 VND
         PromotionRule::create([
-            'name' => 'Freeship ÄÆ¡n Tá»« 1.5 Triá»‡u',
+            'name' => 'Freeship Đơn Từ 1.5 Triệu',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_FREE_SHIPPING,
             'discount_value' => 0.0,
@@ -349,17 +349,17 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
 
         $component = Livewire::test(CartDrawer::class);
 
-        // Step 1: Initial (500k / 1.5M = 33.3%, gap 1.000.000â‚«, shipping fee 30.000â‚« -> netTotal = 530.000â‚«)
+        // Step 1: Initial (500k / 1.5M = 33.3%, gap 1.000.000₫, shipping fee 30.000₫ -> netTotal = 530.000₫)
         expect($component->get('subtotal'))->toBe(500000.0);
         expect($component->get('netTotal'))->toBe(530000.0);
         $nudge1 = $component->get('smartNudge');
         expect($nudge1['progress_percent'])->toBe(33.3);
         expect($nudge1['gap_amount'])->toBe(1000000.0);
         expect($nudge1['is_completed'])->toBeFalse();
-        $component->assertSee('Mua thÃªm 1.000.000â‚« Ä‘á»ƒ nháº­n FREESHIP toÃ n quá»‘c!');
-        $component->assertSee('CÃ’N THIáº¾U 1.000.000â‚«');
+        $component->assertSee('Mua thêm 1.000.000₫ để nhận FREESHIP toàn quốc!');
+        $component->assertSee('CÒN THIẾU 1.000.000₫');
 
-        // Step 2: Increase quantity to 2 (1.000.000â‚« / 1.5M = 66.7%, gap 500.000â‚« -> netTotal = 1.030.000â‚«)
+        // Step 2: Increase quantity to 2 (1.000.000₫ / 1.5M = 66.7%, gap 500.000₫ -> netTotal = 1.030.000₫)
         $component->call('updateQuantity', $this->productB->id, null, 2, $cartService);
         expect($component->get('subtotal'))->toBe(1000000.0);
         expect($component->get('netTotal'))->toBe(1030000.0);
@@ -367,10 +367,10 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
         expect($nudge2['progress_percent'])->toBe(66.7);
         expect($nudge2['gap_amount'])->toBe(500000.0);
         expect($nudge2['is_completed'])->toBeFalse();
-        $component->assertSee('Mua thÃªm 500.000â‚« Ä‘á»ƒ nháº­n FREESHIP toÃ n quá»‘c!');
-        $component->assertSee('CÃ’N THIáº¾U 500.000â‚«');
+        $component->assertSee('Mua thêm 500.000₫ để nhận FREESHIP toàn quốc!');
+        $component->assertSee('CÒN THIẾU 500.000₫');
 
-        // Step 3: Increase quantity to 3 (1.500.000â‚« / 1.5M = 100%, Freeship waived 30k -> netTotal = 1.500.000â‚«)
+        // Step 3: Increase quantity to 3 (1.500.000₫ / 1.5M = 100%, Freeship waived 30k -> netTotal = 1.500.000₫)
         $component->call('updateQuantity', $this->productB->id, null, 3, $cartService);
         expect($component->get('subtotal'))->toBe(1500000.0);
         expect($component->get('netTotal'))->toBe(1500000.0);
@@ -378,8 +378,8 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
         expect($nudge3['progress_percent'])->toBe(100.0);
         expect($nudge3['gap_amount'])->toBe(0.0);
         expect($nudge3['is_completed'])->toBeTrue();
-        $component->assertSee('Tuyá»‡t vá»i! ÄÆ¡n hÃ ng cá»§a báº¡n Ä‘Ã£ Ä‘á»§ Ä‘iá»u kiá»‡n Freeship toÃ n quá»‘c!');
-        $component->assertSee('FREESHIP Äáº T 100%');
+        $component->assertSee('Tuyệt vời! Đơn hàng của bạn đã đủ điều kiện Freeship toàn quốc!');
+        $component->assertSee('FREESHIP ĐẠT 100%');
 
         // Step 4: Decrease quantity back to 1
         $component->call('updateQuantity', $this->productB->id, null, 1, $cartService);
@@ -392,7 +392,7 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
 
     test('Vector 2.2: Tiered Quantity dynamic step nudge progression (1 sp -> 2 sp -> 4 sp -> 6 sp)', function () {
         PromotionRule::create([
-            'name' => 'Chiáº¿t Kháº¥u Sá»‘ LÆ°á»£ng Báº­c Thang',
+            'name' => 'Chiết Khấu Số Lượng Bậc Thang',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_TIERED_QUANTITY,
             'discount_value' => 5.0,
@@ -417,31 +417,31 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
         $nudge = $component->get('smartNudge');
         expect($nudge['type'])->toBe('tiered_quantity');
         expect($nudge['gap_quantity'])->toBe(1);
-        expect($nudge['badge'])->toBe('THÃŠM 1 SP â†’ GIáº¢M 5%');
+        expect($nudge['badge'])->toBe('THÊM 1 SP → GIẢM 5%');
 
         // Update to 2 qty -> Next step: 4 qty (Need 2 more for 10%)
         $component->call('updateQuantity', $this->productB->id, null, 2, $cartService);
         $nudge = $component->get('smartNudge');
         expect($nudge['gap_quantity'])->toBe(2);
-        expect($nudge['badge'])->toBe('THÃŠM 2 SP â†’ GIáº¢M 10%');
+        expect($nudge['badge'])->toBe('THÊM 2 SP → GIẢM 10%');
 
         // Update to 5 qty -> Next step: 6 qty (Need 1 more for 15%)
         $component->call('updateQuantity', $this->productB->id, null, 5, $cartService);
         $nudge = $component->get('smartNudge');
         expect($nudge['gap_quantity'])->toBe(1);
-        expect($nudge['badge'])->toBe('THÃŠM 1 SP â†’ GIáº¢M 15%');
+        expect($nudge['badge'])->toBe('THÊM 1 SP → GIẢM 15%');
 
         // Update to 6 qty -> Max tier reached (15%)
         $component->call('updateQuantity', $this->productB->id, null, 6, $cartService);
         $nudge = $component->get('smartNudge');
         expect($nudge['is_completed'])->toBeTrue();
-        expect($nudge['badge'])->toBe('Äáº T Má»¨C GIáº¢M 15%');
+        expect($nudge['badge'])->toBe('ĐẠT MỨC GIẢM 15%');
     });
 
     test('Vector 2.3: 1-Click Available Coupons Tray: eligibility gating, apply, and removal cycle', function () {
         // Voucher 1: Min 1,000,000 VND -> 100K off
         PromotionRule::create([
-            'name' => 'Voucher 100K ÄÆ¡n 1 Triá»‡u',
+            'name' => 'Voucher 100K Đơn 1 Triệu',
             'code' => 'VOUCHER100',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
@@ -453,7 +453,7 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
 
         // Voucher 2: Min 2,000,000 VND -> 200K off
         PromotionRule::create([
-            'name' => 'Voucher 200K ÄÆ¡n 2 Triá»‡u',
+            'name' => 'Voucher 200K Đơn 2 Triệu',
             'code' => 'VOUCHER200',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
@@ -465,7 +465,7 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
 
         /** @var CartService $cartService */
         $cartService = app(CartService::class);
-        $cartService->add($this->productA->id, null, 1); // 1x 1.000.000â‚«
+        $cartService->add($this->productA->id, null, 1); // 1x 1.000.000₫
 
         $component = Livewire::test(CartDrawer::class);
 
@@ -481,20 +481,20 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
         // Voucher 200: ineligible with actionable near-miss message
         $coupon200 = $availableCoupons->firstWhere('code', 'VOUCHER200');
         expect($coupon200->is_eligible)->toBeFalse();
-        expect($coupon200->ineligible_reason)->toBe('Mua thÃªm 1.000.000â‚«');
+        expect($coupon200->ineligible_reason)->toBe('Mua thêm 1.000.000₫');
 
         // Apply Voucher 100 via 1-Click
-        // Subtotal: 1.000.000, Discount: 100.000, Estimated Shipping: 30.000 -> Net: 930.000â‚«
+        // Subtotal: 1.000.000, Discount: 100.000, Estimated Shipping: 30.000 -> Net: 930.000₫
         $component->call('applyCoupon', 'VOUCHER100');
         expect($component->get('appliedCouponCode'))->toBe('VOUCHER100');
-        expect($component->get('couponSuccess'))->toContain('ÄÃ£ Ã¡p dá»¥ng mÃ£ [VOUCHER100]');
+        expect($component->get('couponSuccess'))->toContain('Đã áp dụng mã [VOUCHER100]');
         expect($component->get('totalDiscount'))->toBe(100000.0);
         expect($component->get('netTotal'))->toBe(930000.0);
         $component->assertDispatched('coupon-applied');
 
         // Attempting to apply ineligible Voucher 200 is rejected
         $component->call('applyCoupon', 'VOUCHER200');
-        expect($component->get('couponError'))->toContain('yÃªu cáº§u Ä‘Æ¡n tá»‘i thiá»ƒu 2.000.000â‚«');
+        expect($component->get('couponError'))->toContain('yêu cầu đơn tối thiểu 2.000.000₫');
         // Original coupon remains intact
         expect($component->get('appliedCouponCode'))->toBe('VOUCHER100');
 
@@ -527,7 +527,7 @@ describe('Pillar 2: Livewire CartDrawer Reactivity & Nudge Dynamic Upgrades', fu
         expect($component->get('subtotal'))->toBe(0.0);
         expect($component->get('totalQuantity'))->toBe(0);
         expect($component->get('smartNudge'))->toBeNull();
-        $component->assertSee('Giá» hÃ ng cá»§a báº¡n Ä‘ang trá»‘ng');
+        $component->assertSee('Giỏ hàng của bạn đang trống');
     });
 });
 
@@ -540,7 +540,7 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
     test('Vector 3.1: Stacked discounts (Cart Rule 10% + Coupon 50K + Freeship) display as separate labeled line items', function () {
         // 1. Automatic Cart Rule: 10% on whole cart
         $autoRule = PromotionRule::create([
-            'name' => 'Khuyáº¿n MÃ£i MÃ¹a Thu 10%',
+            'name' => 'Khuyến Mãi Mùa Thu 10%',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 10.0,
@@ -550,7 +550,7 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
 
         // 2. Coupon Rule: Fixed 50,000 VND
         $couponRule = PromotionRule::create([
-            'name' => 'Voucher Giáº£m 50K',
+            'name' => 'Voucher Giảm 50K',
             'code' => 'SALE50K',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
@@ -561,7 +561,7 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
 
         // 3. Free Shipping Rule
         $freeshipRule = PromotionRule::create([
-            'name' => 'Miá»…n PhÃ­ Váº­n Chuyá»ƒn 1M',
+            'name' => 'Miễn Phí Vận Chuyển 1M',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_FREE_SHIPPING,
             'discount_value' => 0.0,
@@ -572,8 +572,8 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
 
         /** @var CartService $cartService */
         $cartService = app(CartService::class);
-        $cartService->add($this->productA->id, null, 1); // 1.000.000â‚«
-        $cartService->add($this->productB->id, null, 1); // 500.000â‚« -> Subtotal = 1.500.000â‚«
+        $cartService->add($this->productA->id, null, 1); // 1.000.000₫
+        $cartService->add($this->productB->id, null, 1); // 500.000₫ -> Subtotal = 1.500.000₫
 
         Session::put('coupon', 'SALE50K');
 
@@ -586,13 +586,13 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
         );
 
         // Math verification:
-        // Subtotal: 1.500.000â‚«
-        // Auto Rule 10%: 150.000â‚«
-        // Coupon Rule: 50.000â‚«
-        // Shipping Discount: 30.000â‚« (Waived from 30.000â‚« to 0â‚«)
-        // Total Item Discounts (Auto + Coupon): 200.000â‚«
-        // Total Discount: 230.000â‚«
-        // Final Total: 1.500.000 - 150.000 - 50.000 = 1.300.000â‚«
+        // Subtotal: 1.500.000₫
+        // Auto Rule 10%: 150.000₫
+        // Coupon Rule: 50.000₫
+        // Shipping Discount: 30.000₫ (Waived from 30.000₫ to 0₫)
+        // Total Item Discounts (Auto + Coupon): 200.000₫
+        // Total Discount: 230.000₫
+        // Final Total: 1.500.000 - 150.000 - 50.000 = 1.300.000₫
         expect($breakdown->subtotal)->toBe(1500000.0);
         expect($breakdown->itemDiscounts)->toBe(200000.0);
         expect($breakdown->couponDiscount)->toBe(50000.0);
@@ -604,29 +604,29 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
         // Verify applied rules itemization (each rule separate)
         expect($breakdown->appliedRules)->toHaveCount(3);
         $ruleNames = array_map(fn ($r) => $r->ruleName, $breakdown->appliedRules);
-        expect($ruleNames)->toContain('Khuyáº¿n MÃ£i MÃ¹a Thu 10%');
-        expect($ruleNames)->toContain('Voucher Giáº£m 50K');
-        expect($ruleNames)->toContain('Miá»…n PhÃ­ Váº­n Chuyá»ƒn 1M');
+        expect($ruleNames)->toContain('Khuyến Mãi Mùa Thu 10%');
+        expect($ruleNames)->toContain('Voucher Giảm 50K');
+        expect($ruleNames)->toContain('Miễn Phí Vận Chuyển 1M');
 
         // Render Checkout Page and assert distinct itemized line items
         $response = $this->get(route('checkout.index'));
         $response->assertSuccessful();
-        $response->assertSee('1.500.000â‚«'); // Subtotal
-        $response->assertSee('Khuyáº¿n MÃ£i MÃ¹a Thu 10%');
-        $response->assertSee('-150.000â‚«');
-        $response->assertSee('Voucher Giáº£m 50K');
-        $response->assertSee('-50.000â‚«');
-        $response->assertSee('MÃ£ coupon');
-        $response->assertSee('Miá»…n phÃ­'); // Shipping
+        $response->assertSee('1.500.000₫'); // Subtotal
+        $response->assertSee('Khuyến Mãi Mùa Thu 10%');
+        $response->assertSee('-150.000₫');
+        $response->assertSee('Voucher Giảm 50K');
+        $response->assertSee('-50.000₫');
+        $response->assertSee('Mã coupon');
+        $response->assertSee('Miễn phí'); // Shipping
         // Pre-shipping page stage: item + coupon discounts (150k + 50k).
         // The 30k shipping waiver applies once an address sets the fee.
-        $response->assertSee('-200.000â‚«'); // Total discount
-        $response->assertSee('1.300.000â‚«'); // Final total
+        $response->assertSee('-200.000₫'); // Total discount
+        $response->assertSee('1.300.000₫'); // Final total
     });
 
     test('Vector 3.2: Livewire CouponInput component on checkout page applies coupon and sets session', function () {
         PromotionRule::create([
-            'name' => 'Voucher Giáº£m 100K',
+            'name' => 'Voucher Giảm 100K',
             'code' => 'VIP100',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
@@ -637,7 +637,7 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
 
         /** @var CartService $cartService */
         $cartService = app(CartService::class);
-        $cartService->add($this->productA->id, null, 1); // 1.000.000â‚«
+        $cartService->add($this->productA->id, null, 1); // 1.000.000₫
 
         $component = Livewire::test(CouponInput::class, ['subtotal' => 1000000.0]);
 
@@ -658,7 +658,7 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
     test('Vector 3.3: Buy X Get Y promotion deduction in applied promotions list', function () {
         // Buy Product A -> Get Product B free
         PromotionRule::create([
-            'name' => 'Mua BÃ n Táº·ng Gháº¿',
+            'name' => 'Mua Bàn Tặng Ghế',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_BUY_X_GET_Y,
             'discount_value' => 0.0,
@@ -678,18 +678,18 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
 
         /** @var CartService $cartService */
         $cartService = app(CartService::class);
-        $cartService->add($this->productA->id, null, 1); // 1.000.000â‚«
-        $cartService->add($this->productB->id, null, 1); // 500.000â‚«
+        $cartService->add($this->productA->id, null, 1); // 1.000.000₫
+        $cartService->add($this->productB->id, null, 1); // 500.000₫
 
         $response = $this->get(route('checkout.index'));
         $response->assertSuccessful()
-            ->assertSee('Mua BÃ n Táº·ng Gháº¿')
-            ->assertSee('-500.000â‚«');
+            ->assertSee('Mua Bàn Tặng Ghế')
+            ->assertSee('-500.000₫');
     });
 
     test('Vector 3.4: Complete checkout execution persists accurate order financial breakdown and usage rows', function () {
         $autoRule = PromotionRule::create([
-            'name' => 'Khuyáº¿n MÃ£i MÃ¹a Thu 10%',
+            'name' => 'Khuyến Mãi Mùa Thu 10%',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_PERCENTAGE,
             'discount_value' => 10.0,
@@ -698,7 +698,7 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
         ]);
 
         $couponRule = PromotionRule::create([
-            'name' => 'Voucher Giáº£m 50K',
+            'name' => 'Voucher Giảm 50K',
             'code' => 'VOUCHER50K',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
             'action_type' => PromotionRule::ACTION_FIXED_AMOUNT,
@@ -709,17 +709,17 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
 
         /** @var CartService $cartService */
         $cartService = app(CartService::class);
-        $cartService->add($this->productA->id, null, 1); // 1.000.000â‚«
+        $cartService->add($this->productA->id, null, 1); // 1.000.000₫
 
         $checkoutAction = app(ProcessCheckoutAction::class);
         $order = $checkoutAction->execute([
-            'customer_name' => 'HoÃ ng Minh Tuáº¥n',
+            'customer_name' => 'Hoàng Minh Tuấn',
             'phone' => '0912345678',
             'email' => 'tuan.hoang@example.com',
-            'address' => '789 Nguyá»…n Huá»‡',
-            'city' => 'Há»“ ChÃ­ Minh',
-            'district' => 'Quáº­n 1',
-            'ward' => 'Báº¿n NghÃ©',
+            'address' => '789 Nguyễn Huệ',
+            'city' => 'Hồ Chí Minh',
+            'district' => 'Quận 1',
+            'ward' => 'Bến Nghé',
             'payment_method' => 'cod',
         ], 'VOUCHER50K');
 
@@ -748,7 +748,7 @@ describe('Pillar 3: Checkout Breakdown Transparency & Stacked Discounts', functi
 
 describe('Pillar 4: Adversarial Stress Vectors & Edge Case Mining', function () {
 
-    test('Vector 4.1: Extreme cart subtotal (100,000,000â‚«) with percentage discount and upper cap', function () {
+    test('Vector 4.1: Extreme cart subtotal (100,000,000₫) with percentage discount and upper cap', function () {
         PromotionRule::create([
             'name' => 'Mega Sale 20% Capped 2M',
             'rule_type' => PromotionRule::RULE_TYPE_CART,
@@ -806,7 +806,7 @@ describe('Pillar 4: Adversarial Stress Vectors & Edge Case Mining', function () 
 
         // Guest customer attempts to apply VIP coupon
         $component->call('applyCoupon', 'VIPGOLD25');
-        expect($component->get('couponError'))->toContain('khÃ´ng Ä‘á»§ Ä‘iá»u kiá»‡n Ã¡p dá»¥ng');
+        expect($component->get('couponError'))->toContain('không đủ điều kiện áp dụng');
         expect($component->get('appliedCouponCode'))->toBeNull();
     });
 
@@ -842,13 +842,13 @@ describe('Pillar 4: Adversarial Stress Vectors & Edge Case Mining', function () 
         $component = Livewire::test(CartDrawer::class);
 
         $component->call('applyCoupon', 'EXPIRED2025');
-        expect($component->get('couponError'))->toContain('khÃ´ng tá»“n táº¡i hoáº·c Ä‘Ã£ háº¿t háº¡n');
+        expect($component->get('couponError'))->toContain('không tồn tại hoặc đã hết hạn');
 
         $component->call('applyCoupon', 'INACTIVE2026');
-        expect($component->get('couponError'))->toContain('khÃ´ng tá»“n táº¡i hoáº·c Ä‘Ã£ háº¿t háº¡n');
+        expect($component->get('couponError'))->toContain('không tồn tại hoặc đã hết hạn');
 
         $component->call('applyCoupon', 'NONEXISTENT');
-        expect($component->get('couponError'))->toContain('khÃ´ng tá»“n táº¡i hoáº·c Ä‘Ã£ háº¿t háº¡n');
+        expect($component->get('couponError'))->toContain('không tồn tại hoặc đã hết hạn');
     });
 });
 

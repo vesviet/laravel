@@ -59,7 +59,7 @@ test('concurrent stock lock prevents overselling', function () {
         'customer_name' => 'Jane Doe',
         'phone' => '0911111111',
         'address' => '456 Test St',
-    ]))->toThrow(SellerActionException::class, 'Sáº£n pháº©m Ä‘Ã£ háº¿t hÃ ng hoáº·c khÃ´ng Ä‘á»§ sá»‘ lÆ°á»£ng.');
+    ]))->toThrow(SellerActionException::class, 'Sản phẩm đã hết hàng hoặc không đủ số lượng.');
 });
 
 test('carrd subdomain routing falls back correctly', function () {

@@ -41,11 +41,11 @@ test('can render banner list page and see records in table', function () {
     $banner = Banner::create([
         'title'      => 'Summer Living Room Collection 2026',
         'position'   => Banner::POSITION_HERO_SLIDER,
-        'eyebrow'    => 'Bá»˜ SÆ¯U Táº¬P MÃ™A HÃˆ',
-        'subtitle'   => 'Ná»™i tháº¥t phÃ²ng khÃ¡ch phong cÃ¡ch Báº¯c Ã‚u',
+        'eyebrow'    => 'BỘ SƯU TẬP MÙA HÈ',
+        'subtitle'   => 'Nội thất phòng khách phong cách Bắc Âu',
         'image'      => 'banners/hero-1.jpg',
         'link'       => '/products',
-        'cta_text'   => 'KhÃ¡m PhÃ¡ Ngay',
+        'cta_text'   => 'Khám Phá Ngay',
         'status' => 'published',
         'sort_order' => 1,
     ]);
@@ -152,10 +152,10 @@ test('can create a banner with all dynamic fields via filament form', function (
 
     Livewire::test(CreateBanner::class)
         ->fillForm([
-            'title'           => 'Khuyáº¿n MÃ£i Sofa MÃ¹a HÃ¨',
+            'title'           => 'Khuyến Mãi Sofa Mùa Hè',
             'position'        => Banner::POSITION_HERO_SLIDER,
-            'eyebrow'         => 'Bá»˜ SÆ¯U Táº¬P 2026',
-            'subtitle'        => 'Giáº£m giÃ¡ tá»›i 30% cho cÃ¡c sáº£n pháº©m sofa da cao cáº¥p.',
+            'eyebrow'         => 'BỘ SƯU TẬP 2026',
+            'subtitle'        => 'Giảm giá tới 30% cho các sản phẩm sofa da cao cấp.',
             'cta_text'        => 'Mua Ngay',
             'link'            => '/category/sofa-phong-khach',
             'open_in_new_tab' => true,
@@ -167,10 +167,10 @@ test('can create a banner with all dynamic fields via filament form', function (
         ->assertHasNoFormErrors();
 
     $this->assertDatabaseHas('banners', [
-        'title'           => 'Khuyáº¿n MÃ£i Sofa MÃ¹a HÃ¨',
+        'title'           => 'Khuyến Mãi Sofa Mùa Hè',
         'position'        => Banner::POSITION_HERO_SLIDER,
-        'eyebrow'         => 'Bá»˜ SÆ¯U Táº¬P 2026',
-        'subtitle'        => 'Giáº£m giÃ¡ tá»›i 30% cho cÃ¡c sáº£n pháº©m sofa da cao cáº¥p.',
+        'eyebrow'         => 'BỘ SƯU TẬP 2026',
+        'subtitle'        => 'Giảm giá tới 30% cho các sản phẩm sofa da cao cấp.',
         'cta_text'        => 'Mua Ngay',
         'link'            => '/category/sofa-phong-khach',
         'open_in_new_tab' => true,
@@ -194,7 +194,7 @@ test('validates required fields on create banner form', function () {
 
 test('can edit an existing banner and update position and schedule', function () {
     $banner = Banner::create([
-        'title'      => 'Banner CÅ©',
+        'title'      => 'Banner Cũ',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/old.jpg',
         'status'     => 'inactive',
@@ -206,7 +206,7 @@ test('can edit an existing banner and update position and schedule', function ()
 
     Livewire::test(EditBanner::class, ['record' => $banner->getKey()])
         ->fillForm([
-            'title'      => 'Banner Má»›i ÄÃ£ Sá»­a',
+            'title'      => 'Banner Mới Đã Sửa',
             'position'   => Banner::POSITION_HOME_PROMO_2COL,
             'status' => 'published',
             'sort_order' => 10,
@@ -217,7 +217,7 @@ test('can edit an existing banner and update position and schedule', function ()
         ->assertHasNoFormErrors();
 
     $banner->refresh();
-    expect($banner->title)->toBe('Banner Má»›i ÄÃ£ Sá»­a');
+    expect($banner->title)->toBe('Banner Mới Đã Sửa');
     expect($banner->position)->toBe(Banner::POSITION_HOME_PROMO_2COL);
     expect($banner->status)->toBe('active');
     expect($banner->sort_order)->toBe(10);
