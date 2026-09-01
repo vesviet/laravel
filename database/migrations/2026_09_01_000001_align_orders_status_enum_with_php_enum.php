@@ -20,18 +20,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Step 1: Migrate existing data before altering the column
+        // Step 1: Migrate existing data (safe for both MySQL and SQLite)
         DB::table('orders')->where('status', 'shipping')->update(['status' => 'shipped']);
 
-        // Step 2: Alter ENUM to match OrderStatus PHP enum values exactly
-        DB::statement("ALTER TABLE `orders` MODIFY COLUMN `status` ENUM(
-            'pending',
-            'confirmed',
-            'processing',
-            'shipped',
-            'delivered',
-            'cancelled'
-        ) NOT NULL DEFAULT 'pending'");
+        // Step 2: ALTER TABLE MODIFY COLUMN is MySQL-only syntax.
+        // SQLite (used in :memory: tests with RefreshDatabase) does not support it
+        // and already has no ENUM enforcement — so we skip it there.
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE `orders` MODIFY COLUMN `status` ENUM(
+                'pending',
+                'confirmed',
+                'processing',
+                'shipped',
+                'delivered',
+                'cancelled'
+            ) NOT NULL DEFAULT 'pending'");
+        }
     }
 
     public function down(): void
@@ -40,12 +44,14 @@ return new class extends Migration
         DB::table('orders')->where('status', 'shipped')->update(['status' => 'shipping']);
         DB::table('orders')->where('status', 'processing')->update(['status' => 'confirmed']);
 
-        DB::statement("ALTER TABLE `orders` MODIFY COLUMN `status` ENUM(
-            'pending',
-            'confirmed',
-            'shipping',
-            'delivered',
-            'cancelled'
-        ) NOT NULL DEFAULT 'pending'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE `orders` MODIFY COLUMN `status` ENUM(
+                'pending',
+                'confirmed',
+                'shipping',
+                'delivered',
+                'cancelled'
+            ) NOT NULL DEFAULT 'pending'");
+        }
     }
 };
