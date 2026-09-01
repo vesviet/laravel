@@ -64,6 +64,16 @@ class AuthController extends Controller
 
             Session::migrate(true);
 
+            // Merge any guest session cart into the customer's DB cart.
+            // This ensures items added before login are preserved cross-device.
+            $guestCart = session()->get('cart', []);
+            if (!empty($guestCart)) {
+                app(CartService::class)->mergeGuestCartToDB(
+                    Auth::guard('customer')->user(),
+                    $guestCart
+                );
+            }
+
             // Check if 2FA is enabled
             if ($customer->two_factor_enabled) {
                 // Store the intended URL and redirect to 2FA challenge
@@ -174,6 +184,12 @@ class AuthController extends Controller
 
         Auth::guard("customer")->login($customer);
         Session::migrate(true);
+
+        // Merge any guest session cart into the newly registered customer's DB cart.
+        $guestCart = session()->get('cart', []);
+        if (!empty($guestCart)) {
+            $cartService->mergeGuestCartToDB($customer, $guestCart);
+        }
 
         return redirect()->route("account.orders")
             ->with("success", "Đăng ký tài khoản thành công. Chào mừng bạn đến với cửa hàng!");
