@@ -91,8 +91,9 @@ class CheckoutFlow extends Component
     {
         // PERF-01: Cache via Cache facade (not Livewire persist) — Livewire persist
         // serializes Eloquent Collections to plain arrays which breaks ->name access in views.
+        // v2 key: invalidates stale cache from old Livewire persist format (plain strings).
         return \Illuminate\Support\Facades\Cache::remember(
-            'provinces_list',
+            'provinces_list_v2',
             now()->addHours(24),
             fn () => Province::orderBy('name')->get()
         );
