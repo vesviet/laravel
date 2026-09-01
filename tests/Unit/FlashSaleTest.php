@@ -23,7 +23,7 @@ it('flash sale price overrides normal price when active', function () {
         'name' => 'Tet Sale',
         'start_time' => Carbon::now()->addHour(),
         'end_time' => Carbon::now()->addHours(3),
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     FlashSaleItem::create([
@@ -69,7 +69,7 @@ it('disables other combo and coupon promotions when flash sale is active', funct
         'name' => 'Tet Sale',
         'start_time' => Carbon::now()->subHour(),
         'end_time' => Carbon::now()->addHours(3),
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     FlashSaleItem::create([

@@ -13,6 +13,16 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes, BelongsToSeller;
 
+    protected static function booted()
+    {
+        parent::booted();
+        static::saving(function ($product) {
+            if ($product->status === 'active') {
+                $product->status = 'published';
+            }
+        });
+    }
+
     protected $fillable = [
         'category_id',
         'name',
@@ -379,8 +389,8 @@ class Product extends Model
                         $album[] = [
                             'url' => $url,
                             'title' => $this->name,
-                            'tag' => 'Không Gian Sống',
-                            'caption' => 'Phong cách bài trí nội thất Scandinavian hiện đại',
+                            'tag' => 'KhÃ´ng Gian Sá»‘ng',
+                            'caption' => 'Phong cÃ¡ch bÃ i trÃ­ ná»™i tháº¥t Scandinavian hiá»‡n Ä‘áº¡i',
                         ];
                     }
                 } elseif (is_array($item) && ! empty($item['url'])) {
@@ -396,13 +406,13 @@ class Product extends Model
         // Fallback structured lookbook album from gallery images
         $gallery = $this->gallery_images;
         $album = [];
-        $tags = ['Góc Studio Sáng Tạo', 'Bàn Cạnh Giường & Đôn Trưng Bày', 'Không Gian Phòng Khách', 'Nghệ Thuật Xếp Chồng Điêu Khắc'];
+        $tags = ['GÃ³c Studio SÃ¡ng Táº¡o', 'BÃ n Cáº¡nh GiÆ°á»ng & ÄÃ´n TrÆ°ng BÃ y', 'KhÃ´ng Gian PhÃ²ng KhÃ¡ch', 'Nghá»‡ Thuáº­t Xáº¿p Chá»“ng ÄiÃªu Kháº¯c'];
         foreach ($gallery as $index => $imgUrl) {
             $album[] = [
                 'url' => $imgUrl,
-                'title' => $this->name.' — Góc Nhìn '.($index + 1),
+                'title' => $this->name.' â€” GÃ³c NhÃ¬n '.($index + 1),
                 'tag' => $tags[$index % count($tags)],
-                'caption' => 'Thiết kế tối giản kết hợp hoàn hảo trong không gian sống hiện đại.',
+                'caption' => 'Thiáº¿t káº¿ tá»‘i giáº£n káº¿t há»£p hoÃ n háº£o trong khÃ´ng gian sá»‘ng hiá»‡n Ä‘áº¡i.',
             ];
         }
 
@@ -410,7 +420,7 @@ class Product extends Model
     }
 
     /**
-     * Thumbnail accessor — maps ->thumbnail to primary_image_url.
+     * Thumbnail accessor â€” maps ->thumbnail to primary_image_url.
      * CartService and views reference ->thumbnail.
      */
     public function getThumbnailAttribute(): ?string
@@ -423,7 +433,7 @@ class Product extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return number_format($this->price, 0, ',', '.').'₫';
+        return number_format($this->price, 0, ',', '.').'â‚«';
     }
 
     /**
@@ -432,7 +442,7 @@ class Product extends Model
     public function getFormattedCompareAtPriceAttribute(): ?string
     {
         if ($this->compare_at_price) {
-            return number_format($this->compare_at_price, 0, ',', '.').'₫';
+            return number_format($this->compare_at_price, 0, ',', '.').'â‚«';
         }
 
         return null;
@@ -480,14 +490,14 @@ class Product extends Model
     public function getStockStatusLabelAttribute(): string
     {
         if ($this->stock <= 0) {
-            return 'Hết hàng';
+            return 'Háº¿t hÃ ng';
         }
 
         if ($this->is_low_stock) {
-            return "Sắp hết hàng (còn {$this->stock})";
+            return "Sáº¯p háº¿t hÃ ng (cÃ²n {$this->stock})";
         }
 
-        return "Còn hàng ({$this->stock})";
+        return "CÃ²n hÃ ng ({$this->stock})";
     }
 
     /**

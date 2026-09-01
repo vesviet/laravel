@@ -267,7 +267,7 @@ test('CP-12: customer isolation - getCart() returns only own items', function ()
         'name'     => 'Customer B',
         'email'    => 'b@test.com',
         'password' => bcrypt('secret'),
-        'status' => 'published',
+        'status'   => 'active',
     ]);
     CustomerCartItem::create([
         'customer_id'        => $customerB->id,

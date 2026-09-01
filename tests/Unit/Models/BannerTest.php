@@ -42,7 +42,7 @@ test('can create and persist banner with full fillable attributes and casts', fu
         'link'            => '/catalog?category=living-room',
         'cta_text'        => 'Khám Phá Ngay',
         'open_in_new_tab' => 1,
-        'status' => 'published',
+        'status'          => 'active',
         'starts_at'       => $startsAt,
         'ends_at'         => $endsAt,
         'sort_order'      => '5',
@@ -84,7 +84,7 @@ test('scopeActive accurately filters banners by status and scheduling time windo
     $activeIndefinite = Banner::create([
         'title'     => 'Active Indefinite',
         'image'     => 'banners/1.jpg',
-        'status' => 'published',
+        'status'    => 'active',
         'starts_at' => null,
         'ends_at'   => null,
     ]);
@@ -93,7 +93,7 @@ test('scopeActive accurately filters banners by status and scheduling time windo
     $activePastStart = Banner::create([
         'title'     => 'Active Past Start',
         'image'     => 'banners/2.jpg',
-        'status' => 'published',
+        'status'    => 'active',
         'starts_at' => Carbon::parse('2026-08-15 00:00:00'),
         'ends_at'   => null,
     ]);
@@ -102,7 +102,7 @@ test('scopeActive accurately filters banners by status and scheduling time windo
     $activeFutureEnd = Banner::create([
         'title'     => 'Active Future End',
         'image'     => 'banners/3.jpg',
-        'status' => 'published',
+        'status'    => 'active',
         'starts_at' => null,
         'ends_at'   => Carbon::parse('2026-08-25 00:00:00'),
     ]);
@@ -111,7 +111,7 @@ test('scopeActive accurately filters banners by status and scheduling time windo
     $activeWindow = Banner::create([
         'title'     => 'Active Window',
         'image'     => 'banners/4.jpg',
-        'status' => 'published',
+        'status'    => 'active',
         'starts_at' => Carbon::parse('2026-08-19 00:00:00'),
         'ends_at'   => Carbon::parse('2026-08-21 00:00:00'),
     ]);
@@ -138,7 +138,7 @@ test('scopeActive accurately filters banners by status and scheduling time windo
     $futureScheduled = Banner::create([
         'title'     => 'Future Scheduled',
         'image'     => 'banners/7.jpg',
-        'status' => 'published',
+        'status'    => 'active',
         'starts_at' => Carbon::parse('2026-08-21 00:00:00'),
         'ends_at'   => Carbon::parse('2026-08-30 00:00:00'),
     ]);
@@ -147,7 +147,7 @@ test('scopeActive accurately filters banners by status and scheduling time windo
     $expired = Banner::create([
         'title'     => 'Expired Banner',
         'image'     => 'banners/8.jpg',
-        'status' => 'published',
+        'status'    => 'active',
         'starts_at' => Carbon::parse('2026-08-01 00:00:00'),
         'ends_at'   => Carbon::parse('2026-08-19 23:59:59'),
     ]);

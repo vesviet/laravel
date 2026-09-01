@@ -252,7 +252,7 @@ class ChallengerM5RemediationVerificationTest extends TestCase
             'title' => 'Original Banner Title',
             'image' => 'banners/existing_photo.jpg',
             'position' => 'hero_slider',
-            'status' => 'published',
+            'status' => 'active',
             'sort_order' => 0,
         ]);
 

@@ -282,7 +282,7 @@ describe('Pillar 1: Catalog Pricing Consistency Across Full Funnel', function ()
             'name' => 'Flash Sale Midnight',
             'start_time' => now()->subHour(),
             'end_time' => now()->addHours(2),
-            'status' => 'published',
+            'status' => 'active',
         ]);
 
         FlashSaleItem::create([

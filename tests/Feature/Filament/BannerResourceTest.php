@@ -46,7 +46,7 @@ test('can render banner list page and see records in table', function () {
         'image'      => 'banners/hero-1.jpg',
         'link'       => '/products',
         'cta_text'   => 'Khám Phá Ngay',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -60,7 +60,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Hero Slide Banner',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/hero.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -68,7 +68,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Promo 2 Column Banner',
         'position'   => Banner::POSITION_HOME_PROMO_2COL,
         'image'      => 'banners/promo.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -76,7 +76,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Collection 3 Column Banner',
         'position'   => Banner::POSITION_HOME_COLLECTION_3COL,
         'image'      => 'banners/collection.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -84,7 +84,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Catalog Header Banner',
         'position'   => Banner::POSITION_CATALOG_HEADER,
         'image'      => 'banners/catalog.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -92,7 +92,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Blog Sidebar Banner',
         'position'   => Banner::POSITION_BLOG_SIDEBAR,
         'image'      => 'banners/blog.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -100,7 +100,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Top Announcement Banner',
         'position'   => Banner::POSITION_TOP_ANNOUNCEMENT,
         'image'      => 'banners/announcement.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -160,7 +160,7 @@ test('can create a banner with all dynamic fields via filament form', function (
             'link'            => '/category/sofa-phong-khach',
             'open_in_new_tab' => true,
             'image'           => $file,
-            'status' => 'published',
+            'status'          => 'active',
             'sort_order'      => 5,
         ])
         ->call('create')
@@ -174,7 +174,7 @@ test('can create a banner with all dynamic fields via filament form', function (
         'cta_text'        => 'Mua Ngay',
         'link'            => '/category/sofa-phong-khach',
         'open_in_new_tab' => true,
-        'status' => 'published',
+        'status'          => 'active',
         'sort_order'      => 5,
     ]);
 });
@@ -208,7 +208,7 @@ test('can edit an existing banner and update position and schedule', function ()
         ->fillForm([
             'title'      => 'Banner Mới Đã Sửa',
             'position'   => Banner::POSITION_HOME_PROMO_2COL,
-            'status' => 'published',
+            'status'     => 'active',
             'sort_order' => 10,
             'starts_at'  => $startsAt,
             'ends_at'    => $endsAt,
@@ -230,7 +230,7 @@ test('can reorder banners using table reordering', function () {
         'title'      => 'Slide 1',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/1.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -238,7 +238,7 @@ test('can reorder banners using table reordering', function () {
         'title'      => 'Slide 2',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/2.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 2,
     ]);
 
@@ -257,7 +257,7 @@ test('can filter table records by position and status select filters', function 
         'title'      => 'Active Hero',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/1.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -273,7 +273,7 @@ test('can filter table records by position and status select filters', function 
         'title'      => 'Active Promo',
         'position'   => Banner::POSITION_HOME_PROMO_2COL,
         'image'      => 'banners/3.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 3,
     ]);
 
@@ -293,7 +293,7 @@ test('can delete a banner via table delete action', function () {
         'title'      => 'Banner To Delete',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/delete.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -311,7 +311,7 @@ test('can bulk delete banners via bulk action', function () {
         'title'      => 'Bulk Delete 1',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/bulk1.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 1,
     ]);
 
@@ -319,7 +319,7 @@ test('can bulk delete banners via bulk action', function () {
         'title'      => 'Bulk Delete 2',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/bulk2.jpg',
-        'status' => 'published',
+        'status'     => 'active',
         'sort_order' => 2,
     ]);
 

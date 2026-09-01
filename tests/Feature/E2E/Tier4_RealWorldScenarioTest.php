@@ -35,7 +35,7 @@ it('executes scenario 1: first-time visitor homepage discovery to direct checkou
         'slug' => 'sober-armchair-nordic-edition',
         'price' => 3200000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => true,
     ]);
 
@@ -121,7 +121,7 @@ it('executes scenario 2: catalog browsing category filtering and multi-item cart
         'slug' => 'scandinavian-oak-coffee-table',
         'price' => 1500000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
         'category_id' => $categoryLiving->id,
     ]);
 
@@ -130,7 +130,7 @@ it('executes scenario 2: catalog browsing category filtering and multi-item cart
         'slug' => 'ergonomic-desk-chair',
         'price' => 2500000,
         'stock' => 15,
-        'status' => 'published',
+        'status' => 'active',
         'category_id' => $categoryOffice->id,
     ]);
 
@@ -209,7 +209,7 @@ it('executes scenario 3: registered customer wishlist curation and order history
         'email' => 'hoanglong@example.com',
         'password' => bcrypt('secret123'),
         'phone' => '0918273645',
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $product1 = Product::create([
@@ -361,7 +361,7 @@ it('executes scenario 5: mobile-first user experience slide drawer navigation an
         'slug' => 'mobile-minimalist-desk',
         'price' => 2900000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => false,
     ]);
 

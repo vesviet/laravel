@@ -13,7 +13,7 @@ beforeEach(function () {
         'email' => 'customer_vip@example.com',
         'phone' => '0912999888',
         'password' => 'secret123',
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $this->otherCustomer = Customer::create([
@@ -21,7 +21,7 @@ beforeEach(function () {
         'email' => 'other_customer@example.com',
         'phone' => '0933888777',
         'password' => 'secret123',
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $this->category = Category::create([

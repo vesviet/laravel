@@ -311,7 +311,7 @@ test('promotion engine correctly applies seeded VIPGOLD20 coupon with tier valid
         'email' => 'vipgold@example.com',
         'phone' => '0988776655',
         'password' => bcrypt('password'),
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Order::create([
@@ -334,7 +334,7 @@ test('promotion engine correctly applies seeded VIPGOLD20 coupon with tier valid
         'email' => 'regular@example.com',
         'phone' => '0988112233',
         'password' => bcrypt('password'),
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     // Order of 8.000.000₫: 20% of 8M = 1.6M, capped at 1.000.000₫ max discount

@@ -58,7 +58,7 @@ it('verifies rapid successive additions of multiple unique products maintain exa
             'slug' => "stress-test-product-{$i}",
             'price' => $prices[$i],
             'stock' => 50,
-            'status' => 'published',
+            'status' => 'active',
         ]);
         $products[] = $p;
         $qty = $i + 1; // 1, 2, 3, 4, 5 items
@@ -90,7 +90,7 @@ it('verifies rapid successive additions of same product aggregate atomically wit
         'slug' => 'atomic-accumulation-stool',
         'price' => 350000,
         'stock' => 100,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     // Simulate 12 rapid individual clicks adding 1 unit each
@@ -111,10 +111,10 @@ it('verifies rapid successive additions of same product aggregate atomically wit
 it('verifies interleaved rapid add, update, and remove mutations result in consistent cart state', function () {
     $cartService = app(\App\Services\CartService::class);
 
-    $pA = Product::create(['name' => 'Prod A', 'slug' => 'prod-a', 'price' => 100000, 'stock' => 20, 'status' => 'published']);
-    $pB = Product::create(['name' => 'Prod B', 'slug' => 'prod-b', 'price' => 200000, 'stock' => 20, 'status' => 'published']);
-    $pC = Product::create(['name' => 'Prod C', 'slug' => 'prod-c', 'price' => 300000, 'stock' => 20, 'status' => 'published']);
-    $pD = Product::create(['name' => 'Prod D', 'slug' => 'prod-d', 'price' => 400000, 'stock' => 20, 'status' => 'published']);
+    $pA = Product::create(['name' => 'Prod A', 'slug' => 'prod-a', 'price' => 100000, 'stock' => 20, 'status' => 'active']);
+    $pB = Product::create(['name' => 'Prod B', 'slug' => 'prod-b', 'price' => 200000, 'stock' => 20, 'status' => 'active']);
+    $pC = Product::create(['name' => 'Prod C', 'slug' => 'prod-c', 'price' => 300000, 'stock' => 20, 'status' => 'active']);
+    $pD = Product::create(['name' => 'Prod D', 'slug' => 'prod-d', 'price' => 400000, 'stock' => 20, 'status' => 'active']);
 
     // Sequence of interleaved actions
     $cartService->add($pA->id, null, 2); // A: 2
@@ -192,7 +192,7 @@ it('verifies cart calculations maintain floating-point precision with flash sale
         'slug' => 'regular-nordic-lamp',
         'price' => 600000,
         'stock' => 20,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $flashProduct = Product::create([
@@ -200,14 +200,14 @@ it('verifies cart calculations maintain floating-point precision with flash sale
         'slug' => 'flash-sale-accent-table',
         'price' => 1200000,
         'stock' => 15,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $flashSale = FlashSale::create([
         'name' => 'Midnight Flash Sale',
         'start_time' => now()->subHour(),
         'end_time' => now()->addHours(2),
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     FlashSaleItem::create([
@@ -241,7 +241,7 @@ it('verifies simultaneous operations across product variants create distinct car
         'slug' => 'modular-lounge-chair',
         'price' => 2000000,
         'stock' => 50,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $vOak = ProductVariant::create([
@@ -280,8 +280,8 @@ it('verifies simultaneous operations across product variants create distinct car
 });
 
 it('verifies multi-user session cart isolation under rapid parallel requests', function () {
-    $pA = Product::create(['name' => 'Item A', 'slug' => 'item-a', 'price' => 500000, 'stock' => 10, 'status' => 'published']);
-    $pB = Product::create(['name' => 'Item B', 'slug' => 'item-b', 'price' => 900000, 'stock' => 10, 'status' => 'published']);
+    $pA = Product::create(['name' => 'Item A', 'slug' => 'item-a', 'price' => 500000, 'stock' => 10, 'status' => 'active']);
+    $pB = Product::create(['name' => 'Item B', 'slug' => 'item-b', 'price' => 900000, 'stock' => 10, 'status' => 'active']);
 
     // User Session 1
     Session::put('cart', [
@@ -346,7 +346,7 @@ it('verifies catalog and product cards render complex UTF-8 diacritics, Asian sc
             'slug' => $item['slug'],
             'price' => $item['price'],
             'stock' => 10,
-            'status' => 'published',
+            'status' => 'active',
         ]);
     }
 
@@ -374,7 +374,7 @@ it('verifies zero price and multi-billion VND price format accurately in views a
         'slug' => 'free-fabric-swatch',
         'price' => 0,
         'stock' => 100,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $billionSofa = Product::create([
@@ -382,7 +382,7 @@ it('verifies zero price and multi-billion VND price format accurately in views a
         'slug' => 'royal-suite-villa-set',
         'price' => 2500000000, // 2.5 Billion VND
         'stock' => 1,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $response = $this->get(route('products.index'));
@@ -410,7 +410,7 @@ it('verifies products with null or soft-deleted categories render safely without
         'category_id' => null,
         'price' => 850000,
         'stock' => 5,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $pWithCategory = Product::create([
@@ -419,7 +419,7 @@ it('verifies products with null or soft-deleted categories render safely without
         'category_id' => $category->id,
         'price' => 950000,
         'stock' => 5,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     // Delete category
@@ -442,7 +442,7 @@ it('verifies missing images and external CDN URLs render appropriate fallbacks o
         'image_path' => null,
         'price' => 1200000,
         'stock' => 4,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $pCdn = Product::create([
@@ -451,7 +451,7 @@ it('verifies missing images and external CDN URLs render appropriate fallbacks o
         'image_path' => 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c',
         'price' => 450000,
         'stock' => 8,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $response = $this->get(route('products.index'));
@@ -519,7 +519,7 @@ it('verifies checkout pipeline validates and handles extreme customer inputs saf
         'slug' => 'solid-oak-dining-table',
         'price' => 5000000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -704,7 +704,7 @@ it('verifies responsive grid classes across all homepage sections and footer lay
 });
 
 it('verifies homepage renders all 7 sections in exact chronological sequence', function () {
-    Product::create(['name' => 'F1', 'slug' => 'f1', 'price' => 100, 'stock' => 10, 'status' => 'published', 'is_featured' => true]);
+    Product::create(['name' => 'F1', 'slug' => 'f1', 'price' => 100, 'stock' => 10, 'status' => 'active', 'is_featured' => true]);
 
     $response = $this->get(route('home'));
     $response->assertOk();
@@ -835,7 +835,7 @@ it('verifies AddToCartButton dispatches toast, cart-updated, and open-cart event
         'slug' => 'nordic-dining-stool',
         'price' => 750000,
         'stock' => 15,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Livewire::test(AddToCartButton::class, ['product' => $product])
@@ -851,7 +851,7 @@ it('verifies AddToCartButton rejects additions when stock is zero with error toa
         'slug' => 'sold-out-wooden-bench',
         'price' => 1200000,
         'stock' => 0,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Livewire::test(AddToCartButton::class, ['product' => $outOfStockProduct])
@@ -866,7 +866,7 @@ it('verifies rapid sequential quantity increments and decrements maintain accura
         'slug' => 'minimalist-coffee-mug',
         'price' => 150000,
         'stock' => 50,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $cartService = app(\App\Services\CartService::class);
@@ -892,7 +892,7 @@ it('verifies CartDrawer ignores negative or zero quantity mutations without cras
         'slug' => 'sturdy-bookshelf',
         'price' => 3200000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $cartService = app(\App\Services\CartService::class);
@@ -919,8 +919,8 @@ it('verifies CartDrawer handles removal of non-existent items safely', function 
 });
 
 it('verifies CartDrawer and CartCount components remain in perfect synchronization across multiple mutations', function () {
-    $p1 = Product::create(['name' => 'Sync Item 1', 'slug' => 'sync-item-1', 'price' => 200000, 'stock' => 20, 'status' => 'published']);
-    $p2 = Product::create(['name' => 'Sync Item 2', 'slug' => 'sync-item-2', 'price' => 500000, 'stock' => 20, 'status' => 'published']);
+    $p1 = Product::create(['name' => 'Sync Item 1', 'slug' => 'sync-item-1', 'price' => 200000, 'stock' => 20, 'status' => 'active']);
+    $p2 = Product::create(['name' => 'Sync Item 2', 'slug' => 'sync-item-2', 'price' => 500000, 'stock' => 20, 'status' => 'active']);
 
     $cartService = app(\App\Services\CartService::class);
     $cartService->add($p1->id, null, 3);

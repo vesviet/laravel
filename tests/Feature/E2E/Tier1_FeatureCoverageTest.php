@@ -294,7 +294,7 @@ it('verifies section 4 featured products section renders with title and see-all 
         'slug' => 'featured-oak-chair',
         'price' => 1250000,
         'stock' => 15,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => true,
     ]);
 
@@ -312,7 +312,7 @@ it('verifies section 5 new arrivals grid renders with section header', function 
         'slug' => 'new-minimalist-lamp',
         'price' => 850000,
         'stock' => 20,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => false,
     ]);
 
@@ -348,7 +348,7 @@ it('verifies all homepage sections render in exact required sequence', function 
         'slug' => 'seq-test-featured-product',
         'price' => 500000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => true,
     ]);
 
@@ -448,7 +448,7 @@ it('verifies product card renders product title and formatted price in vnd', fun
         'slug' => 'sober-armchair-vintage',
         'price' => 1750000,
         'stock' => 5,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => false,
     ]);
 
@@ -465,7 +465,7 @@ it('verifies product card displays hot badge for featured products', function ()
         'slug' => 'hot-premium-table',
         'price' => 3200000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => true,
     ]);
 
@@ -482,7 +482,7 @@ it('verifies product card omits hot badge for regular non-featured products', fu
         'slug' => 'standard-desk-lamp',
         'price' => 450000,
         'stock' => 20,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => false,
     ]);
 
@@ -499,7 +499,7 @@ it('verifies product card renders svg placeholder fallback when image path is nu
         'slug' => 'null-image-product',
         'price' => 300000,
         'stock' => 5,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => false,
         'image_path' => null,
     ]);
@@ -517,7 +517,7 @@ it('verifies product card renders detail hover bar with xem chi tiet action', fu
         'slug' => 'hover-action-stool',
         'price' => 600000,
         'stock' => 8,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => false,
     ]);
 
@@ -539,7 +539,7 @@ it('verifies product card integrates wishlist button component when customer is 
         'slug' => 'wishlist-target-sofa',
         'price' => 4500000,
         'stock' => 4,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => true,
     ]);
 
@@ -572,7 +572,7 @@ it('verifies livewire add to cart button adds product and dispatches events', fu
         'slug' => 'addable-lounge-chair',
         'price' => 2100000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Livewire::test(AddToCartButton::class, ['product' => $product])
@@ -593,7 +593,7 @@ it('verifies livewire cart drawer updates item quantity', function () {
         'slug' => 'qty-updatable-chair',
         'price' => 500000,
         'stock' => 15,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -618,7 +618,7 @@ it('verifies livewire cart drawer removes item from cart', function () {
         'slug' => 'removable-cushion',
         'price' => 200000,
         'stock' => 25,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -643,7 +643,7 @@ it('verifies livewire cart count component updates accurately', function () {
         'slug' => 'countable-shelf',
         'price' => 1100000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -665,7 +665,7 @@ it('verifies checkout page loads successfully when cart has items', function () 
         'slug' => 'checkout-test-bed',
         'price' => 5000000,
         'stock' => 5,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -687,7 +687,7 @@ it('verifies guest order placement via checkout pipeline creates order in databa
         'slug' => 'pipeline-dining-table',
         'price' => 3500000,
         'stock' => 5,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [

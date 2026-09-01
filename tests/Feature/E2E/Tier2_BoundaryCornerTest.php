@@ -54,7 +54,7 @@ it('verifies product card handles null image path with svg placeholder fallback'
         'slug' => 'zero-image-product',
         'price' => 150000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
         'image_path' => null,
     ]);
 
@@ -71,7 +71,7 @@ it('verifies product card handles product with no category without null pointer 
         'slug' => 'uncategorized-stool',
         'price' => 750000,
         'stock' => 5,
-        'status' => 'published',
+        'status' => 'active',
         'category_id' => null,
     ]);
 
@@ -88,7 +88,7 @@ it('verifies product card handles extreme long product name properly', function 
         'slug' => 'extreme-long-name-table',
         'price' => 2890000,
         'stock' => 3,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $response = $this->get(route('products.index'));
@@ -104,7 +104,7 @@ it('verifies product card escapes special characters quotes and html entities sa
         'slug' => 'special-char-product',
         'price' => 990000,
         'stock' => 7,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $response = $this->get(route('products.index'));
@@ -120,7 +120,7 @@ it('verifies product card formats zero price cleanly', function () {
         'slug' => 'complimentary-swatch',
         'price' => 0,
         'stock' => 100,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $response = $this->get(route('products.index'));
@@ -135,7 +135,7 @@ it('verifies product card formats large price with vnd thousands separator', fun
         'slug' => 'luxury-italian-sofa',
         'price' => 125000000,
         'stock' => 2,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $response = $this->get(route('products.index'));
@@ -295,7 +295,7 @@ it('verifies cart drawer ignores quantity update less than one', function () {
         'slug' => 'boundary-chair',
         'price' => 300000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -319,7 +319,7 @@ it('verifies cart drawer handles large quantity update', function () {
         'slug' => 'bulk-stool',
         'price' => 100000,
         'stock' => 500,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -351,7 +351,7 @@ it('verifies cart drawer calculates subtotal accurately with multiple quantities
         'slug' => 'subtotal-product-1',
         'price' => 250000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $product2 = Product::create([
@@ -359,7 +359,7 @@ it('verifies cart drawer calculates subtotal accurately with multiple quantities
         'slug' => 'subtotal-product-2',
         'price' => 100000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -386,7 +386,7 @@ it('verifies add to cart is blocked when product stock is zero', function () {
         'slug' => 'out-of-stock-bench',
         'price' => 1200000,
         'stock' => 0,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Livewire::test(AddToCartButton::class, ['product' => $product])
@@ -402,7 +402,7 @@ it('verifies add to cart handles product with variant', function () {
         'slug' => 'variant-product-chair',
         'price' => 500000,
         'stock' => 20,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $variant = ProductVariant::create([
@@ -436,7 +436,7 @@ it('verifies checkout validates required customer fields presence', function () 
         'slug' => 'checkout-validation-product',
         'price' => 200000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -527,7 +527,7 @@ it('verifies catalog sort price_asc orders products from lowest to highest', fun
         'slug' => 'cheap-accessory',
         'price' => 50000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $expensive = Product::create([
@@ -535,7 +535,7 @@ it('verifies catalog sort price_asc orders products from lowest to highest', fun
         'slug' => 'expensive-credenza',
         'price' => 8000000,
         'stock' => 2,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $response = $this->get(route('products.index', ['sort' => 'price_asc']));
@@ -554,7 +554,7 @@ it('verifies catalog sort price_desc orders products from highest to lowest', fu
         'slug' => 'cheap-desk-pad',
         'price' => 80000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $expensive = Product::create([
@@ -562,7 +562,7 @@ it('verifies catalog sort price_desc orders products from highest to lowest', fu
         'slug' => 'expensive-dining-set',
         'price' => 15000000,
         'stock' => 2,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $response = $this->get(route('products.index', ['sort' => 'price_desc']));
@@ -582,7 +582,7 @@ it('verifies catalog pagination renders when product count exceeds twelve', func
             'slug' => "paginated-product-{$i}",
             'price' => 100000 * $i,
             'stock' => 10,
-            'status' => 'published',
+            'status' => 'active',
         ]);
     }
 

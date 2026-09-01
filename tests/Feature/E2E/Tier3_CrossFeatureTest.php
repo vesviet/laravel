@@ -35,7 +35,7 @@ it('verifies add to cart synchronizes livewire cart count and cart drawer conten
         'slug' => 'cross-sync-dining-table',
         'price' => 3500000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     // 1. Add item to cart via AddToCartButton component
@@ -70,7 +70,7 @@ it('verifies cart drawer item removal synchronizes cart count and subtotal', fun
         'slug' => 'cross-product-a',
         'price' => 500000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $product2 = Product::create([
@@ -78,7 +78,7 @@ it('verifies cart drawer item removal synchronizes cart count and subtotal', fun
         'slug' => 'cross-product-b',
         'price' => 300000,
         'stock' => 10,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     Session::put('cart', [
@@ -161,7 +161,7 @@ it('verifies category filter and sort interoperability in product catalog', func
         'slug' => 'living-cheap-coffee-table',
         'price' => 1200000,
         'stock' => 5,
-        'status' => 'published',
+        'status' => 'active',
         'category_id' => $livingCategory->id,
     ]);
 
@@ -170,7 +170,7 @@ it('verifies category filter and sort interoperability in product catalog', func
         'slug' => 'living-expensive-sectional',
         'price' => 8500000,
         'stock' => 2,
-        'status' => 'published',
+        'status' => 'active',
         'category_id' => $livingCategory->id,
     ]);
 
@@ -179,7 +179,7 @@ it('verifies category filter and sort interoperability in product catalog', func
         'slug' => 'bedroom-nightstand',
         'price' => 900000,
         'stock' => 4,
-        'status' => 'published',
+        'status' => 'active',
         'category_id' => $bedroomCategory->id,
     ]);
 
@@ -212,7 +212,7 @@ it('verifies customer authentication alters header navigation and enables wishli
         'name' => 'Cross Customer User',
         'email' => 'cross_cust@example.com',
         'password' => bcrypt('password123'),
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $product = Product::create([
@@ -220,7 +220,7 @@ it('verifies customer authentication alters header navigation and enables wishli
         'slug' => 'wishlist-fav-lounge',
         'price' => 2400000,
         'stock' => 6,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => true,
     ]);
 
@@ -260,7 +260,7 @@ it('verifies homepage featured to product detail to checkout navigation flow', f
         'slug' => 'copenhague-desk-classic',
         'price' => 4200000,
         'stock' => 8,
-        'status' => 'published',
+        'status' => 'active',
         'is_featured' => true,
     ]);
 
@@ -369,7 +369,7 @@ it('verifies multi-variant product add to cart creates distinct line items in dr
         'slug' => 'modular-sofa-system',
         'price' => 5000000,
         'stock' => 20,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $variantBeige = ProductVariant::create([
@@ -471,7 +471,7 @@ it('verifies hero and promo banner cta links target working catalog routes', fun
         'slug' => 'banner-target-armchair',
         'price' => 1800000,
         'stock' => 5,
-        'status' => 'published',
+        'status' => 'active',
     ]);
 
     $response = $this->get(route('products.index'));

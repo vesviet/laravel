@@ -124,7 +124,7 @@ test('User canAccessPanel differentiates seller vs admin panels', function () {
     $user->assignRole('super_admin');
     expect($user->canAccessPanel($adminPanel))->toBeTrue();
 
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
     // Refresh the user model so the new relation is loaded.
     $user->refresh();
     expect($user->sellerProfile)->not->toBeNull();
