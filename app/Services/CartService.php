@@ -2,11 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\Customer;
+use App\Models\CustomerCartItem;
 use App\Models\FlashSaleItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\Promotions\DTOs\PromotedPriceResult;
 use App\Services\Promotions\PromotionEngine;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 
@@ -26,6 +30,18 @@ class CartService
 
     public function getCart(): array
     {
+        // Logged-in: DB is source of truth; session is a cache.
+        // If session has data → cache hit, no DB query.
+        // If session is empty → load from DB and warm session.
+        if (Auth::guard('customer')->check()) {
+            $sessionCart = Session::get($this->sessionKey, []);
+            if (!empty($sessionCart)) {
+                return $sessionCart;
+            }
+            return $this->getCartFromDB();
+        }
+
+        // Guest: session only (unchanged behavior).
         return Session::get($this->sessionKey, []);
     }
 
@@ -45,6 +61,45 @@ class CartService
         }
 
         $this->saveCart($cart);
+    }
+
+    /**
+     * Merge guest session cart into the customer's DB cart after login or register.
+     * Quantities are summed and capped at 99 (soft limit).
+     * Session cart is cleared after merge — DB becomes the single source of truth.
+     */
+    public function mergeGuestCartToDB(Customer $customer, array $guestCart): void
+    {
+        if (empty($guestCart)) {
+            return;
+        }
+
+        // Load existing DB cart keyed by composite cart key.
+        $existing = CustomerCartItem::where('customer_id', $customer->id)
+            ->get()
+            ->keyBy(fn ($r) => $this->generateKey($r->product_id, $r->product_variant_id));
+
+        $rows = [];
+        foreach ($guestCart as $key => $item) {
+            $existingQty = $existing->get($key)?->quantity ?? 0;
+            $mergedQty   = min($existingQty + $item['quantity'], 99); // soft cap
+            $rows[] = [
+                'customer_id'        => $customer->id,
+                'product_id'         => $item['product_id'],
+                'product_variant_id' => $item['product_variant_id'] ?? null,
+                'quantity'           => $mergedQty,
+                'updated_at'         => now(),
+            ];
+        }
+
+        CustomerCartItem::upsert(
+            $rows,
+            ['customer_id', 'product_id', 'product_variant_id'],
+            ['quantity', 'updated_at']
+        );
+
+        // DB = source of truth. Session will be re-warmed on next getCart() call.
+        Session::forget($this->sessionKey);
     }
 
     public function update(int $productId, ?int $variantId, int $quantity): void
@@ -76,6 +131,18 @@ class CartService
     public function clear(): void
     {
         Session::forget($this->sessionKey);
+        // Clear DB cart OUTSIDE any transaction (post-commit) —
+        // safe: if this fails, the order is already placed; cart will appear stale but won't block.
+        if (Auth::guard('customer')->check()) {
+            try {
+                CustomerCartItem::where('customer_id', Auth::guard('customer')->id())->delete();
+            } catch (\Throwable $e) {
+                Log::warning('CartService: DB clear failed after checkout.', [
+                    'customer_id' => Auth::guard('customer')->id(),
+                    'error'       => $e->getMessage(),
+                ]);
+            }
+        }
     }
 
     /**
@@ -280,11 +347,92 @@ class CartService
 
     protected function generateKey(int $productId, ?int $variantId): string
     {
-        return $productId.'_'.($variantId ?? '0');
+        return $productId . '_' . ($variantId ?? '0');
     }
 
     protected function saveCart(array $cart): void
     {
         Session::put($this->sessionKey, $cart);
+
+        // Sync to DB for logged-in customers (best-effort — do not block on failure).
+        if (Auth::guard('customer')->check()) {
+            $this->syncCartToDB($cart);
+        }
+    }
+
+    /**
+     * Load cart from DB and warm the session cache.
+     * Returns the same array shape as the session cart so downstream code is unaffected.
+     */
+    private function getCartFromDB(): array
+    {
+        $cart = [];
+        CustomerCartItem::where('customer_id', Auth::guard('customer')->id())
+            ->get()
+            ->each(function ($row) use (&$cart) {
+                $key = $this->generateKey($row->product_id, $row->product_variant_id);
+                $cart[$key] = [
+                    'product_id'         => $row->product_id,
+                    'product_variant_id' => $row->product_variant_id,
+                    'quantity'           => $row->quantity,
+                ];
+            });
+
+        Session::put($this->sessionKey, $cart); // warm session cache
+        return $cart;
+    }
+
+    /**
+     * Sync the current session cart to DB using a single upsert + composite-key cleanup.
+     *
+     * TL FIX: cleanup uses composite (product_id, product_variant_id) pairs,
+     * NOT just product_id, to avoid deleting other variants of the same product.
+     */
+    private function syncCartToDB(array $cart): void
+    {
+        try {
+            $customerId = Auth::guard('customer')->id();
+
+            if (empty($cart)) {
+                CustomerCartItem::where('customer_id', $customerId)->delete();
+                return;
+            }
+
+            $rows = collect($cart)->map(fn ($item) => [
+                'customer_id'        => $customerId,
+                'product_id'         => $item['product_id'],
+                'product_variant_id' => $item['product_variant_id'] ?? null,
+                'quantity'           => $item['quantity'],
+                'updated_at'         => now(),
+            ])->values()->all();
+
+            CustomerCartItem::upsert(
+                $rows,
+                ['customer_id', 'product_id', 'product_variant_id'],
+                ['quantity', 'updated_at']
+            );
+
+            // Remove rows no longer in cart using composite pairs (TL FIX: not just product_id).
+            $activePairs = collect($cart)->map(fn ($item) => [
+                (int) $item['product_id'],
+                $item['product_variant_id'] ? (int) $item['product_variant_id'] : null,
+            ])->all();
+
+            CustomerCartItem::where('customer_id', $customerId)
+                ->get()
+                ->filter(fn ($row) => !collect($activePairs)->contains(
+                    fn ($pair) => $pair[0] === (int) $row->product_id
+                        && $pair[1] === ($row->product_variant_id ? (int) $row->product_variant_id : null)
+                ))
+                ->each->delete();
+
+        } catch (\Throwable $e) {
+            // DB sync must NOT block the user — session cart remains valid.
+            Log::warning('CartService: DB sync failed, session cart preserved.', [
+                'customer_id' => Auth::guard('customer')->id(),
+                'error'       => $e->getMessage(),
+            ]);
+        }
     }
 }
+
