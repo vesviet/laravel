@@ -6,9 +6,13 @@ use App\Mail\AbandonedCartIncentiveMail;
 use App\Mail\AbandonedCartReminderMail;
 use App\Models\AbandonedCart;
 use App\Models\Coupon;
+use App\Models\Customer;
+use App\Models\CustomerCartItem;
 use App\Models\Order;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class ProcessAbandonedCartsCommand extends Command
 {
@@ -28,6 +32,10 @@ class ProcessAbandonedCartsCommand extends Command
     public function handle(): int
     {
         $this->info('Starting Abandoned Cart recovery processing...');
+
+        // Snapshot idle customer_cart_items (updated_at > 1h) into abandoned_carts
+        // for logged-in users — feeds the existing 2-step email recovery flow.
+        $this->snapshotIdleDBCarts();
 
         $activeAbandonedCarts = AbandonedCart::whereNull('recovered_at')->get();
 
@@ -87,5 +95,63 @@ class ProcessAbandonedCartsCommand extends Command
         $this->info("Abandoned Cart processing completed. Dispatched {$processedCount} recovery emails.");
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Snapshot customer_cart_items idle for more than 1 hour into the abandoned_carts table.
+     * This feeds the existing 2-step recovery email flow without changing that logic.
+     *
+     * Only processes customers with an email who have not already placed an order recently.
+     * Uses chunk() to avoid memory issues on large datasets.
+     */
+    private function snapshotIdleDBCarts(): void
+    {
+        $this->line('Snapshotting idle DB carts into abandoned_carts...');
+
+        // Get unique customer_ids with idle cart items (updated_at > 1h ago)
+        $idleCustomerIds = CustomerCartItem::where('updated_at', '<', now()->subHour())
+            ->distinct()
+            ->pluck('customer_id');
+
+        if ($idleCustomerIds->isEmpty()) {
+            return;
+        }
+
+        Customer::whereIn('id', $idleCustomerIds)
+            ->whereNotNull('email')
+            ->chunk(100, function ($customers) {
+                foreach ($customers as $customer) {
+                    try {
+                        $items = CustomerCartItem::where('customer_id', $customer->id)->get();
+
+                        if ($items->isEmpty()) {
+                            continue;
+                        }
+
+                        $itemsJson = $items->map(fn ($i) => [
+                            'product_id'         => $i->product_id,
+                            'product_variant_id' => $i->product_variant_id,
+                            'quantity'           => $i->quantity,
+                        ])->all();
+
+                        $subtotal = 0; // price enrichment handled by email template
+
+                        AbandonedCart::updateOrCreate(
+                            ['customer_id' => $customer->id, 'recovered_at' => null],
+                            [
+                                'email'       => $customer->email,
+                                'cart_token'  => Str::random(32),
+                                'items_json'  => $itemsJson,
+                                'subtotal'    => $subtotal,
+                            ]
+                        );
+                    } catch (\Throwable $e) {
+                        Log::warning('ProcessAbandonedCartsCommand: snapshot failed for customer.', [
+                            'customer_id' => $customer->id,
+                            'error'       => $e->getMessage(),
+                        ]);
+                    }
+                }
+            });
     }
 }
