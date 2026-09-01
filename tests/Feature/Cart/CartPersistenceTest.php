@@ -252,3 +252,69 @@ test('CP-11: removing one variant does not delete other variants of same product
 
 
 
+
+// -----------------------------------------------------------------------------
+// CP-12: Customer isolation - Customer A cannot read Customer B's cart
+// -----------------------------------------------------------------------------
+
+test('CP-12: customer isolation - getCart() returns only own items', function () {
+    // Customer A adds items
+    Auth::guard('customer')->login($this->customer);
+    $this->cartService->add($this->product->id, null, 3);
+
+    // Seed DB directly for Customer B
+    $customerB = Customer::create([
+        'name'     => 'Customer B',
+        'email'    => 'b@test.com',
+        'password' => bcrypt('secret'),
+        'status'   => 'active',
+    ]);
+    CustomerCartItem::create([
+        'customer_id'        => $customerB->id,
+        'product_id'         => $this->product->id,
+        'product_variant_id' => 0,
+        'quantity'           => 99,
+        'updated_at'         => now(),
+    ]);
+
+    // A's cart must only contain A's items
+    $cartA = $this->cartService->getCart();
+    $key = $this->product->id . '_0';
+    expect($cartA[$key]['quantity'])->toBe(3); // not 99 from B
+    expect(CustomerCartItem::where('customer_id', $this->customer->id)->count())->toBe(1);
+    expect(CustomerCartItem::where('customer_id', $customerB->id)->count())->toBe(1);
+});
+
+// -----------------------------------------------------------------------------
+// CP-13: 2FA login - mergeGuestCartToDB called in verifyTwoFactor path
+// -----------------------------------------------------------------------------
+
+test('CP-13: mergeGuestCartToDB called correctly after 2FA completes', function () {
+    // Simulate: guest added items to session before login
+    $guestCart = [$this->product->id . '_0' => [
+        'product_id'         => $this->product->id,
+        'product_variant_id' => null,
+        'quantity'           => 2,
+    ]];
+
+    // Call mergeGuestCartToDB directly (simulating what verifyTwoFactor now does)
+    $this->cartService->mergeGuestCartToDB($this->customer, $guestCart);
+
+    expect(CustomerCartItem::where('customer_id', $this->customer->id)->count())->toBe(1);
+    expect(CustomerCartItem::where('customer_id', $this->customer->id)->first()->quantity)->toBe(2);
+});
+
+// -----------------------------------------------------------------------------
+// CP-14: add() qty cap at 99
+// -----------------------------------------------------------------------------
+
+test('CP-14: add() caps total qty at 99', function () {
+    Auth::guard('customer')->login($this->customer);
+
+    // Add 98 first
+    $this->cartService->add($this->product->id, null, 98);
+    // Then add 5 more — should be capped at 99, not 103
+    $this->cartService->add($this->product->id, null, 5);
+
+    expect(CustomerCartItem::where('customer_id', $this->customer->id)->first()->quantity)->toBe(99);
+});

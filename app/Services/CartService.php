@@ -51,12 +51,13 @@ class CartService
         $key = $this->generateKey($productId, $variantId);
 
         if (isset($cart[$key])) {
-            $cart[$key]['quantity'] += $quantity;
+            // D-02 fix: cap total qty at 99 — consistent with mergeGuestCartToDB soft cap.
+            $cart[$key]['quantity'] = min($cart[$key]['quantity'] + $quantity, 99);
         } else {
             $cart[$key] = [
-                'product_id' => $productId,
+                'product_id'         => $productId,
                 'product_variant_id' => $variantId,
-                'quantity' => $quantity,
+                'quantity'           => min($quantity, 99),
             ];
         }
 
@@ -92,14 +93,28 @@ class CartService
             ];
         }
 
-        CustomerCartItem::upsert(
-            $rows,
-            ['customer_id', 'product_id', 'product_variant_id'],
-            ['quantity', 'updated_at']
-        );
+        try {
+            CustomerCartItem::upsert(
+                $rows,
+                ['customer_id', 'product_id', 'product_variant_id'],
+                ['quantity', 'updated_at']
+            );
 
-        // DB = source of truth. Session will be re-warmed on next getCart() call.
-        Session::forget($this->sessionKey);
+            // DB = source of truth. Session will be re-warmed on next getCart() call.
+            Session::forget($this->sessionKey);
+
+            Log::info('CartService: guest cart merged to DB.', [
+                'customer_id' => $customer->id,
+                'items'       => count($rows),
+            ]);
+        } catch (\Throwable $e) {
+            // D-03 fix: merge failure must NOT block login.
+            // Guest cart remains in session and will be available this session.
+            Log::warning('CartService: mergeGuestCartToDB failed — session cart preserved.', [
+                'customer_id' => $customer->id,
+                'error'       => $e->getMessage(),
+            ]);
+        }
     }
 
     public function update(int $productId, ?int $variantId, int $quantity): void
@@ -368,21 +383,31 @@ class CartService
      */
     private function getCartFromDB(): array
     {
-        $cart = [];
-        CustomerCartItem::where('customer_id', Auth::guard('customer')->id())
-            ->get()
-            ->each(function ($row) use (&$cart) {
-                $key = $this->generateKey($row->product_id, $row->product_variant_id);
-                $cart[$key] = [
-                    'product_id'         => $row->product_id,
-                    // Convert sentinel 0 back to null for session cart compatibility
-                    'product_variant_id' => $row->product_variant_id === 0 ? null : $row->product_variant_id,
-                    'quantity'           => $row->quantity,
-                ];
-            });
+        try {
+            $cart = [];
+            CustomerCartItem::where('customer_id', Auth::guard('customer')->id())
+                ->get()
+                ->each(function ($row) use (&$cart) {
+                    $key = $this->generateKey($row->product_id, $row->product_variant_id);
+                    $cart[$key] = [
+                        'product_id'         => $row->product_id,
+                        // Convert sentinel 0 back to null for session cart compatibility
+                        'product_variant_id' => $row->product_variant_id === 0 ? null : $row->product_variant_id,
+                        'quantity'           => $row->quantity,
+                    ];
+                });
 
-        Session::put($this->sessionKey, $cart); // warm session cache
-        return $cart;
+            Session::put($this->sessionKey, $cart); // warm session cache
+            return $cart;
+        } catch (\Throwable $e) {
+            // D-05 fix: DB failure on session miss must not crash the page.
+            // Return empty cart — guest-like degraded mode until DB recovers.
+            Log::warning('CartService: getCartFromDB failed — returning empty cart.', [
+                'customer_id' => Auth::guard('customer')->id(),
+                'error'       => $e->getMessage(),
+            ]);
+            return [];
+        }
     }
 
     /**

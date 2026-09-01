@@ -25,10 +25,12 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     protected TwoFactorService $twoFactorService;
+    protected CartService $cartService;
 
-    public function __construct(TwoFactorService $twoFactorService)
+    public function __construct(TwoFactorService $twoFactorService, CartService $cartService)
     {
         $this->twoFactorService = $twoFactorService;
+        $this->cartService = $cartService;
     }
 
     public function showLoginForm()
@@ -68,7 +70,7 @@ class AuthController extends Controller
             // This ensures items added before login are preserved cross-device.
             $guestCart = session()->get('cart', []);
             if (!empty($guestCart)) {
-                app(CartService::class)->mergeGuestCartToDB(
+                $this->cartService->mergeGuestCartToDB(
                     Auth::guard('customer')->user(),
                     $guestCart
                 );
@@ -148,6 +150,13 @@ class AuthController extends Controller
 
         if ($remember) {
             $customer->regenerateRememberToken();
+        }
+
+        // D-01 fix: merge guest cart that was added BEFORE 2FA challenge completed.
+        // The actual Auth::login happens here (not in login()), so merge must be here too.
+        $guestCart = session()->get('cart', []);
+        if (!empty($guestCart)) {
+            $this->cartService->mergeGuestCartToDB($customer, $guestCart);
         }
 
         return redirect()->intended($intended)
