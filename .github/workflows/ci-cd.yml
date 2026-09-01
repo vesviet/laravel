@@ -303,7 +303,15 @@ jobs:
       - name: Optimize and Cache
         run: |
           docker compose -f docker-compose.prod.yml exec -T app php artisan optimize:clear
+          docker compose -f docker-compose.prod.yml exec -T app php artisan view:clear
           docker compose -f docker-compose.prod.yml exec -T app php artisan optimize
+
+      - name: Clear Stale Application Cache Keys
+        run: |
+          echo "Clearing application-level cache keys that may have stale serialized data..."
+          docker compose -f docker-compose.prod.yml exec -T app php artisan cache:forget provinces_list || true
+          docker compose -f docker-compose.prod.yml exec -T app php artisan cache:forget provinces_list_v2 || true
+          echo "Stale cache keys cleared."
 
       - name: Verify Deployment (Health Check)
         run: |
