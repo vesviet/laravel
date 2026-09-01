@@ -301,7 +301,9 @@ class CheckoutFlow extends Component
             'review' => [],
         };
 
-        $this->validate($rules);
+        if (!empty($rules)) {
+            $this->validate($rules);
+        }
 
         return true;
     }
