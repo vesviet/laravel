@@ -761,13 +761,13 @@ describe('Pillar 4: Adversarial Stress Vectors & Edge Case Mining', function () 
 
         /** @var CartService $cartService */
         $cartService = app(CartService::class);
-        $cartService->add($this->productA->id, null, 100); // 100 * 1M = 100,000,000₫
+        $cartService->add($this->productA->id, null, 99); // qty capped at 99 (CartService business rule)
 
         $component = Livewire::test(CartDrawer::class);
-        expect($component->get('subtotal'))->toBe(100000000.0);
+        expect($component->get('subtotal'))->toBe(99000000.0);
         expect($component->get('totalDiscount'))->toBe(2000000.0);
-        // Subtotal (100M) - Discount (2M) + Est Shipping (30K) = 98,030,000₫
-        expect($component->get('netTotal'))->toBe(98030000.0);
+        // Subtotal (99M) - Discount (2M) + Est Shipping (30K) = 97,030,000d
+        expect($component->get('netTotal'))->toBe(97030000.0);
     });
 
     test('Vector 4.2: Zero or invalid quantity mutations are rejected without corrupting cart state', function () {
@@ -851,3 +851,4 @@ describe('Pillar 4: Adversarial Stress Vectors & Edge Case Mining', function () 
         expect($component->get('couponError'))->toContain('không tồn tại hoặc đã hết hạn');
     });
 });
+
