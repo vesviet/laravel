@@ -22,7 +22,10 @@ class ProductFactory extends Factory
             'description' => $this->faker->paragraph,
             'price' => $this->faker->numberBetween(100, 1000) * 1000,
             'stock' => $this->faker->numberBetween(10, 100),
-            'status' => 'active',
+            // products.status ENUM: ['draft', 'published', 'archived'] — 'active' is NOT valid.
+            // SQLite ignores ENUM constraints; MySQL 8.0 strict mode throws SQLSTATE[01000] Warning 1265.
+            'status' => 'published',
+
             'is_visible' => true,
             'is_purchasable' => true,
             'seller_id' => SellerProfile::factory(),
