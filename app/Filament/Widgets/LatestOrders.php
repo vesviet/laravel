@@ -23,14 +23,8 @@ class LatestOrders extends BaseWidget
                 Tables\Columns\TextColumn::make('total_amount')->money('VND'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'shipping' => 'info',
-                        'delivered' => 'success',
-                        'completed' => 'success',
-                        'cancelled' => 'danger',
-                        default => 'gray',
-                    }),
+                    ->formatStateUsing(fn (\App\Enums\OrderStatus $state): string => $state->label())
+                    ->color(fn (\App\Enums\OrderStatus $state): string => $state->color()),
                 Tables\Columns\TextColumn::make('created_at')->dateTime(),
             ]);
     }
