@@ -91,12 +91,15 @@ class CheckoutFlow extends Component
     {
         // PERF-01: Cache via Cache facade (not Livewire persist) — Livewire persist
         // serializes Eloquent Collections to plain arrays which breaks ->name access in views.
-        // v3 key: store plain array of objects to avoid Eloquent serialization issues in Redis
-        return \Illuminate\Support\Facades\Cache::remember(
-            'provinces_list_v3',
+        // v4 key: cache as plain array of arrays to bypass strict unserialize() restrictions 
+        // that cause __PHP_Incomplete_Class, then cast back to objects for Blade.
+        $cached = \Illuminate\Support\Facades\Cache::remember(
+            'provinces_list_v4',
             now()->addHours(24),
-            fn () => Province::orderBy('name')->get()->map(fn($p) => (object) $p->only(['name', 'code']))->all()
+            fn () => Province::orderBy('name')->get()->toArray()
         );
+
+        return array_map(fn($item) => (object) $item, $cached);
     }
 
     #[Computed]

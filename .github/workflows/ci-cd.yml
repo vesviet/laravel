@@ -312,6 +312,7 @@ jobs:
           docker compose -f docker-compose.prod.yml exec -T app php artisan cache:forget provinces_list || true
           docker compose -f docker-compose.prod.yml exec -T app php artisan cache:forget provinces_list_v2 || true
           docker compose -f docker-compose.prod.yml exec -T app php artisan cache:forget provinces_list_v3 || true
+          docker compose -f docker-compose.prod.yml exec -T app php artisan cache:forget provinces_list_v4 || true
           echo "Stale cache keys cleared."
 
       - name: Verify Deployment (Health Check)
