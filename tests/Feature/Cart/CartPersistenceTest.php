@@ -65,12 +65,13 @@ test('CP-03: merge adds qty from guest to existing DB qty', function () {
     CustomerCartItem::create([
         'customer_id'        => $this->customer->id,
         'product_id'         => $this->product->id,
-        'product_variant_id' => null,
+        'product_variant_id' => 0, // sentinel (no variant)
         'quantity'           => 2,
         'updated_at'         => now(),
     ]);
 
-    $guestCart = ['1_0' => ['product_id' => $this->product->id, 'product_variant_id' => null, 'quantity' => 1]];
+    $productKey = $this->product->id . '_0';
+    $guestCart = [$productKey => ['product_id' => $this->product->id, 'product_variant_id' => null, 'quantity' => 1]];
 
     $this->cartService->mergeGuestCartToDB($this->customer, $guestCart);
 
@@ -86,12 +87,13 @@ test('CP-04: merge caps qty at 99 when sum exceeds limit', function () {
     CustomerCartItem::create([
         'customer_id'        => $this->customer->id,
         'product_id'         => $this->product->id,
-        'product_variant_id' => null,
+        'product_variant_id' => 0, // sentinel (no variant)
         'quantity'           => 98,
         'updated_at'         => now(),
     ]);
 
-    $guestCart = ['1_0' => ['product_id' => $this->product->id, 'product_variant_id' => null, 'quantity' => 5]];
+    $productKey = $this->product->id . '_0';
+    $guestCart = [$productKey => ['product_id' => $this->product->id, 'product_variant_id' => null, 'quantity' => 5]];
 
     $this->cartService->mergeGuestCartToDB($this->customer, $guestCart);
 
@@ -165,7 +167,7 @@ test('CP-09: getCart() reloads from DB when session is empty', function () {
     CustomerCartItem::create([
         'customer_id'        => $this->customer->id,
         'product_id'         => $this->product->id,
-        'product_variant_id' => null,
+        'product_variant_id' => 0, // sentinel (no variant)
         'quantity'           => 4,
         'updated_at'         => now(),
     ]);
@@ -247,3 +249,6 @@ test('CP-11: removing one variant does not delete other variants of same product
         ->where('product_variant_id', 2)
         ->count())->toBe(1);
 });
+
+
+

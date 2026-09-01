@@ -86,7 +86,7 @@ class CartService
             $rows[] = [
                 'customer_id'        => $customer->id,
                 'product_id'         => $item['product_id'],
-                'product_variant_id' => $item['product_variant_id'] ?? null,
+                'product_variant_id' => $item['product_variant_id'] ?? 0, // 0 = sentinel for null
                 'quantity'           => $mergedQty,
                 'updated_at'         => now(),
             ];
@@ -345,9 +345,11 @@ class CartService
         ];
     }
 
-    protected function generateKey(int $productId, ?int $variantId): string
+    protected function generateKey(int $productId, int|null $variantId): string
     {
-        return $productId . '_' . ($variantId ?? '0');
+        // Normalize null and 0 to the same key '0' — both mean "no variant".
+        // DB stores 0 (sentinel), session stores null; both must produce the same lookup key.
+        return $productId . '_' . (($variantId === null || $variantId === 0) ? '0' : $variantId);
     }
 
     protected function saveCart(array $cart): void
@@ -373,7 +375,8 @@ class CartService
                 $key = $this->generateKey($row->product_id, $row->product_variant_id);
                 $cart[$key] = [
                     'product_id'         => $row->product_id,
-                    'product_variant_id' => $row->product_variant_id,
+                    // Convert sentinel 0 back to null for session cart compatibility
+                    'product_variant_id' => $row->product_variant_id === 0 ? null : $row->product_variant_id,
                     'quantity'           => $row->quantity,
                 ];
             });
@@ -401,7 +404,7 @@ class CartService
             $rows = collect($cart)->map(fn ($item) => [
                 'customer_id'        => $customerId,
                 'product_id'         => $item['product_id'],
-                'product_variant_id' => $item['product_variant_id'] ?? null,
+                'product_variant_id' => $item['product_variant_id'] ?? 0, // 0 = no variant sentinel
                 'quantity'           => $item['quantity'],
                 'updated_at'         => now(),
             ])->values()->all();
@@ -412,17 +415,17 @@ class CartService
                 ['quantity', 'updated_at']
             );
 
-            // Remove rows no longer in cart using composite pairs (TL FIX: not just product_id).
+            // Remove rows no longer in cart using composite pairs (TL FIX + NULL sentinel fix).
             $activePairs = collect($cart)->map(fn ($item) => [
                 (int) $item['product_id'],
-                $item['product_variant_id'] ? (int) $item['product_variant_id'] : null,
+                (int) ($item['product_variant_id'] ?? 0), // 0 = no variant
             ])->all();
 
             CustomerCartItem::where('customer_id', $customerId)
                 ->get()
                 ->filter(fn ($row) => !collect($activePairs)->contains(
                     fn ($pair) => $pair[0] === (int) $row->product_id
-                        && $pair[1] === ($row->product_variant_id ? (int) $row->product_variant_id : null)
+                        && $pair[1] === (int) $row->product_variant_id
                 ))
                 ->each->delete();
 

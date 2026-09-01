@@ -24,10 +24,9 @@ return new class extends Migration
             $table->foreignId('product_id')
                 ->constrained('products')
                 ->cascadeOnDelete();
-            $table->foreignId('product_variant_id')
-                ->nullable()
-                ->constrained('product_variants')
-                ->nullOnDelete();
+            $table->unsignedBigInteger('product_variant_id')->default(0); // 0 = no variant (sentinel)
+            // NOTE: Cannot use NULL here — MySQL treats NULL != NULL in UNIQUE constraints,
+            // causing upsert() to INSERT duplicates instead of UPDATE on (customer_id, product_id, NULL).
             $table->unsignedSmallInteger('quantity')->default(1);
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
