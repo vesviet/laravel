@@ -194,17 +194,30 @@ jobs:
         uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
         with:
           php-version: '8.4'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv
+          # pdo_mysql added: tests now run against MySQL 8.0 (same as prod).
+          # Previously used pdo_sqlite which silently no-ops lockForUpdate() — a
+          # concurrency bug was undetectable. Remove sqlite/pdo_sqlite to enforce
+          # production parity and catch InnoDB-specific behaviors in CI.
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql, bcmath, soap, intl, gd, exif, iconv
           coverage: none
 
       - name: Install Composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      - name: Run Tests (Pest/PHPUnit)
+      - name: Run Tests (Pest/PHPUnit) against MySQL 8.0
         run: |
           cp .env.example .env
           php artisan key:generate
           php artisan test
+        env:
+          # Override to use the MySQL 8.0 service container (production parity).
+          # lockForUpdate() and InnoDB row-level locking are now actually tested.
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: laravel_test
+          DB_USERNAME: laravel
+          DB_PASSWORD: password
 
   build:
     name: Build and Push Docker Image
@@ -246,6 +259,23 @@ jobs:
           image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
           format: spdx-json
           output-file: sbom.spdx.json
+
+      - name: '[SCA] Scan SBOM for vulnerabilities (blocks on critical/high CVEs)'
+        uses: anchore/scan-action@3343887d815d7b07465f6fdcd395bd66508d486a # v4
+        id: sca-scan
+        with:
+          sbom: sbom.spdx.json
+          # Block the build on critical or high CVEs.
+          # Medium/low are surfaced as warnings but do not fail the pipeline.
+          # Rationale (ADR-S3): supply-chain security debt must not accumulate silently.
+          fail-build: true
+          severity-cutoff: high
+
+      - name: Upload SCA scan results
+        uses: github/codeql-action/upload-sarif@65c74964a9ed8c44ed9f19d4bbc5757a6a8af9f4 # v3
+        if: always()
+        with:
+          sarif_file: ${{ steps.sca-scan.outputs.sarif }}
 
   deploy:
     name: Deploy to Homelab

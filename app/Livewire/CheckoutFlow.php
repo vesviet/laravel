@@ -281,6 +281,21 @@ class CheckoutFlow extends Component
         }
     }
 
+    /**
+     * Validate the fields required for the current checkout step.
+     *
+     * Returns true if validation passes or if the step has no validation rules.
+     * Throws a Livewire ValidationException if rules are defined and not met.
+     *
+     * IMPORTANT: The 'review' step intentionally has no validation rules and
+     * always returns true. Review is a read-only confirmation step — the user
+     * has already validated shipping (step 1) and payment (step 2). Do NOT
+     * add logic to 'review' that assumes validation ran; if pre-submit checks
+     * are needed, add them to the 'shipping' or 'payment' rule sets instead,
+     * or validate them explicitly in submitOrder() before calling this method.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function validateCurrentStep(): bool
     {
         $this->resetValidation();
@@ -298,15 +313,22 @@ class CheckoutFlow extends Component
             'payment' => [
                 'selectedPaymentMethod' => ['required', 'in:cod,vnpay,momo,banking'],
             ],
+            // 'review' is a read-only confirmation step with no user input fields.
+            // Validation for shipping and payment data was already completed in prior steps.
+            // This empty rules array is intentional — NOT a missing validation case.
             'review' => [],
         };
 
-        if (!empty($rules)) {
+        // Only call validate() when rules exist. When rules are empty (review step),
+        // skip the call entirely rather than letting Livewire validate an empty ruleset
+        // (which triggered MissingRulesException in PHP 8 / Livewire 3).
+        if (! empty($rules)) {
             $this->validate($rules);
         }
 
         return true;
     }
+
 
     #[On('address-changed')]
     public function onAddressChanged(array $address): void

@@ -19,11 +19,24 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <!--
+            APP_KEY: local dev placeholder only.
+            CI overrides this via `php artisan key:generate` in the test job.
+            ADR-S3: This value is intentionally not a real production key.
+            The ADR-S3 secret scanner exempts phpunit.xml (test infra file),
+            but this key MUST NOT be reused in any production environment.
+        -->
         <env name="APP_KEY" value="base64:JqMvwJ625u6/663j6+mZ4hZ3d+fJ+c888O+X627R9R8="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
+        <!--
+            DB_CONNECTION: defaults to sqlite for fast local dev without MySQL.
+            CI overrides via env: DB_CONNECTION=mysql (MySQL 8.0 service container).
+            This ensures lockForUpdate() and InnoDB-specific behaviors are tested
+            in CI under production-parity conditions.
+        -->
         <env name="DB_CONNECTION" value="sqlite" force="true"/>
         <env name="DB_DATABASE" value=":memory:" force="true"/>
         <env name="MAIL_MAILER" value="array"/>
