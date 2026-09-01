@@ -185,7 +185,7 @@ test('CP-09: getCart() reloads from DB when session is empty', function () {
 });
 
 // -----------------------------------------------------------------------------
-// CP-10: Cross-device sync — add on device A, load on device B (fresh session)
+// CP-10: Cross-device sync â€” add on device A, load on device B (fresh session)
 // -----------------------------------------------------------------------------
 
 test('CP-10: cart synced across devices via DB', function () {
@@ -206,7 +206,7 @@ test('CP-10: cart synced across devices via DB', function () {
 });
 
 // -----------------------------------------------------------------------------
-// CP-11: Variant cleanup — 2 variants of same product, remove one only
+// CP-11: Variant cleanup â€” 2 variants of same product, remove one only
 // -----------------------------------------------------------------------------
 
 test('CP-11: removing one variant does not delete other variants of same product', function () {
@@ -267,7 +267,7 @@ test('CP-12: customer isolation - getCart() returns only own items', function ()
         'name'     => 'Customer B',
         'email'    => 'b@test.com',
         'password' => bcrypt('secret'),
-        'status'   => 'active',
+        'status' => 'published',
     ]);
     CustomerCartItem::create([
         'customer_id'        => $customerB->id,
@@ -313,7 +313,7 @@ test('CP-14: add() caps total qty at 99', function () {
 
     // Add 98 first
     $this->cartService->add($this->product->id, null, 98);
-    // Then add 5 more — should be capped at 99, not 103
+    // Then add 5 more â€” should be capped at 99, not 103
     $this->cartService->add($this->product->id, null, 5);
 
     expect(CustomerCartItem::where('customer_id', $this->customer->id)->first()->quantity)->toBe(99);

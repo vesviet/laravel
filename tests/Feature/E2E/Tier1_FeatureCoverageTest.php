@@ -170,18 +170,18 @@ it('verifies header contains center navigation links with required destinations'
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    $response->assertSee('Trang Chủ');
-    $response->assertSee('Sản Phẩm');
-    $response->assertSee('Giới Thiệu');
-    $response->assertSee('Liên Hệ');
-    $response->assertSee('Tra Cứu');
+    $response->assertSee('Trang Chá»§');
+    $response->assertSee('Sáº£n Pháº©m');
+    $response->assertSee('Giá»›i Thiá»‡u');
+    $response->assertSee('LiÃªn Há»‡');
+    $response->assertSee('Tra Cá»©u');
 });
 
 it('verifies header navigation marks active indicator for home route', function () {
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    // On home page, Trang Chủ link receives active border
+    // On home page, Trang Chá»§ link receives active border
     $response->assertSee('border-b border-[#1a1a1a]', false);
 });
 
@@ -190,7 +190,7 @@ it('verifies header contains right action icons area with cart trigger', functio
     $response->assertOk();
 
     $response->assertSee('$dispatch(\'open-cart\')', false);
-    $response->assertSee('aria-label="Giỏ hàng"', false);
+    $response->assertSee('aria-label="Giá» hÃ ng"', false);
 });
 
 /*
@@ -223,9 +223,9 @@ it('verifies mobile drawer contains all primary navigation links', function () {
     $response->assertOk();
 
     $content = $response->getContent();
-    expect(substr_count($content, 'Trang Chủ'))->toBeGreaterThanOrEqual(2)
-        ->and(substr_count($content, 'Sản Phẩm'))->toBeGreaterThanOrEqual(2)
-        ->and(substr_count($content, 'Tra Cứu'))->toBeGreaterThanOrEqual(2);
+    expect(substr_count($content, 'Trang Chá»§'))->toBeGreaterThanOrEqual(2)
+        ->and(substr_count($content, 'Sáº£n Pháº©m'))->toBeGreaterThanOrEqual(2)
+        ->and(substr_count($content, 'Tra Cá»©u'))->toBeGreaterThanOrEqual(2);
 });
 
 it('verifies mobile drawer contains customer authentication controls', function () {
@@ -241,7 +241,7 @@ it('verifies cart drawer trigger component is rendered and listening', function 
     $response->assertOk();
 
     $response->assertSee('wire:click="closeCart"', false);
-    $response->assertSee('aria-label="Giỏ hàng"', false);
+    $response->assertSee('aria-label="Giá» hÃ ng"', false);
 });
 
 it('verifies layout includes accessibility skip-to-content navigation link', function () {
@@ -275,8 +275,8 @@ it('verifies section 1 hero slider renders with multi-slide cta links', function
     $response->assertOk();
 
     $response->assertSee('Hero banner', false);
-    $response->assertSee('Bộ Sưu Tập Mới');
-    $response->assertSee('Khám Phá Ngay');
+    $response->assertSee('Bá»™ SÆ°u Táº­p Má»›i');
+    $response->assertSee('KhÃ¡m PhÃ¡ Ngay');
 });
 
 it('verifies section 2 two-column promo banners render with 50-50 grid', function () {
@@ -284,8 +284,8 @@ it('verifies section 2 two-column promo banners render with 50-50 grid', functio
     $response->assertOk();
 
     $response->assertSee('grid-cols-1 md:grid-cols-2', false);
-    $response->assertSee('Phong Cách Mùa Này');
-    $response->assertSee('Thiết Kế Tối Giản');
+    $response->assertSee('Phong CÃ¡ch MÃ¹a NÃ y');
+    $response->assertSee('Thiáº¿t Káº¿ Tá»‘i Giáº£n');
 });
 
 it('verifies section 4 featured products section renders with title and see-all link', function () {
@@ -294,15 +294,15 @@ it('verifies section 4 featured products section renders with title and see-all 
         'slug' => 'featured-oak-chair',
         'price' => 1250000,
         'stock' => 15,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => true,
     ]);
 
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    $response->assertSee('Sản Phẩm Nổi Bật');
-    $response->assertSee('Xem Tất Cả');
+    $response->assertSee('Sáº£n Pháº©m Ná»•i Báº­t');
+    $response->assertSee('Xem Táº¥t Cáº£');
     $response->assertSee('Featured Oak Chair');
 });
 
@@ -312,14 +312,14 @@ it('verifies section 5 new arrivals grid renders with section header', function 
         'slug' => 'new-minimalist-lamp',
         'price' => 850000,
         'stock' => 20,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => false,
     ]);
 
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    $response->assertSee('Sản Phẩm Mới');
+    $response->assertSee('Sáº£n Pháº©m Má»›i');
     $response->assertSee('New Minimalist Lamp');
 });
 
@@ -328,18 +328,18 @@ it('verifies section 6 featured collections renders 3-column banner row', functi
     $response->assertOk();
 
     $response->assertSee('grid-cols-1 md:grid-cols-3', false);
-    $response->assertSee('Đồ Nội Thất');
-    $response->assertSee('Trang Trí Nhà');
-    $response->assertSee('Phụ Kiện');
+    $response->assertSee('Äá»“ Ná»™i Tháº¥t');
+    $response->assertSee('Trang TrÃ­ NhÃ ');
+    $response->assertSee('Phá»¥ Kiá»‡n');
 });
 
 it('verifies section 7 trust badges renders 3-column icon row with guarantees', function () {
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    $response->assertSee('Miễn Phí Vận Chuyển');
-    $response->assertSee('Đổi Trả 30 Ngày');
-    $response->assertSee('Thanh Toán An Toàn');
+    $response->assertSee('Miá»…n PhÃ­ Váº­n Chuyá»ƒn');
+    $response->assertSee('Äá»•i Tráº£ 30 NgÃ y');
+    $response->assertSee('Thanh ToÃ¡n An ToÃ n');
 });
 
 it('verifies all homepage sections render in exact required sequence', function () {
@@ -348,7 +348,7 @@ it('verifies all homepage sections render in exact required sequence', function 
         'slug' => 'seq-test-featured-product',
         'price' => 500000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => true,
     ]);
 
@@ -356,11 +356,11 @@ it('verifies all homepage sections render in exact required sequence', function 
     $html = $response->getContent();
 
     $posHero = strpos($html, 'Hero banner');
-    $posPromo = strpos($html, 'Phong Cách Mùa Này');
-    $posFeatured = strpos($html, 'Sản Phẩm Nổi Bật');
-    $posNewArrivals = strpos($html, 'Sản Phẩm Mới');
-    $posCollections = strpos($html, 'Đồ Nội Thất');
-    $posTrust = strpos($html, 'Miễn Phí Vận Chuyển');
+    $posPromo = strpos($html, 'Phong CÃ¡ch MÃ¹a NÃ y');
+    $posFeatured = strpos($html, 'Sáº£n Pháº©m Ná»•i Báº­t');
+    $posNewArrivals = strpos($html, 'Sáº£n Pháº©m Má»›i');
+    $posCollections = strpos($html, 'Äá»“ Ná»™i Tháº¥t');
+    $posTrust = strpos($html, 'Miá»…n PhÃ­ Váº­n Chuyá»ƒn');
 
     expect($posHero)->toBeLessThan($posPromo)
         ->and($posPromo)->toBeLessThan($posFeatured)
@@ -385,15 +385,15 @@ it('verifies footer renders layer 1 newsletter subscription bar', function () {
     $response->assertSee('Newsletter');
     $response->assertSee(route('newsletter.subscribe'), false);
     $response->assertSee('name="email"', false);
-    $response->assertSee('Đăng Ký');
+    $response->assertSee('ÄÄƒng KÃ½');
 });
 
 it('verifies footer renders layer 2 two-column widgets with company info and quick links', function () {
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    $response->assertSee('VỀ MYSHOP');
-    $response->assertSee('LIÊN KẾT NHANH');
+    $response->assertSee('Vá»€ MYSHOP');
+    $response->assertSee('LIÃŠN Káº¾T NHANH');
     $response->assertSee(route('products.index'), false);
     $response->assertSee(route('track-order.index'), false);
 });
@@ -448,7 +448,7 @@ it('verifies product card renders product title and formatted price in vnd', fun
         'slug' => 'sober-armchair-vintage',
         'price' => 1750000,
         'stock' => 5,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => false,
     ]);
 
@@ -456,7 +456,7 @@ it('verifies product card renders product title and formatted price in vnd', fun
     $response->assertOk();
 
     $response->assertSee('Sober Armchair Vintage');
-    $response->assertSee('1.750.000₫');
+    $response->assertSee('1.750.000â‚«');
 });
 
 it('verifies product card displays hot badge for featured products', function () {
@@ -465,7 +465,7 @@ it('verifies product card displays hot badge for featured products', function ()
         'slug' => 'hot-premium-table',
         'price' => 3200000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => true,
     ]);
 
@@ -482,7 +482,7 @@ it('verifies product card omits hot badge for regular non-featured products', fu
         'slug' => 'standard-desk-lamp',
         'price' => 450000,
         'stock' => 20,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => false,
     ]);
 
@@ -499,7 +499,7 @@ it('verifies product card renders svg placeholder fallback when image path is nu
         'slug' => 'null-image-product',
         'price' => 300000,
         'stock' => 5,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => false,
         'image_path' => null,
     ]);
@@ -517,14 +517,14 @@ it('verifies product card renders detail hover bar with xem chi tiet action', fu
         'slug' => 'hover-action-stool',
         'price' => 600000,
         'stock' => 8,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => false,
     ]);
 
     $response = $this->get(route('products.index'));
     $response->assertOk();
 
-    $response->assertSee('Xem Chi Tiết');
+    $response->assertSee('Xem Chi Tiáº¿t');
 });
 
 it('verifies product card integrates wishlist button component when customer is authenticated', function () {
@@ -539,7 +539,7 @@ it('verifies product card integrates wishlist button component when customer is 
         'slug' => 'wishlist-target-sofa',
         'price' => 4500000,
         'stock' => 4,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => true,
     ]);
 
@@ -563,7 +563,7 @@ it('verifies livewire cart drawer mounts and displays empty state when cart is e
     Livewire::test(CartDrawer::class)
         ->assertSet('isOpen', false)
         ->assertSet('cartItems', [])
-        ->assertSee('Giỏ hàng của bạn đang trống');
+        ->assertSee('Giá» hÃ ng cá»§a báº¡n Ä‘ang trá»‘ng');
 });
 
 it('verifies livewire add to cart button adds product and dispatches events', function () {
@@ -572,7 +572,7 @@ it('verifies livewire add to cart button adds product and dispatches events', fu
         'slug' => 'addable-lounge-chair',
         'price' => 2100000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Livewire::test(AddToCartButton::class, ['product' => $product])
@@ -593,7 +593,7 @@ it('verifies livewire cart drawer updates item quantity', function () {
         'slug' => 'qty-updatable-chair',
         'price' => 500000,
         'stock' => 15,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Session::put('cart', [
@@ -618,7 +618,7 @@ it('verifies livewire cart drawer removes item from cart', function () {
         'slug' => 'removable-cushion',
         'price' => 200000,
         'stock' => 25,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Session::put('cart', [
@@ -643,7 +643,7 @@ it('verifies livewire cart count component updates accurately', function () {
         'slug' => 'countable-shelf',
         'price' => 1100000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Session::put('cart', [
@@ -665,7 +665,7 @@ it('verifies checkout page loads successfully when cart has items', function () 
         'slug' => 'checkout-test-bed',
         'price' => 5000000,
         'stock' => 5,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Session::put('cart', [
@@ -687,7 +687,7 @@ it('verifies guest order placement via checkout pipeline creates order in databa
         'slug' => 'pipeline-dining-table',
         'price' => 3500000,
         'stock' => 5,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Session::put('cart', [

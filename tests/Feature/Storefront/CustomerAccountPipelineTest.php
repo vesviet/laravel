@@ -13,7 +13,7 @@ beforeEach(function () {
         'email' => 'customer_vip@example.com',
         'phone' => '0912999888',
         'password' => 'secret123',
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $this->otherCustomer = Customer::create([
@@ -21,7 +21,7 @@ beforeEach(function () {
         'email' => 'other_customer@example.com',
         'phone' => '0933888777',
         'password' => 'secret123',
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $this->category = Category::create([
@@ -42,9 +42,9 @@ beforeEach(function () {
 
 it('calculates customer lifetime spend and membership tier correctly', function () {
     expect($this->customer->total_spent)->toBe(0);
-    expect($this->customer->membership_tier)->toBe('Thành Viên Mới');
+    expect($this->customer->membership_tier)->toBe('ThÃ nh ViÃªn Má»›i');
 
-    // Create a delivered order worth 6,000,000 VND -> Membership Tier becomes 'Thành Viên Thân Thiết'
+    // Create a delivered order worth 6,000,000 VND -> Membership Tier becomes 'ThÃ nh ViÃªn ThÃ¢n Thiáº¿t'
     Order::create([
         'customer_id' => $this->customer->id,
         'order_number' => 'ORD-TIER-001',
@@ -62,8 +62,8 @@ it('calculates customer lifetime spend and membership tier correctly', function 
 
     $this->customer->refresh();
     expect($this->customer->total_spent)->toBe(6000000);
-    expect($this->customer->formatted_total_spent)->toBe('6.000.000₫');
-    expect($this->customer->membership_tier)->toBe('Thành Viên Thân Thiết');
+    expect($this->customer->formatted_total_spent)->toBe('6.000.000â‚«');
+    expect($this->customer->membership_tier)->toBe('ThÃ nh ViÃªn ThÃ¢n Thiáº¿t');
 });
 
 it('displays customer order history with status filtering tabs', function () {
@@ -150,7 +150,7 @@ it('allows customer to view order detail and rejects access to other customer or
     $response->assertStatus(200);
     $response->assertSee('ORD-DETAIL-001');
     $response->assertSee('Nordic Ceramic Vase');
-    $response->assertSee('2.000.000₫');
+    $response->assertSee('2.000.000â‚«');
 
     // Other customer attempts to view -> 404
     $this->actingAs($this->otherCustomer, 'customer');

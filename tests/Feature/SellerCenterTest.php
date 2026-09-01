@@ -59,7 +59,7 @@ test('concurrent stock lock prevents overselling', function () {
         'customer_name' => 'Jane Doe',
         'phone' => '0911111111',
         'address' => '456 Test St',
-    ]))->toThrow(SellerActionException::class, 'Sản phẩm đã hết hàng hoặc không đủ số lượng.');
+    ]))->toThrow(SellerActionException::class, 'Sáº£n pháº©m Ä‘Ã£ háº¿t hÃ ng hoáº·c khÃ´ng Ä‘á»§ sá»‘ lÆ°á»£ng.');
 });
 
 test('carrd subdomain routing falls back correctly', function () {
@@ -124,7 +124,7 @@ test('User canAccessPanel differentiates seller vs admin panels', function () {
     $user->assignRole('super_admin');
     expect($user->canAccessPanel($adminPanel))->toBeTrue();
 
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
     // Refresh the user model so the new relation is loaded.
     $user->refresh();
     expect($user->sellerProfile)->not->toBeNull();

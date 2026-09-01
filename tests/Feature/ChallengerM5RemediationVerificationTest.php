@@ -178,10 +178,10 @@ class ChallengerM5RemediationVerificationTest extends TestCase
         $this->assertStringContainsString('Hero banner', $htmlEmpty);
         $this->assertStringContainsString('role="region"', $htmlEmpty);
         $this->assertStringContainsString('aria-roledescription="carousel"', $htmlEmpty);
-        $this->assertStringContainsString('Khám Phá Ngay · SHOP NOW', $htmlEmpty);
-        $this->assertStringContainsString('Bộ Sưu Tập Mới', $htmlEmpty);
-        $this->assertStringContainsString('Lighting on Express · Bộ Sưu Tập', $htmlEmpty);
-        $this->assertStringContainsString('Copenhague Desk · Danh Mục 01', $htmlEmpty);
+        $this->assertStringContainsString('KhÃ¡m PhÃ¡ Ngay Â· SHOP NOW', $htmlEmpty);
+        $this->assertStringContainsString('Bá»™ SÆ°u Táº­p Má»›i', $htmlEmpty);
+        $this->assertStringContainsString('Lighting on Express Â· Bá»™ SÆ°u Táº­p', $htmlEmpty);
+        $this->assertStringContainsString('Copenhague Desk Â· Danh Má»¥c 01', $htmlEmpty);
 
         // Vector B: Asymmetrical population (5 Hero banners, 1 Promo banner, 10 Collection banners)
         Cache::flush();
@@ -252,7 +252,7 @@ class ChallengerM5RemediationVerificationTest extends TestCase
             'title' => 'Original Banner Title',
             'image' => 'banners/existing_photo.jpg',
             'position' => 'hero_slider',
-            'status' => 'active',
+            'status' => 'published',
             'sort_order' => 0,
         ]);
 
@@ -324,7 +324,7 @@ class ChallengerM5RemediationVerificationTest extends TestCase
         $this->assertStringContainsString('role="tab"', $html);
 
         // 4. Accessible new tab announcement
-        $this->assertStringContainsString('(mở trong tab mới)', $html);
+        $this->assertStringContainsString('(má»Ÿ trong tab má»›i)', $html);
     }
 
     /**

@@ -19,13 +19,13 @@ use Illuminate\Support\Facades\Gate;
 
 uses(RefreshDatabase::class);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SF-01: SellerOrderPolicy — sellers cannot delete orders
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// SF-01: SellerOrderPolicy â€” sellers cannot delete orders
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('SF-01: SellerOrderPolicy denies order deletion', function () {
     $user = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
 
     $order = Order::factory()->create(['seller_id' => $seller->id]);
 
@@ -37,7 +37,7 @@ test('SF-01: SellerOrderPolicy denies order deletion', function () {
 
 test('SF-01: SellerOrderPolicy allows viewing own orders', function () {
     $user = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
     $order = Order::factory()->create(['seller_id' => $seller->id]);
     $user->refresh();
 
@@ -56,10 +56,10 @@ test('SF-01: SellerOrderPolicy allows viewing own orders', function () {
 
 test('SF-01: SellerOrderPolicy denies cross-seller order access', function () {
     $userA = User::factory()->create();
-    $sellerA = SellerProfile::factory()->create(['user_id' => $userA->id, 'status' => 'active']);
+    $sellerA = SellerProfile::factory()->create(['user_id' => $userA->id, 'status' => 'published']);
 
     $userB = User::factory()->create();
-    $sellerB = SellerProfile::factory()->create(['user_id' => $userB->id, 'status' => 'active']);
+    $sellerB = SellerProfile::factory()->create(['user_id' => $userB->id, 'status' => 'published']);
 
     // Order belongs to seller B
     $order = Order::factory()->create(['seller_id' => $sellerB->id]);
@@ -71,13 +71,13 @@ test('SF-01: SellerOrderPolicy denies cross-seller order access', function () {
         ->and($policy->update($userA, $order))->toBeFalse();
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SF-02: SellerProductPolicy — proper product authorization
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// SF-02: SellerProductPolicy â€” proper product authorization
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('SF-02: SellerProductPolicy allows seller to manage own products', function () {
     $user = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
     $seller->makeCurrent();
 
     $product = Product::factory()->create(['seller_id' => $seller->id]);
@@ -98,10 +98,10 @@ test('SF-02: SellerProductPolicy allows seller to manage own products', function
 
 test('SF-02: SellerProductPolicy denies access to other seller products', function () {
     $userA = User::factory()->create();
-    $sellerA = SellerProfile::factory()->create(['user_id' => $userA->id, 'status' => 'active']);
+    $sellerA = SellerProfile::factory()->create(['user_id' => $userA->id, 'status' => 'published']);
 
     $userB = User::factory()->create();
-    $sellerB = SellerProfile::factory()->create(['user_id' => $userB->id, 'status' => 'active']);
+    $sellerB = SellerProfile::factory()->create(['user_id' => $userB->id, 'status' => 'published']);
 
     $productB = Product::factory()->create(['seller_id' => $sellerB->id]);
 
@@ -126,9 +126,9 @@ test('SF-02: SellerProductPolicy denies inactive seller', function () {
         ->and($policy->update($user, $product))->toBeFalse();
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SF-03: Registration atomicity — no orphan users
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// SF-03: Registration atomicity â€” no orphan users
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('SF-03: RegisterSellerAction creates SellerProfile and SellerPage atomically', function () {
     $user = User::factory()->create();
@@ -169,13 +169,13 @@ test('SF-03: RegisterSellerAction wraps DB failure in SellerActionException', fu
     // DB::transaction() rollback inside RegisterSellerAction.
     //
     // Strategy: Pre-occupy the subdomain AND override SellerProfile::generateUniqueSubdomain
-    // to return that same pre-occupied subdomain — forcing an IntegrityConstraintViolation.
+    // to return that same pre-occupied subdomain â€” forcing an IntegrityConstraintViolation.
     SellerProfile::create([
         'user_id'   => User::factory()->create()->id,
         'shop_name' => 'Occupied',
         'subdomain' => 'test-shop',
         'shop_slug' => 'test-shop', // Slice 1: required NOT NULL
-        'status'    => 'active',
+        'status' => 'published',
     ]);
 
     // Patch generateUniqueSubdomain to always return the occupied subdomain
@@ -183,7 +183,7 @@ test('SF-03: RegisterSellerAction wraps DB failure in SellerActionException', fu
     $partialMock = Mockery::mock(SellerProfile::class . '[generateUniqueSubdomain]');
     $partialMock->shouldAllowMockingProtectedMethods();
     $partialMock->shouldReceive('generateUniqueSubdomain')
-        ->andReturn('test-shop'); // Already taken — will cause constraint violation
+        ->andReturn('test-shop'); // Already taken â€” will cause constraint violation
 
     // Bind the mock into the container so `new SellerProfile` inside the Action resolves it.
     // Note: RegisterSellerAction uses `new SellerProfile` inline, so this tests the wrapping.
@@ -198,11 +198,11 @@ test('SF-03: RegisterSellerAction wraps DB failure in SellerActionException', fu
             'shop_name' => "Occupied $i",
             'subdomain' => "test-shop-$i",
             'shop_slug' => "test-shop-$i", // Slice 1: required NOT NULL
-            'status'    => 'active',
+            'status' => 'published',
         ]);
     }
 
-    // The Action will still find 'test-shop-6' as an available slot — it won't fail.
+    // The Action will still find 'test-shop-6' as an available slot â€” it won't fail.
     // The reliable way to test exception wrapping is to confirm the Action's catch block
     // works by simulating a transaction failure using DB partial rollback awareness.
     //
@@ -212,14 +212,14 @@ test('SF-03: RegisterSellerAction wraps DB failure in SellerActionException', fu
 
     expect($wrapped)->toBeInstanceOf(SellerActionException::class)
         ->and($wrapped->errorCode)->toBe('seller_registration_failed')
-        ->and($wrapped->getMessage())->toContain('Đăng ký tài khoản Seller thất bại')
+        ->and($wrapped->getMessage())->toContain('ÄÄƒng kÃ½ tÃ i khoáº£n Seller tháº¥t báº¡i')
         ->and($wrapped->getPrevious())->toBe($originalException);
 });
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SF-04: UpdateSellerPageAction — cache invalidation
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// SF-04: UpdateSellerPageAction â€” cache invalidation
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('SF-04: UpdateSellerPageAction invalidates storefront cache on save', function () {
     $seller = SellerProfile::factory()->create(['subdomain' => 'cache-test-shop']);
@@ -246,16 +246,16 @@ test('SF-04: UpdateSellerPageAction invalidates storefront cache on save', funct
     expect(Cache::has($cacheKey))->toBeFalse();
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SF-05: UpdateSellerProfileAction — field whitelist & cache
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// SF-05: UpdateSellerProfileAction â€” field whitelist & cache
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('SF-05: UpdateSellerProfileAction cannot change subdomain', function () {
     $user = User::factory()->create();
     $seller = SellerProfile::factory()->create([
         'user_id'   => $user->id,
         'subdomain' => 'original-subdomain',
-        'status'    => 'active',
+        'status' => 'published',
     ]);
 
     app(UpdateSellerProfileAction::class)->execute($seller, [
@@ -273,7 +273,7 @@ test('SF-05: UpdateSellerProfileAction invalidates storefront cache', function (
     $seller = SellerProfile::factory()->create([
         'user_id'   => $user->id,
         'subdomain' => 'profile-cache-test',
-        'status'    => 'active',
+        'status' => 'published',
     ]);
 
     // ADR-SC1: cache key uses seller_id (stable int)
@@ -288,9 +288,9 @@ test('SF-05: UpdateSellerProfileAction invalidates storefront cache', function (
     expect(Cache::has($cacheKey))->toBeFalse();
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// P0-01 / P1-04: Tenant injection — Filament::getTenant() is authoritative
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// P0-01 / P1-04: Tenant injection â€” Filament::getTenant() is authoritative
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('P0-01: CreateSimpleProduct uses Filament::getTenant() as seller_id source', function () {
     // This is a unit test for the contract: mutateFormDataBeforeCreate() must read
@@ -304,9 +304,9 @@ test('P0-01: CreateSimpleProduct uses Filament::getTenant() as seller_id source'
     // Filament::getTenant()->id which resolves to Tenant::current() in panel context.
 
     $user   = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
 
-    // Set tenant context (Spatie) — equivalent to what the panel sets during a real request
+    // Set tenant context (Spatie) â€” equivalent to what the panel sets during a real request
     $seller->makeCurrent();
 
     // Contract: Tenant::current() must resolve to our seller
@@ -320,7 +320,7 @@ test('P0-01: CreateSimpleProduct uses Filament::getTenant() as seller_id source'
 
 test('P1-04: ListSellerPages resolves page via tenant, not auth()->user()->sellerProfile', function () {
     $user   = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
     $seller->makeCurrent();
 
     $page = SellerPage::factory()->create(['seller_id' => $seller->id]);
@@ -334,13 +334,13 @@ test('P1-04: ListSellerPages resolves page via tenant, not auth()->user()->selle
     SellerProfile::forgetCurrent();
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// P1-01: UpdateSellerOrderStatusAction — state machine enforcement
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// P1-01: UpdateSellerOrderStatusAction â€” state machine enforcement
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('P1-01: UpdateSellerOrderStatusAction enforces valid state machine transition', function () {
     $user   = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
     $order  = Order::factory()->create([
         'seller_id' => $seller->id,
         'status'    => \App\Enums\OrderStatus::Pending,
@@ -357,7 +357,7 @@ test('P1-01: UpdateSellerOrderStatusAction enforces valid state machine transiti
 
 test('P1-01: UpdateSellerOrderStatusAction throws on invalid state machine transition', function () {
     $user   = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
     $order  = Order::factory()->create([
         'seller_id' => $seller->id,
         'status'    => \App\Enums\OrderStatus::Delivered, // already delivered
@@ -367,15 +367,15 @@ test('P1-01: UpdateSellerOrderStatusAction throws on invalid state machine trans
         $seller,
         $order,
         \App\Enums\OrderStatus::Pending, // cannot go back to Pending
-    ))->toThrow(\App\Exceptions\SellerActionException::class, "Không thể chuyển đơn hàng");
+    ))->toThrow(\App\Exceptions\SellerActionException::class, "KhÃ´ng thá»ƒ chuyá»ƒn Ä‘Æ¡n hÃ ng");
 });
 
 test('P1-01: UpdateSellerOrderStatusAction throws on cross-seller access', function () {
     $userA   = User::factory()->create();
-    $sellerA = SellerProfile::factory()->create(['user_id' => $userA->id, 'status' => 'active']);
+    $sellerA = SellerProfile::factory()->create(['user_id' => $userA->id, 'status' => 'published']);
 
     $userB   = User::factory()->create();
-    $sellerB = SellerProfile::factory()->create(['user_id' => $userB->id, 'status' => 'active']);
+    $sellerB = SellerProfile::factory()->create(['user_id' => $userB->id, 'status' => 'published']);
 
     $orderB = Order::factory()->create([
         'seller_id' => $sellerB->id,
@@ -387,14 +387,14 @@ test('P1-01: UpdateSellerOrderStatusAction throws on cross-seller access', funct
         $sellerA,
         $orderB,
         \App\Enums\OrderStatus::Confirmed,
-    ))->toThrow(\App\Exceptions\SellerActionException::class, 'không thuộc gian hàng');
+    ))->toThrow(\App\Exceptions\SellerActionException::class, 'khÃ´ng thuá»™c gian hÃ ng');
 });
 
 test('P1-01: UpdateSellerOrderStatusAction dispatches SellerOrderStatusUpdated event', function () {
     \Illuminate\Support\Facades\Event::fake([\App\Events\SellerOrderStatusUpdated::class]);
 
     $user   = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
     $order  = Order::factory()->create([
         'seller_id' => $seller->id,
         'status'    => \App\Enums\OrderStatus::Pending,
@@ -413,13 +413,13 @@ test('P1-01: UpdateSellerOrderStatusAction dispatches SellerOrderStatusUpdated e
     );
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// P1-03: SellerPagePolicy — prevents cross-seller page access
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// P1-03: SellerPagePolicy â€” prevents cross-seller page access
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('P1-03: SellerPagePolicy allows seller to view and update own page', function () {
     $user   = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
     $seller->makeCurrent();
     $user->refresh();
 
@@ -436,10 +436,10 @@ test('P1-03: SellerPagePolicy allows seller to view and update own page', functi
 
 test('P1-03: SellerPagePolicy denies cross-seller page access', function () {
     $userA   = User::factory()->create();
-    $sellerA = SellerProfile::factory()->create(['user_id' => $userA->id, 'status' => 'active']);
+    $sellerA = SellerProfile::factory()->create(['user_id' => $userA->id, 'status' => 'published']);
 
     $userB   = User::factory()->create();
-    $sellerB = SellerProfile::factory()->create(['user_id' => $userB->id, 'status' => 'active']);
+    $sellerB = SellerProfile::factory()->create(['user_id' => $userB->id, 'status' => 'published']);
 
     $pageB = SellerPage::factory()->create(['seller_id' => $sellerB->id]);
 
@@ -451,7 +451,7 @@ test('P1-03: SellerPagePolicy denies cross-seller page access', function () {
 
 test('P1-03: SellerPagePolicy always denies delete', function () {
     $user   = User::factory()->create();
-    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'active']);
+    $seller = SellerProfile::factory()->create(['user_id' => $user->id, 'status' => 'published']);
     $seller->makeCurrent();
     $user->refresh();
 
@@ -466,9 +466,9 @@ test('P1-03: SellerPagePolicy always denies delete', function () {
     SellerProfile::forgetCurrent();
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// P2-01: RegisterSellerAction — subdomain UNIQUE constraint + retry logic
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// P2-01: RegisterSellerAction â€” subdomain UNIQUE constraint + retry logic
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('P2-01: RegisterSellerAction generates unique subdomain when base slug is taken', function () {
     $user1 = User::factory()->create();
@@ -479,7 +479,7 @@ test('P2-01: RegisterSellerAction generates unique subdomain when base slug is t
         'shop_name' => 'My Shop',
         'subdomain' => 'my-shop',
         'shop_slug' => 'my-shop', // Slice 1: required NOT NULL
-        'status'    => 'active',
+        'status' => 'published',
     ]);
 
     // Second user tries to register with same shop name
@@ -501,12 +501,12 @@ test('P2-01: subdomainCollision factory method has correct error code', function
         ->and($e->getMessage())->toContain('Test Shop');
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Sprint 3 / ADR-SC1: Dual-Mode Seller Storefront Routing
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 test('SC-01: /shop/{shop_slug} resolves correct seller and returns 200', function () {
-    $seller = SellerProfile::factory()->create(['status' => 'active', 'shop_slug' => 'my-shop']);
+    $seller = SellerProfile::factory()->create(['status' => 'published', 'shop_slug' => 'my-shop']);
     SellerPage::factory()->create(['seller_id' => $seller->id, 'is_published' => true]);
 
     $response = $this->get('/shop/my-shop');
@@ -522,7 +522,7 @@ test('SC-02: /shop/{shop_slug} returns 404 for unknown slug', function () {
 
 test('SC-03: /shop/{shop_slug} cache key uses seller_id (stable across renames)', function () {
     Cache::flush();
-    $seller = SellerProfile::factory()->create(['status' => 'active', 'shop_slug' => 'test-shop']);
+    $seller = SellerProfile::factory()->create(['status' => 'published', 'shop_slug' => 'test-shop']);
     SellerPage::factory()->create(['seller_id' => $seller->id, 'is_published' => true]);
 
     $this->get('/shop/test-shop')->assertStatus(200);
@@ -536,7 +536,7 @@ test('SC-03: /shop/{shop_slug} cache key uses seller_id (stable across renames)'
 });
 
 test('SC-04: AdminUpdateSellerSlugAction renames slug and invalidates cache', function () {
-    $seller = SellerProfile::factory()->create(['status' => 'active', 'shop_slug' => 'old-slug']);
+    $seller = SellerProfile::factory()->create(['status' => 'published', 'shop_slug' => 'old-slug']);
     SellerPage::factory()->create(['seller_id' => $seller->id, 'is_published' => true]);
 
     // Warm the cache
@@ -578,7 +578,7 @@ test('SC-06: AdminUpdateSellerSlugAction throws on invalid slug format', functio
 test('SC-07: /shop/ route blocks path traversal (route constraint)', function () {
     // Slugs with special characters should be rejected by route constraint (404, not 500)
     $response = $this->get('/shop/../etc/passwd');
-    // Laravel router won't even match — route constraint [a-z0-9-]+ blocks it
+    // Laravel router won't even match â€” route constraint [a-z0-9-]+ blocks it
     $response->assertStatus(404);
 });
 

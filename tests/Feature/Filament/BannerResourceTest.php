@@ -41,12 +41,12 @@ test('can render banner list page and see records in table', function () {
     $banner = Banner::create([
         'title'      => 'Summer Living Room Collection 2026',
         'position'   => Banner::POSITION_HERO_SLIDER,
-        'eyebrow'    => 'BỘ SƯU TẬP MÙA HÈ',
-        'subtitle'   => 'Nội thất phòng khách phong cách Bắc Âu',
+        'eyebrow'    => 'Bá»˜ SÆ¯U Táº¬P MÃ™A HÃˆ',
+        'subtitle'   => 'Ná»™i tháº¥t phÃ²ng khÃ¡ch phong cÃ¡ch Báº¯c Ã‚u',
         'image'      => 'banners/hero-1.jpg',
         'link'       => '/products',
-        'cta_text'   => 'Khám Phá Ngay',
-        'status'     => 'active',
+        'cta_text'   => 'KhÃ¡m PhÃ¡ Ngay',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -60,7 +60,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Hero Slide Banner',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/hero.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -68,7 +68,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Promo 2 Column Banner',
         'position'   => Banner::POSITION_HOME_PROMO_2COL,
         'image'      => 'banners/promo.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -76,7 +76,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Collection 3 Column Banner',
         'position'   => Banner::POSITION_HOME_COLLECTION_3COL,
         'image'      => 'banners/collection.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -84,7 +84,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Catalog Header Banner',
         'position'   => Banner::POSITION_CATALOG_HEADER,
         'image'      => 'banners/catalog.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -92,7 +92,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Blog Sidebar Banner',
         'position'   => Banner::POSITION_BLOG_SIDEBAR,
         'image'      => 'banners/blog.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -100,7 +100,7 @@ test('can filter banners by position tabs', function () {
         'title'      => 'Top Announcement Banner',
         'position'   => Banner::POSITION_TOP_ANNOUNCEMENT,
         'image'      => 'banners/announcement.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -152,29 +152,29 @@ test('can create a banner with all dynamic fields via filament form', function (
 
     Livewire::test(CreateBanner::class)
         ->fillForm([
-            'title'           => 'Khuyến Mãi Sofa Mùa Hè',
+            'title'           => 'Khuyáº¿n MÃ£i Sofa MÃ¹a HÃ¨',
             'position'        => Banner::POSITION_HERO_SLIDER,
-            'eyebrow'         => 'BỘ SƯU TẬP 2026',
-            'subtitle'        => 'Giảm giá tới 30% cho các sản phẩm sofa da cao cấp.',
+            'eyebrow'         => 'Bá»˜ SÆ¯U Táº¬P 2026',
+            'subtitle'        => 'Giáº£m giÃ¡ tá»›i 30% cho cÃ¡c sáº£n pháº©m sofa da cao cáº¥p.',
             'cta_text'        => 'Mua Ngay',
             'link'            => '/category/sofa-phong-khach',
             'open_in_new_tab' => true,
             'image'           => $file,
-            'status'          => 'active',
+            'status' => 'published',
             'sort_order'      => 5,
         ])
         ->call('create')
         ->assertHasNoFormErrors();
 
     $this->assertDatabaseHas('banners', [
-        'title'           => 'Khuyến Mãi Sofa Mùa Hè',
+        'title'           => 'Khuyáº¿n MÃ£i Sofa MÃ¹a HÃ¨',
         'position'        => Banner::POSITION_HERO_SLIDER,
-        'eyebrow'         => 'BỘ SƯU TẬP 2026',
-        'subtitle'        => 'Giảm giá tới 30% cho các sản phẩm sofa da cao cấp.',
+        'eyebrow'         => 'Bá»˜ SÆ¯U Táº¬P 2026',
+        'subtitle'        => 'Giáº£m giÃ¡ tá»›i 30% cho cÃ¡c sáº£n pháº©m sofa da cao cáº¥p.',
         'cta_text'        => 'Mua Ngay',
         'link'            => '/category/sofa-phong-khach',
         'open_in_new_tab' => true,
-        'status'          => 'active',
+        'status' => 'published',
         'sort_order'      => 5,
     ]);
 });
@@ -194,7 +194,7 @@ test('validates required fields on create banner form', function () {
 
 test('can edit an existing banner and update position and schedule', function () {
     $banner = Banner::create([
-        'title'      => 'Banner Cũ',
+        'title'      => 'Banner CÅ©',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/old.jpg',
         'status'     => 'inactive',
@@ -206,9 +206,9 @@ test('can edit an existing banner and update position and schedule', function ()
 
     Livewire::test(EditBanner::class, ['record' => $banner->getKey()])
         ->fillForm([
-            'title'      => 'Banner Mới Đã Sửa',
+            'title'      => 'Banner Má»›i ÄÃ£ Sá»­a',
             'position'   => Banner::POSITION_HOME_PROMO_2COL,
-            'status'     => 'active',
+            'status' => 'published',
             'sort_order' => 10,
             'starts_at'  => $startsAt,
             'ends_at'    => $endsAt,
@@ -217,7 +217,7 @@ test('can edit an existing banner and update position and schedule', function ()
         ->assertHasNoFormErrors();
 
     $banner->refresh();
-    expect($banner->title)->toBe('Banner Mới Đã Sửa');
+    expect($banner->title)->toBe('Banner Má»›i ÄÃ£ Sá»­a');
     expect($banner->position)->toBe(Banner::POSITION_HOME_PROMO_2COL);
     expect($banner->status)->toBe('active');
     expect($banner->sort_order)->toBe(10);
@@ -230,7 +230,7 @@ test('can reorder banners using table reordering', function () {
         'title'      => 'Slide 1',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/1.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -238,7 +238,7 @@ test('can reorder banners using table reordering', function () {
         'title'      => 'Slide 2',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/2.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 2,
     ]);
 
@@ -257,7 +257,7 @@ test('can filter table records by position and status select filters', function 
         'title'      => 'Active Hero',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/1.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -273,7 +273,7 @@ test('can filter table records by position and status select filters', function 
         'title'      => 'Active Promo',
         'position'   => Banner::POSITION_HOME_PROMO_2COL,
         'image'      => 'banners/3.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 3,
     ]);
 
@@ -293,7 +293,7 @@ test('can delete a banner via table delete action', function () {
         'title'      => 'Banner To Delete',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/delete.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -311,7 +311,7 @@ test('can bulk delete banners via bulk action', function () {
         'title'      => 'Bulk Delete 1',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/bulk1.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 1,
     ]);
 
@@ -319,7 +319,7 @@ test('can bulk delete banners via bulk action', function () {
         'title'      => 'Bulk Delete 2',
         'position'   => Banner::POSITION_HERO_SLIDER,
         'image'      => 'banners/bulk2.jpg',
-        'status'     => 'active',
+        'status' => 'published',
         'sort_order' => 2,
     ]);
 

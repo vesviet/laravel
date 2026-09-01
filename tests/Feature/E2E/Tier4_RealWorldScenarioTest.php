@@ -35,7 +35,7 @@ it('executes scenario 1: first-time visitor homepage discovery to direct checkou
         'slug' => 'sober-armchair-nordic-edition',
         'price' => 3200000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => true,
     ]);
 
@@ -45,12 +45,12 @@ it('executes scenario 1: first-time visitor homepage discovery to direct checkou
 
     // Verify all 7 sections are present
     $homeResponse->assertSee('Hero banner', false);
-    $homeResponse->assertSee('Phong Cách Mùa Này');
-    $homeResponse->assertSee('Sản Phẩm Nổi Bật');
+    $homeResponse->assertSee('Phong CÃ¡ch MÃ¹a NÃ y');
+    $homeResponse->assertSee('Sáº£n Pháº©m Ná»•i Báº­t');
     $homeResponse->assertSee('Sober Armchair Nordic Edition');
-    $homeResponse->assertSee('Đồ Nội Thất');
-    $homeResponse->assertSee('Sản Phẩm Mới');
-    $homeResponse->assertSee('Miễn Phí Vận Chuyển');
+    $homeResponse->assertSee('Äá»“ Ná»™i Tháº¥t');
+    $homeResponse->assertSee('Sáº£n Pháº©m Má»›i');
+    $homeResponse->assertSee('Miá»…n PhÃ­ Váº­n Chuyá»ƒn');
     $homeResponse->assertSee('Newsletter');
 
     // 2. Visitor visits product detail page
@@ -58,7 +58,7 @@ it('executes scenario 1: first-time visitor homepage discovery to direct checkou
     $detailResponse = $this->get(route('products.show', $featuredProduct->slug));
     $detailResponse->assertOk();
     $detailResponse->assertSee('Sober Armchair Nordic Edition');
-    $detailResponse->assertSee('3.200.000₫');
+    $detailResponse->assertSee('3.200.000â‚«');
 
     // 3. Visitor adds product to cart (quantity 2)
     Livewire::test(AddToCartButton::class, ['product' => $featuredProduct])
@@ -68,16 +68,16 @@ it('executes scenario 1: first-time visitor homepage discovery to direct checkou
         ->assertDispatched('cart-updated')
         ->assertDispatched('open-cart');
 
-    // 4. Cart drawer displays item and subtotal = 6.400.000₫
+    // 4. Cart drawer displays item and subtotal = 6.400.000â‚«
     Livewire::test(CartDrawer::class)
         ->assertSee('Sober Armchair Nordic Edition')
-        ->assertSee('6.400.000₫');
+        ->assertSee('6.400.000â‚«');
 
     // 5. Visitor navigates to checkout
     $checkoutPage = $this->get(route('checkout.index'));
     $checkoutPage->assertOk();
     $checkoutPage->assertSee('Sober Armchair Nordic Edition');
-    $checkoutPage->assertSee('6.400.000₫');
+    $checkoutPage->assertSee('6.400.000â‚«');
 
     // 6. Visitor completes checkout with COD
     $postCheckout = $this->post(route('checkout.store'), [
@@ -121,7 +121,7 @@ it('executes scenario 2: catalog browsing category filtering and multi-item cart
         'slug' => 'scandinavian-oak-coffee-table',
         'price' => 1500000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
         'category_id' => $categoryLiving->id,
     ]);
 
@@ -130,7 +130,7 @@ it('executes scenario 2: catalog browsing category filtering and multi-item cart
         'slug' => 'ergonomic-desk-chair',
         'price' => 2500000,
         'stock' => 15,
-        'status' => 'active',
+        'status' => 'published',
         'category_id' => $categoryOffice->id,
     ]);
 
@@ -172,9 +172,9 @@ it('executes scenario 2: catalog browsing category filtering and multi-item cart
     Livewire::test(CartDrawer::class)
         ->call('updateQuantity', $tableProduct->id, null, 2);
 
-    // 6. Subtotal is (1.500.000 * 2) + (2.800.000 * 1) = 5.800.000₫
+    // 6. Subtotal is (1.500.000 * 2) + (2.800.000 * 1) = 5.800.000â‚«
     Livewire::test(CartDrawer::class)
-        ->assertSee('5.800.000₫');
+        ->assertSee('5.800.000â‚«');
 
     // 7. Complete checkout
     $checkoutResponse = $this->post(route('checkout.store'), [
@@ -209,7 +209,7 @@ it('executes scenario 3: registered customer wishlist curation and order history
         'email' => 'hoanglong@example.com',
         'password' => bcrypt('secret123'),
         'phone' => '0918273645',
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $product1 = Product::create([
@@ -293,8 +293,8 @@ it('executes scenario 4: footer brand engagement newsletter subscription and ord
     $response = $this->get(route('home'));
     $response->assertOk();
     $response->assertSee('Newsletter');
-    $response->assertSee('VỀ MYSHOP');
-    $response->assertSee('LIÊN KẾT NHANH');
+    $response->assertSee('Vá»€ MYSHOP');
+    $response->assertSee('LIÃŠN Káº¾T NHANH');
     $response->assertSee('Facebook');
     $response->assertSee('Instagram');
 
@@ -342,8 +342,8 @@ it('executes scenario 4: footer brand engagement newsletter subscription and ord
     $trackResult->assertOk();
     $trackResult->assertSee('ORD-JOURNEY-2026');
     $trackResult->assertSee('Modular Lounge Chair');
-    $trackResult->assertSee('4.500.000₫');
-    $trackResult->assertSee('Chờ xác nhận');
+    $trackResult->assertSee('4.500.000â‚«');
+    $trackResult->assertSee('Chá» xÃ¡c nháº­n');
 });
 
 /*
@@ -361,7 +361,7 @@ it('executes scenario 5: mobile-first user experience slide drawer navigation an
         'slug' => 'mobile-minimalist-desk',
         'price' => 2900000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
         'is_featured' => false,
     ]);
 
@@ -373,10 +373,10 @@ it('executes scenario 5: mobile-first user experience slide drawer navigation an
     $homeResponse->assertSee('md:hidden', false);
     $homeResponse->assertSee('mobileMenuOpen = true', false);
     $homeResponse->assertSee('role="dialog"', false);
-    $homeResponse->assertSee('aria-label="Menu điều hướng"', false);
+    $homeResponse->assertSee('aria-label="Menu Ä‘iá»u hÆ°á»›ng"', false);
 
     // 2. Mobile shopper views New Arrivals section
-    $homeResponse->assertSee('Sản Phẩm Mới');
+    $homeResponse->assertSee('Sáº£n Pháº©m Má»›i');
     $homeResponse->assertSee('Mobile Minimalist Desk');
 
     // 3. Shopper adds product to cart via Livewire
@@ -395,8 +395,8 @@ it('executes scenario 5: mobile-first user experience slide drawer navigation an
     // 5. Cart drawer opens with product details and subtotal
     Livewire::test(CartDrawer::class)
         ->assertSee('Mobile Minimalist Desk')
-        ->assertSee('2.900.000₫')
-        ->assertSee('Tiến Hành Thanh Toán');
+        ->assertSee('2.900.000â‚«')
+        ->assertSee('Tiáº¿n HÃ nh Thanh ToÃ¡n');
 
     // 6. Mobile shopper proceeds through checkout
     $checkoutResponse = $this->post(route('checkout.store'), [

@@ -27,8 +27,8 @@ it('verifies homepage handles zero products gracefully without errors', function
     $response = $this->get(route('home'));
     $response->assertOk();
 
-    $response->assertSee('Chưa có sản phẩm nổi bật');
-    $response->assertSee('Chưa có sản phẩm nào.');
+    $response->assertSee('ChÆ°a cÃ³ sáº£n pháº©m ná»•i báº­t');
+    $response->assertSee('ChÆ°a cÃ³ sáº£n pháº©m nÃ o.');
 });
 
 it('verifies products catalog handles empty category gracefully', function () {
@@ -39,13 +39,13 @@ it('verifies products catalog handles empty category gracefully', function () {
 
     $response = $this->get(route('products.index', ['category' => $category->slug]));
     $response->assertOk();
-    $response->assertSee('Không tìm thấy sản phẩm nào.');
+    $response->assertSee('KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m nÃ o.');
 });
 
 it('verifies products catalog handles non-existent category slug without 500 error', function () {
     $response = $this->get(route('products.index', ['category' => 'non-existent-category-slug-999']));
     $response->assertOk();
-    $response->assertSee('Không tìm thấy sản phẩm nào.');
+    $response->assertSee('KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m nÃ o.');
 });
 
 it('verifies product card handles null image path with svg placeholder fallback', function () {
@@ -54,7 +54,7 @@ it('verifies product card handles null image path with svg placeholder fallback'
         'slug' => 'zero-image-product',
         'price' => 150000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
         'image_path' => null,
     ]);
 
@@ -71,7 +71,7 @@ it('verifies product card handles product with no category without null pointer 
         'slug' => 'uncategorized-stool',
         'price' => 750000,
         'stock' => 5,
-        'status' => 'active',
+        'status' => 'published',
         'category_id' => null,
     ]);
 
@@ -82,13 +82,13 @@ it('verifies product card handles product with no category without null pointer 
 });
 
 it('verifies product card handles extreme long product name properly', function () {
-    $longName = 'Bàn Trà Sofa Scandinavian Gỗ Sồi Tự Nhiên Cao Cấp Phủ Sơn PU Bóng Mờ Kháng Nước Chống Trầy Xước 2026';
+    $longName = 'BÃ n TrÃ  Sofa Scandinavian Gá»— Sá»“i Tá»± NhiÃªn Cao Cáº¥p Phá»§ SÆ¡n PU BÃ³ng Má» KhÃ¡ng NÆ°á»›c Chá»‘ng Tráº§y XÆ°á»›c 2026';
     $product = Product::create([
         'name' => $longName,
         'slug' => 'extreme-long-name-table',
         'price' => 2890000,
         'stock' => 3,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $response = $this->get(route('products.index'));
@@ -98,13 +98,13 @@ it('verifies product card handles extreme long product name properly', function 
 });
 
 it('verifies product card escapes special characters quotes and html entities safely', function () {
-    $specialName = 'Ghế "Armchair" Vintage & Đèn <Gỗ>';
+    $specialName = 'Gháº¿ "Armchair" Vintage & ÄÃ¨n <Gá»—>';
     $product = Product::create([
         'name' => $specialName,
         'slug' => 'special-char-product',
         'price' => 990000,
         'stock' => 7,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $response = $this->get(route('products.index'));
@@ -120,13 +120,13 @@ it('verifies product card formats zero price cleanly', function () {
         'slug' => 'complimentary-swatch',
         'price' => 0,
         'stock' => 100,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $response = $this->get(route('products.index'));
     $response->assertOk();
 
-    $response->assertSee('0₫');
+    $response->assertSee('0â‚«');
 });
 
 it('verifies product card formats large price with vnd thousands separator', function () {
@@ -135,13 +135,13 @@ it('verifies product card formats large price with vnd thousands separator', fun
         'slug' => 'luxury-italian-sofa',
         'price' => 125000000,
         'stock' => 2,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $response = $this->get(route('products.index'));
     $response->assertOk();
 
-    $response->assertSee('125.000.000₫');
+    $response->assertSee('125.000.000â‚«');
 });
 
 it('verifies draft and archived products are excluded from homepage and catalog', function () {
@@ -221,7 +221,7 @@ it('verifies skip to content accessibility link is present with proper attribute
     $response->assertOk();
 
     $response->assertSee('sr-only', false);
-    $response->assertSee('Bỏ qua điều hướng');
+    $response->assertSee('Bá» qua Ä‘iá»u hÆ°á»›ng');
 });
 
 /*
@@ -295,7 +295,7 @@ it('verifies cart drawer ignores quantity update less than one', function () {
         'slug' => 'boundary-chair',
         'price' => 300000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Session::put('cart', [
@@ -319,7 +319,7 @@ it('verifies cart drawer handles large quantity update', function () {
         'slug' => 'bulk-stool',
         'price' => 100000,
         'stock' => 500,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Session::put('cart', [
@@ -351,7 +351,7 @@ it('verifies cart drawer calculates subtotal accurately with multiple quantities
         'slug' => 'subtotal-product-1',
         'price' => 250000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $product2 = Product::create([
@@ -359,7 +359,7 @@ it('verifies cart drawer calculates subtotal accurately with multiple quantities
         'slug' => 'subtotal-product-2',
         'price' => 100000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Session::put('cart', [
@@ -377,7 +377,7 @@ it('verifies cart drawer calculates subtotal accurately with multiple quantities
 
     // Subtotal = (250000 * 2) + (100000 * 3) = 800000
     Livewire::test(CartDrawer::class)
-        ->assertSee('800.000₫');
+        ->assertSee('800.000â‚«');
 });
 
 it('verifies add to cart is blocked when product stock is zero', function () {
@@ -386,7 +386,7 @@ it('verifies add to cart is blocked when product stock is zero', function () {
         'slug' => 'out-of-stock-bench',
         'price' => 1200000,
         'stock' => 0,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Livewire::test(AddToCartButton::class, ['product' => $product])
@@ -402,7 +402,7 @@ it('verifies add to cart handles product with variant', function () {
         'slug' => 'variant-product-chair',
         'price' => 500000,
         'stock' => 20,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $variant = ProductVariant::create([
@@ -436,7 +436,7 @@ it('verifies checkout validates required customer fields presence', function () 
         'slug' => 'checkout-validation-product',
         'price' => 200000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Session::put('cart', [
@@ -468,14 +468,14 @@ it('verifies order tracking page loads cleanly with no query param', function ()
     $response = $this->get(route('track-order.index'));
     $response->assertOk();
 
-    $response->assertSee('Tra Cứu Đơn Hàng');
+    $response->assertSee('Tra Cá»©u ÄÆ¡n HÃ ng');
 });
 
 it('verifies order tracking handles non-existent order number gracefully', function () {
     $response = $this->get(route('track-order.index', ['order_number' => 'ORD-NON-EXISTENT-999']));
     $response->assertOk();
 
-    $response->assertSee('Không tìm thấy đơn hàng với mã');
+    $response->assertSee('KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng vá»›i mÃ£');
     $response->assertSee('ORD-NON-EXISTENT-999');
 });
 
@@ -495,8 +495,8 @@ it('verifies order tracking displays complete order details for valid order', fu
     $response->assertOk();
 
     $response->assertSee('ORD-TRACK-12345');
-    $response->assertSee('1.500.000₫');
-    $response->assertSee('Chờ xác nhận');
+    $response->assertSee('1.500.000â‚«');
+    $response->assertSee('Chá» xÃ¡c nháº­n');
 });
 
 it('verifies order tracking post endpoint validates required order number', function () {
@@ -527,7 +527,7 @@ it('verifies catalog sort price_asc orders products from lowest to highest', fun
         'slug' => 'cheap-accessory',
         'price' => 50000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $expensive = Product::create([
@@ -535,7 +535,7 @@ it('verifies catalog sort price_asc orders products from lowest to highest', fun
         'slug' => 'expensive-credenza',
         'price' => 8000000,
         'stock' => 2,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $response = $this->get(route('products.index', ['sort' => 'price_asc']));
@@ -554,7 +554,7 @@ it('verifies catalog sort price_desc orders products from highest to lowest', fu
         'slug' => 'cheap-desk-pad',
         'price' => 80000,
         'stock' => 10,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $expensive = Product::create([
@@ -562,7 +562,7 @@ it('verifies catalog sort price_desc orders products from highest to lowest', fu
         'slug' => 'expensive-dining-set',
         'price' => 15000000,
         'stock' => 2,
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     $response = $this->get(route('products.index', ['sort' => 'price_desc']));
@@ -582,7 +582,7 @@ it('verifies catalog pagination renders when product count exceeds twelve', func
             'slug' => "paginated-product-{$i}",
             'price' => 100000 * $i,
             'stock' => 10,
-            'status' => 'active',
+            'status' => 'published',
         ]);
     }
 

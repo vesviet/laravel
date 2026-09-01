@@ -132,13 +132,13 @@ test('promotion seeder populates campaign 6 VIPGOLD20 coupon rule targeting VIP 
 test('promotion seeder dynamically resolves existing categories and products without duplicate creation', function () {
     // Pre-create lighting category and desk/chair products with custom initial IDs
     $existingLighting = Category::create([
-        'name' => 'Đèn Chiếu Sáng Pre-existing',
+        'name' => 'ÄÃ¨n Chiáº¿u SÃ¡ng Pre-existing',
         'slug' => 'den-chieu-sang',
         'description' => 'Pre-existing lighting category',
     ]);
 
     $existingDesk = Product::create([
-        'name' => 'Bàn Làm Việc Copenhague Desk Pre-existing',
+        'name' => 'BÃ n LÃ m Viá»‡c Copenhague Desk Pre-existing',
         'slug' => 'copenhague-desk',
         'sku' => 'DSK-005',
         'price' => 14200000,
@@ -147,7 +147,7 @@ test('promotion seeder dynamically resolves existing categories and products wit
     ]);
 
     $existingChair = Product::create([
-        'name' => 'Ghế Ăn Gỗ Sồi Synnes Dining Chair Pre-existing',
+        'name' => 'Gháº¿ Ä‚n Gá»— Sá»“i Synnes Dining Chair Pre-existing',
         'slug' => 'synnes-dining-chair',
         'sku' => 'CHR-004',
         'price' => 5800000,
@@ -197,7 +197,7 @@ test('promotion engine correctly applies seeded WELCOME10 coupon on eligible ord
     $this->seed(PromotionSeeder::class);
     $engine = app(PromotionEngine::class);
 
-    // Eligible order: 1.000.000₫ >= 300.000₫ min order => 10% = 100.000₫ discount (under 500k cap)
+    // Eligible order: 1.000.000â‚« >= 300.000â‚« min order => 10% = 100.000â‚« discount (under 500k cap)
     $cartItems = [
         ['product_id' => 10, 'price' => 1000000.0, 'quantity' => 1, 'subtotal' => 1000000.0],
     ];
@@ -208,7 +208,7 @@ test('promotion engine correctly applies seeded WELCOME10 coupon on eligible ord
         ->and($breakdown->couponDiscount)->toBe(100000.0)
         ->and($breakdown->totalDiscount)->toBeGreaterThanOrEqual(100000.0);
 
-    // Ineligible order: 200.000₫ < 300.000₫ min order
+    // Ineligible order: 200.000â‚« < 300.000â‚« min order
     $smallCartItems = [
         ['product_id' => 10, 'price' => 200000.0, 'quantity' => 1, 'subtotal' => 200000.0],
     ];
@@ -258,7 +258,7 @@ test('promotion engine correctly applies seeded BUY_DESK_GET_CHAIR reward discou
     $subtotal = (float) $desk->price + (float) $chair->price;
     $breakdown = $engine->calculateCartDiscounts($subtotal, $cartItems);
 
-    // Chair price (5.800.000₫) is 100% discounted
+    // Chair price (5.800.000â‚«) is 100% discounted
     $bxgyDiscount = collect($breakdown->appliedRules)->firstWhere('actionType', PromotionRule::ACTION_BUY_X_GET_Y);
     expect($bxgyDiscount)->not->toBeNull()
         ->and($bxgyDiscount->discountAmount)->toBe((float) $chair->price);
@@ -291,7 +291,7 @@ test('promotion engine correctly applies seeded FREESHIP500 automatic free shipp
     $this->seed(PromotionSeeder::class);
     $engine = app(PromotionEngine::class);
 
-    // Order of 600.000₫ with 35.000₫ shipping fee qualifies for freeship
+    // Order of 600.000â‚« with 35.000â‚« shipping fee qualifies for freeship
     $cartItems = [
         ['product_id' => 1, 'price' => 600000.0, 'quantity' => 1, 'subtotal' => 600000.0],
     ];
@@ -311,7 +311,7 @@ test('promotion engine correctly applies seeded VIPGOLD20 coupon with tier valid
         'email' => 'vipgold@example.com',
         'phone' => '0988776655',
         'password' => bcrypt('password'),
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
     Order::create([
@@ -334,15 +334,15 @@ test('promotion engine correctly applies seeded VIPGOLD20 coupon with tier valid
         'email' => 'regular@example.com',
         'phone' => '0988112233',
         'password' => bcrypt('password'),
-        'status' => 'active',
+        'status' => 'published',
     ]);
 
-    // Order of 8.000.000₫: 20% of 8M = 1.6M, capped at 1.000.000₫ max discount
+    // Order of 8.000.000â‚«: 20% of 8M = 1.6M, capped at 1.000.000â‚« max discount
     $cartItems = [
         ['product_id' => 1, 'price' => 8000000.0, 'quantity' => 1, 'subtotal' => 8000000.0],
     ];
 
-    // VIP Gold customer gets 1.000.000₫ capped discount
+    // VIP Gold customer gets 1.000.000â‚« capped discount
     $vipBreakdown = $engine->calculateCartDiscounts(8000000.0, $cartItems, 'VIPGOLD20', 0.0, $vipCustomer);
     expect($vipBreakdown->hasCouponApplied())->toBeTrue()
         ->and($vipBreakdown->couponDiscount)->toBe(1000000.0);
