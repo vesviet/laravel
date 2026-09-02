@@ -44,10 +44,9 @@ class OrderHistoriesRelationManager extends RelationManager
                     ->badge()
                     ->formatStateUsing(fn (OrderStatus $state): string => $state->label())
                     ->color(fn (OrderStatus $state): string => $state->color()),
-                Tables\Columns\TextColumn::make('user_id')
+                Tables\Columns\TextColumn::make('user.name')
                     ->label('Người thực hiện')
-                    // Giả sử có quan hệ tới bảng users hoặc chỉ hiển thị ID. Tạm thời hiển thị text System nếu null
-                    ->formatStateUsing(fn ($state) => $state ? "User #{$state}" : 'Hệ thống'),
+                    ->default('Hệ thống'),
                 Tables\Columns\TextColumn::make('note')
                     ->label('Ghi chú')
                     ->wrap(),
