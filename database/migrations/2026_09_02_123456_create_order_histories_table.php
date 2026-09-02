@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('order_histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('seller_id')->constrained('seller_profiles')->cascadeOnDelete();
+            $table->foreignId('seller_id')->nullable()->constrained('seller_profiles')->cascadeOnDelete();
             $table->unsignedBigInteger('user_id')->nullable()->comment('Null for system actions');
             $table->string('old_status')->nullable();
             $table->string('new_status');
