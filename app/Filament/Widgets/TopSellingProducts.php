@@ -20,6 +20,7 @@ class TopSellingProducts extends BaseWidget
             ->query(
                 OrderItem::query()
                     ->select(
+                        DB::raw('MAX(id) as id'),
                         'product_id',
                         'product_name',
                         DB::raw('SUM(quantity) as total_sold'),
