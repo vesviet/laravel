@@ -227,6 +227,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -272,7 +273,7 @@ jobs:
           severity-cutoff: high
 
       - name: Upload SCA scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: ${{ steps.sca-scan.outputs.sarif }}
