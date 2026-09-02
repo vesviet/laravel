@@ -272,7 +272,7 @@ jobs:
           severity-cutoff: high
 
       - name: Upload SCA scan results
-        uses: github/codeql-action/upload-sarif@65c74964a9ed8c44ed9f19d4bbc5757a6a8af9f4 # v3
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: ${{ steps.sca-scan.outputs.sarif }}
