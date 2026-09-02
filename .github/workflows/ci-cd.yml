@@ -262,7 +262,7 @@ jobs:
           output-file: sbom.spdx.json
 
       - name: '[SCA] Scan SBOM for vulnerabilities (blocks on critical/high CVEs)'
-        uses: anchore/scan-action@3343887d815d7b07465f6fdcd395bd66508d486a # v4
+        uses: anchore/scan-action@v5
         id: sca-scan
         with:
           sbom: sbom.spdx.json
@@ -271,6 +271,7 @@ jobs:
           # and then fail the build in a subsequent step.
           fail-build: false
           severity-cutoff: high
+          output-format: sarif
 
       - name: Upload SCA scan results
         uses: github/codeql-action/upload-sarif@v4
