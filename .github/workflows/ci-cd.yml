@@ -266,10 +266,10 @@ jobs:
         id: sca-scan
         with:
           sbom: sbom.spdx.json
-          # Block the build on critical or high CVEs.
-          # Medium/low are surfaced as warnings but do not fail the pipeline.
-          # Rationale (ADR-S3): supply-chain security debt must not accumulate silently.
-          fail-build: true
+          # ADR-S3: supply-chain security debt must not accumulate silently.
+          # We set fail-build to false here so the SARIF writes completely,
+          # and then fail the build in a subsequent step.
+          fail-build: false
           severity-cutoff: high
 
       - name: Upload SCA scan results
@@ -277,6 +277,13 @@ jobs:
         if: always()
         with:
           sarif_file: ${{ steps.sca-scan.outputs.sarif }}
+
+      - name: Fail build if critical/high CVEs found
+        run: |
+          if grep -q '"level": "error"' ${{ steps.sca-scan.outputs.sarif }}; then
+            echo "Critical/High CVEs found! Check the GitHub Security tab for details."
+            exit 1
+          fi
 
   deploy:
     name: Deploy to Homelab
