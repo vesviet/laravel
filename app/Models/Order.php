@@ -52,6 +52,11 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function histories()
+    {
+        return $this->hasMany(OrderHistory::class)->latest('id');
+    }
+
     public function landingPage()
     {
         return $this->belongsTo(LandingPage::class);

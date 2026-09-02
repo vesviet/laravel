@@ -25,9 +25,9 @@ class OrderResource extends Resource
                 Forms\Components\Group::make()->schema([
                     Forms\Components\Section::make('Order Information')->schema([
                         Forms\Components\TextInput::make('order_number')->disabled(),
-                        Forms\Components\Select::make('status')
-                            ->options(OrderStatus::class)
-                            ->required(),
+                        Forms\Components\Placeholder::make('status_label')
+                            ->label('Status')
+                            ->content(fn (?Order $record) => $record?->status instanceof OrderStatus ? $record->status->label() : ($record?->status ? OrderStatus::tryFrom($record->status)?->label() : 'N/A')),
                         Forms\Components\Select::make('payment_method')
                             ->options([
                                 'cod' => 'Cash on Delivery',
@@ -133,7 +133,7 @@ class OrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            OrderResource\RelationManagers\OrderHistoriesRelationManager::class,
         ];
     }
 
