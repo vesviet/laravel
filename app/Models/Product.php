@@ -490,14 +490,14 @@ class Product extends Model
     public function getStockStatusLabelAttribute(): string
     {
         if ($this->stock <= 0) {
-            return 'Háº¿t hÃ ng';
+            return 'Hết hàng';
         }
 
         if ($this->is_low_stock) {
-            return "Sáº¯p háº¿t hÃ ng (cÃ²n {$this->stock})";
+            return "Sắp hết hàng (còn {$this->stock})";
         }
 
-        return "CÃ²n hÃ ng ({$this->stock})";
+        return "Còn hàng ({$this->stock})";
     }
 
     /**
