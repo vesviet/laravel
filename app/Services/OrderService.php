@@ -35,23 +35,29 @@ class OrderService
     ): Order {
         $totalAmount = $subtotal - $discountAmount + $shippingFee;
 
+        $paymentMethod = $customerData['payment_method'] ?? 'cod';
+        $paymentStatus = $customerData['payment_status'] ?? 'unpaid';
+        $paymentExpiresAt = ($paymentMethod !== 'cod') ? now()->addMinutes(15) : null;
+
         $order = Order::create([
-            'customer_id'     => $customerData['customer_id'] ?? null,
-            'order_number'    => $this->generateOrderNumber(),
-            'status'          => OrderStatus::Pending,
-            'payment_method'  => $customerData['payment_method'] ?? 'cod',
-            'customer_name'   => $customerData['customer_name'],
-            'phone'           => $customerData['phone'],
-            'email'           => $customerData['email'] ?? null,
-            'address'         => $customerData['address'],
-            'city'            => $customerData['city'] ?? null,
-            'district'        => $customerData['district'] ?? null,
-            'ward'            => $customerData['ward'] ?? null,
-            'notes'           => $customerData['notes'] ?? null,
-            'subtotal'        => $subtotal,
-            'discount_amount' => $discountAmount,
-            'shipping_fee'    => $shippingFee,
-            'total_amount'    => $totalAmount,
+            'customer_id'        => $customerData['customer_id'] ?? null,
+            'order_number'       => $this->generateOrderNumber(),
+            'status'             => OrderStatus::Pending,
+            'payment_method'     => $paymentMethod,
+            'payment_status'     => $paymentStatus,
+            'payment_expires_at' => $paymentExpiresAt,
+            'customer_name'      => $customerData['customer_name'],
+            'phone'              => $customerData['phone'],
+            'email'              => $customerData['email'] ?? null,
+            'address'            => $customerData['address'],
+            'city'               => $customerData['city'] ?? null,
+            'district'           => $customerData['district'] ?? null,
+            'ward'               => $customerData['ward'] ?? null,
+            'notes'              => $customerData['notes'] ?? null,
+            'subtotal'           => $subtotal,
+            'discount_amount'    => $discountAmount,
+            'shipping_fee'       => $shippingFee,
+            'total_amount'       => $totalAmount,
         ]);
 
         foreach ($cartItems as $item) {

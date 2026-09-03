@@ -170,10 +170,7 @@ class CheckoutFlow extends Component
         try {
             $totalWeight = 0;
             foreach ($this->cart as $item) {
-                // [BUG-01 FIX] CartService::getCartItemsDetails() returns a plain array,
-                // NOT an Eloquent model. There is no 'product' key — use default weight 500g.
-                // ProductWeight would need to be added to CartService output to use real weights.
-                $productWeight = 500; // default 500g per item
+                $productWeight = (int) ($item['weight'] ?? 500);
                 $qty = (int) ($item['quantity'] ?? 1);
                 $totalWeight += max(100, $productWeight) * $qty;
             }
@@ -311,7 +308,7 @@ class CheckoutFlow extends Component
                 'shippingData.ward' => ['required', 'string', 'max:100'],
             ],
             'payment' => [
-                'selectedPaymentMethod' => ['required', 'in:cod,vnpay,momo,banking'],
+                'selectedPaymentMethod' => ['required', 'in:cod,vnpay,momo,banking,vietqr'],
             ],
             // 'review' is a read-only confirmation step with no user input fields.
             // Validation for shipping and payment data was already completed in prior steps.
@@ -325,6 +322,29 @@ class CheckoutFlow extends Component
         if (! empty($rules)) {
             $this->validate($rules);
         }
+
+        return true;
+    }
+
+    /**
+     * Validate all required checkout steps comprehensively before order placement.
+     */
+    public function validateAllSteps(): bool
+    {
+        $this->resetValidation();
+
+        $rules = [
+            'shippingData.customer_name' => ['required', 'string', 'max:255'],
+            'shippingData.phone' => ['required', 'string', 'max:20', "regex:/^(\+84|0)[0-9]{9,10}$/"],
+            'shippingData.email' => ['nullable', 'email', 'max:255'],
+            'shippingData.address' => ['required', 'string', 'max:500'],
+            'shippingData.city' => ['required', 'string', 'max:100'],
+            'shippingData.district' => ['required', 'string', 'max:100'],
+            'shippingData.ward' => ['required', 'string', 'max:100'],
+            'selectedPaymentMethod' => ['required', 'in:cod,vnpay,momo,banking,vietqr'],
+        ];
+
+        $this->validate($rules);
 
         return true;
     }
@@ -352,7 +372,7 @@ class CheckoutFlow extends Component
     #[On('payment-method-changed')]
     public function onPaymentMethodChanged(string $method): void
     {
-        $allowed = ['cod', 'vnpay', 'momo', 'banking'];
+        $allowed = ['cod', 'vnpay', 'momo', 'banking', 'vietqr'];
         if (in_array($method, $allowed)) {
             $this->selectedPaymentMethod = $method;
         }
@@ -381,7 +401,7 @@ class CheckoutFlow extends Component
 
     public function submitOrder(): void
     {
-        $this->validateCurrentStep();
+        $this->validateAllSteps();
 
         $this->isProcessing = true;
         $this->errorMessage = null;

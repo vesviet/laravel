@@ -80,6 +80,18 @@ class GoshipService
      */
     public function createWaybill(Order $order): ?array
     {
+        // Guard: Prevent creating zero-COD waybill for unpaid online/banking orders
+        if ($order->payment_method !== 'cod' && ! $order->isPaid()) {
+            Log::warning('Goship create waybill blocked: non-COD order is not paid yet', [
+                'order_id'       => $order->id,
+                'order_number'   => $order->order_number,
+                'payment_method' => $order->payment_method,
+                'payment_status' => $order->payment_status,
+            ]);
+
+            return null;
+        }
+
         $order->loadMissing('items.product');
         $weight = 0;
         foreach ($order->items as $item) {

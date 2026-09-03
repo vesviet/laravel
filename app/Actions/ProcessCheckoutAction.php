@@ -17,6 +17,7 @@ use App\Services\GoshipService;
 use App\Services\OrderService;
 use App\Services\Promotions\DTOs\PromotionDiscountBreakdown;
 use App\Services\Promotions\PromotionEngine;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -51,186 +52,205 @@ class ProcessCheckoutAction
      */
     public function execute(array $customerData, ?string $couponCode = null): Order
     {
-        // -------------------------------------------------------------
-        // Phase 1: Pre-Transaction Validation & External Network Calls
-        // -------------------------------------------------------------
-        $cartItems = $this->cartService->getCartItemsDetails();
-
-        if (empty($cartItems)) {
-            throw new EmptyCartException('Giỏ hàng của bạn đang trống.');
-        }
-
-        $subtotal = (float) $this->cartService->calculateTotal();
-
         // Resolve customer identity
         $customerId = $customerData['customer_id'] ?? auth('customer')->id() ?? null;
-        $customer = $customerId ? Customer::find($customerId) : null;
-        $customerEmail = trim((string) ($customerData['email'] ?? ($customer?->email ?? '')));
 
-        // Resolve external shipping rates OUTSIDE database transaction
-        $shippingFee = (float) $this->resolveShippingFee($customerData, $cartItems);
+        // Idempotency lock: guard against rapid double-clicks and concurrent submissions
+        $lockKey = $customerId
+            ? "checkout:lock:customer:{$customerId}"
+            : 'checkout:lock:guest:' . md5(($customerData['phone'] ?? '') . ':' . ($customerData['email'] ?? '') . ':' . session()->getId());
 
-        $normalizedCouponCode = $couponCode ? strtoupper(trim($couponCode)) : null;
+        $lock = Cache::lock($lockKey, 15);
 
-        // -------------------------------------------------------------
-        // Phase 2: Atomic DB Transaction with Concurrency Locking
-        // -------------------------------------------------------------
-        $order = DB::transaction(function () use (
-            $customerData,
-            $cartItems,
-            $subtotal,
-            $shippingFee,
-            $normalizedCouponCode,
-            $customer,
-            $customerId,
-            $customerEmail
-        ) {
-            // Step 2.1: Acquire Pessimistic Locks on Candidate Promotion Rules
-            $lockedCouponRule = null;
-            $legacyCoupon = null;
+        if (! $lock->get()) {
+            throw new CommerceException('Đơn hàng của bạn đang được xử lý, vui lòng không gửi yêu cầu liên tiếp.');
+        }
 
-            if ($normalizedCouponCode) {
-                // Lock candidate promotion rule in DB
-                $lockedCouponRule = PromotionRule::where('code', $normalizedCouponCode)
-                    ->where('rule_type', PromotionRule::RULE_TYPE_CART)
-                    ->lockForUpdate()
-                    ->first();
+        try {
+            // -------------------------------------------------------------
+            // Phase 1: Pre-Transaction Validation & External Network Calls
+            // -------------------------------------------------------------
+            $cartItems = $this->cartService->getCartItemsDetails();
 
-                // Backward-compatibility fallback for legacy coupons table
-                if (! $lockedCouponRule && class_exists(Coupon::class)) {
-                    $legacyCoupon = Coupon::where('code', $normalizedCouponCode)
+            if (empty($cartItems)) {
+                throw new EmptyCartException('Giỏ hàng của bạn đang trống.');
+            }
+
+            $subtotal = (float) $this->cartService->calculateTotal();
+
+            $customer = $customerId ? Customer::find($customerId) : null;
+            $customerEmail = trim((string) ($customerData['email'] ?? ($customer?->email ?? '')));
+
+            // Resolve external shipping rates OUTSIDE database transaction
+            $shippingFee = (float) $this->resolveShippingFee($customerData, $cartItems);
+
+            $normalizedCouponCode = $couponCode ? strtoupper(trim($couponCode)) : null;
+
+            // -------------------------------------------------------------
+            // Phase 2: Atomic DB Transaction with Concurrency Locking
+            // -------------------------------------------------------------
+            $order = DB::transaction(function () use (
+                $customerData,
+                $cartItems,
+                $subtotal,
+                $shippingFee,
+                $normalizedCouponCode,
+                $customer,
+                $customerId,
+                $customerEmail
+            ) {
+                // Step 2.1: Acquire Pessimistic Locks on Candidate Promotion Rules
+                $lockedCouponRule = null;
+                $legacyCoupon = null;
+
+                if ($normalizedCouponCode) {
+                    // Lock candidate promotion rule in DB
+                    $lockedCouponRule = PromotionRule::where('code', $normalizedCouponCode)
+                        ->where('rule_type', PromotionRule::RULE_TYPE_CART)
                         ->lockForUpdate()
                         ->first();
-                }
-            }
 
-            // Lock active automatic cart rules in deterministic order (priority ASC, id ASC)
-            $lockedAutomaticRules = PromotionRule::active()
-                ->cartRules()
-                ->automatic()
-                ->orderedByPriority()
-                ->lockForUpdate()
-                ->get();
-
-            // Step 2.2: Re-verify Applicability & Anti-Fraud Under Lock
-            $validCouponRule = null;
-            if ($lockedCouponRule) {
-                $itemCount = (int) array_sum(array_column($cartItems, 'quantity'));
-                $categoryIds = array_filter(array_column($cartItems, 'category_id'));
-                $productIds = array_filter(array_column($cartItems, 'product_id'));
-
-                if ($lockedCouponRule->isApplicableToCustomer(
-                    customer: $customer,
-                    subtotal: $subtotal,
-                    itemCount: $itemCount,
-                    categoryIds: $categoryIds,
-                    email: $customerEmail,
-                    productIds: $productIds
-                )) {
-                    $validCouponRule = $lockedCouponRule;
-                }
-            }
-
-            // Step 2.3: Calculate Authoritative Discounts via PromotionEngine
-            $breakdown = $this->promotionEngine->calculateCartDiscounts(
-                subtotal: $subtotal,
-                cartItems: $cartItems,
-                couponCode: $validCouponRule ? $validCouponRule->code : null,
-                shippingFee: $shippingFee,
-                customer: $customer,
-                email: $customerEmail
-            );
-
-            $totalDiscount = $breakdown->totalDiscount;
-
-            // Handle legacy coupon calculation if applicable
-            if (! $validCouponRule && $legacyCoupon) {
-                $eligibleSubtotal = array_sum(
-                    array_map(
-                        fn ($item) => empty($item['is_flash_sale'])
-                            ? (float) ($item['subtotal'] ?? (($item['price'] ?? 0) * ($item['quantity'] ?? 1)))
-                            : 0.0,
-                        $cartItems
-                    )
-                );
-
-                $isLegacyApplicable = in_array($legacyCoupon->type, ['free_shipping', 'shipping_discount'])
-                    ? $legacyCoupon->isApplicable($subtotal)
-                    : ($eligibleSubtotal > 0 && $legacyCoupon->isApplicable($eligibleSubtotal));
-
-                if ($isLegacyApplicable) {
-                    $legacyDiscount = $legacyCoupon->calculateDiscount($eligibleSubtotal, $shippingFee);
-                    $totalDiscount += $legacyDiscount;
-                } else {
-                    $legacyCoupon = null;
-                }
-            }
-
-            // Legacy combo fallback when no automatic PromotionRules are active
-            $hasAutoPromotionRules = PromotionRule::query()->cartRules()->automatic()->active()->exists();
-            if (! $hasAutoPromotionRules) {
-                $eligibleSubtotal = 0.0;
-                $eligibleItemsCount = 0;
-                foreach ($cartItems as $item) {
-                    if (empty($item['is_flash_sale'])) {
-                        $eligibleSubtotal += (float) ($item['subtotal'] ?? (($item['price'] ?? 0) * ($item['quantity'] ?? 1)));
-                        $eligibleItemsCount += (int) ($item['quantity'] ?? 1);
+                    // Backward-compatibility fallback for legacy coupons table
+                    if (! $lockedCouponRule && class_exists(Coupon::class)) {
+                        $legacyCoupon = Coupon::where('code', $normalizedCouponCode)
+                            ->lockForUpdate()
+                            ->first();
                     }
                 }
-                if ($eligibleItemsCount >= 2 && $eligibleSubtotal > 0) {
-                    $totalDiscount += ($eligibleSubtotal * 0.05);
-                }
-            }
 
-            // Guard: total discount cannot exceed total payable amount (subtotal + shippingFee)
-            $totalDiscount = min($totalDiscount, $subtotal + $shippingFee);
+                // Lock active automatic cart rules in deterministic order (priority ASC, id ASC)
+                $lockedAutomaticRules = PromotionRule::active()
+                    ->cartRules()
+                    ->automatic()
+                    ->orderedByPriority()
+                    ->lockForUpdate()
+                    ->get();
 
-            // Step 2.4: Create Order & OrderItems, then Deduct Stock (with inventory lockForUpdate)
-            $order = $this->orderService->createOrder(
-                customerData: $customerData,
-                cartItems: $cartItems,
-                subtotal: (int) round($subtotal),
-                discountAmount: (int) round($totalDiscount),
-                shippingFee: (int) round($shippingFee)
-            );
+                // Step 2.2: Re-verify Applicability & Anti-Fraud Under Lock
+                $validCouponRule = null;
+                if ($lockedCouponRule) {
+                    $itemCount = (int) array_sum(array_column($cartItems, 'quantity'));
+                    $categoryIds = array_filter(array_column($cartItems, 'category_id'));
+                    $productIds = array_filter(array_column($cartItems, 'product_id'));
 
-            // Step 2.5: Atomically Record Usages for All Applied Promotion Rules
-            foreach ($breakdown->appliedRules as $applied) {
-                $ruleToRecord = ($validCouponRule && $validCouponRule->id === $applied->ruleId)
-                    ? $validCouponRule
-                    : $lockedAutomaticRules->firstWhere('id', $applied->ruleId);
-
-                if (! $ruleToRecord) {
-                    $ruleToRecord = PromotionRule::lockForUpdate()->find($applied->ruleId);
-                }
-
-                if ($ruleToRecord) {
-                    $ruleToRecord->recordUsage(
-                        customerId: $customerId,
-                        orderId: $order->id,
+                    if ($lockedCouponRule->isApplicableToCustomer(
+                        customer: $customer,
+                        subtotal: $subtotal,
+                        itemCount: $itemCount,
+                        categoryIds: $categoryIds,
                         email: $customerEmail,
-                        discountAmount: (float) $applied->discountAmount
-                    );
+                        productIds: $productIds
+                    )) {
+                        $validCouponRule = $lockedCouponRule;
+                    }
                 }
-            }
 
-            // Increment legacy coupon usage if used
-            if ($legacyCoupon instanceof Coupon) {
-                $legacyCoupon->incrementUsage();
-            }
+                // Step 2.3: Calculate Authoritative Discounts via PromotionEngine
+                $breakdown = $this->promotionEngine->calculateCartDiscounts(
+                    subtotal: $subtotal,
+                    cartItems: $cartItems,
+                    couponCode: $validCouponRule ? $validCouponRule->code : null,
+                    shippingFee: $shippingFee,
+                    customer: $customer,
+                    email: $customerEmail
+                );
+
+                $totalDiscount = $breakdown->totalDiscount;
+
+                // Handle legacy coupon calculation if applicable
+                if (! $validCouponRule && $legacyCoupon) {
+                    $eligibleSubtotal = array_sum(
+                        array_map(
+                            fn ($item) => empty($item['is_flash_sale'])
+                                ? (float) ($item['subtotal'] ?? (($item['price'] ?? 0) * ($item['quantity'] ?? 1)))
+                                : 0.0,
+                            $cartItems
+                        )
+                    );
+
+                    $isLegacyApplicable = in_array($legacyCoupon->type, ['free_shipping', 'shipping_discount'])
+                        ? $legacyCoupon->isApplicable($subtotal)
+                        : ($eligibleSubtotal > 0 && $legacyCoupon->isApplicable($eligibleSubtotal));
+
+                    if ($isLegacyApplicable) {
+                        $legacyDiscount = $legacyCoupon->calculateDiscount($eligibleSubtotal, $shippingFee);
+                        $totalDiscount += $legacyDiscount;
+                    } else {
+                        $legacyCoupon = null;
+                    }
+                }
+
+                // Legacy combo fallback when no automatic PromotionRules are active
+                $hasAutoPromotionRules = PromotionRule::query()->cartRules()->automatic()->active()->exists();
+                if (! $hasAutoPromotionRules) {
+                    $eligibleSubtotal = 0.0;
+                    $eligibleItemsCount = 0;
+                    foreach ($cartItems as $item) {
+                        if (empty($item['is_flash_sale'])) {
+                            $eligibleSubtotal += (float) ($item['subtotal'] ?? (($item['price'] ?? 0) * ($item['quantity'] ?? 1)));
+                            $eligibleItemsCount += (int) ($item['quantity'] ?? 1);
+                        }
+                    }
+                    if ($eligibleItemsCount >= 2 && $eligibleSubtotal > 0) {
+                        $totalDiscount += ($eligibleSubtotal * 0.05);
+                    }
+                }
+
+                // Guard: total discount cannot exceed total payable amount (subtotal + shippingFee)
+                $totalDiscount = min($totalDiscount, $subtotal + $shippingFee);
+
+                // Step 2.4: Create Order & OrderItems, then Deduct Stock (with inventory lockForUpdate)
+                $order = $this->orderService->createOrder(
+                    customerData: $customerData,
+                    cartItems: $cartItems,
+                    subtotal: (int) round($subtotal),
+                    discountAmount: (int) round($totalDiscount),
+                    shippingFee: (int) round($shippingFee)
+                );
+
+                // Step 2.5: Atomically Record Usages for All Applied Promotion Rules
+                foreach ($breakdown->appliedRules as $applied) {
+                    $ruleToRecord = ($validCouponRule && $validCouponRule->id === $applied->ruleId)
+                        ? $validCouponRule
+                        : $lockedAutomaticRules->firstWhere('id', $applied->ruleId);
+
+                    if (! $ruleToRecord) {
+                        $ruleToRecord = PromotionRule::lockForUpdate()->find($applied->ruleId);
+                    }
+
+                    if ($ruleToRecord) {
+                        $ruleToRecord->recordUsage(
+                            customerId: $customerId,
+                            orderId: $order->id,
+                            email: $customerEmail,
+                            discountAmount: (float) $applied->discountAmount
+                        );
+                    }
+                }
+
+                // Increment legacy coupon usage if used
+                if ($legacyCoupon instanceof Coupon) {
+                    $legacyCoupon->incrementUsage();
+                }
+
+                return $order;
+            });
+
+            // -------------------------------------------------------------
+            // Phase 3: Post-Transaction Finalization
+            // -------------------------------------------------------------
+            $this->cartService->clear();
+
+            // Initialize payment gateway metadata (e.g. VietQR generation, instructions)
+            app(\App\Services\Payment\PaymentGatewayManager::class)->process($order);
+
+            // Dispatch domain event post-commit for asynchronous notifications
+            OrderPlaced::dispatch($order);
 
             return $order;
-        });
-
-        // -------------------------------------------------------------
-        // Phase 3: Post-Transaction Finalization
-        // -------------------------------------------------------------
-        $this->cartService->clear();
-
-        // Dispatch domain event post-commit for asynchronous notifications
-        OrderPlaced::dispatch($order);
-
-        return $order;
+        } finally {
+            $lock->release();
+        }
     }
 
     /**
@@ -242,7 +262,7 @@ class ProcessCheckoutAction
         try {
             $totalWeight = 0;
             foreach ($cartItems as $item) {
-                $productWeight = (int) ($item['product']->weight ?? 500);
+                $productWeight = (int) ($item['weight'] ?? ($item['product']->weight ?? 500));
                 $qty = (int) ($item['quantity'] ?? 1);
                 $totalWeight += max(100, $productWeight) * $qty;
             }

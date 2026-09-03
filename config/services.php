@@ -45,4 +45,10 @@ return [
         'warehouse_district_id' => env('GOSHIP_WAREHOUSE_DISTRICT_ID', '1'),
     ],
 
+    'banking' => [
+        'bank_code'    => env('BANK_CODE', 'MB'),
+        'account_no'   => env('BANK_ACCOUNT_NO', '0123456789'),
+        'account_name' => env('BANK_ACCOUNT_NAME', 'MYSTORE COMPANY'),
+    ],
+
 ];

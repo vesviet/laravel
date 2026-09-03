@@ -30,7 +30,7 @@ class CheckoutRequest extends FormRequest
             'district' => ['nullable', 'string', 'max:255'],
             'ward' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'payment_method' => ['required', 'in:cod,vnpay,momo,banking'],
+            'payment_method' => ['required', 'in:cod,vnpay,momo,banking,vietqr'],
         ];
     }
 

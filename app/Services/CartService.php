@@ -213,6 +213,7 @@ class CartService
             $categoryId = null;
             $originalPrice = 0.0;
             $promotedResult = null;
+            $weight = 500;
 
             if ($variantId && $variants->has($variantId)) {
                 $variant = $variants->get($variantId);
@@ -224,6 +225,7 @@ class CartService
                 $imagePath = $variant->product->primary_image_url ?? $variant->product->thumbnail ?? null;
                 $slug = $variant->product->slug ?? null;
                 $categoryId = $variant->product->category_id ?? null;
+                $weight = (int) (($variant->weight > 0 ? $variant->weight : null) ?? ($variant->product?->weight > 0 ? $variant->product->weight : 500));
             } elseif ($products->has($productId)) {
                 $product = $products->get($productId);
                 $price = (float) $product->price;
@@ -233,6 +235,7 @@ class CartService
                 $imagePath = $product->primary_image_url ?? $product->thumbnail ?? null;
                 $slug = $product->slug ?? null;
                 $categoryId = $product->category_id ?? null;
+                $weight = (int) ($product->weight > 0 ? $product->weight : 500);
 
                 // [I-02] Use injected engine instance — catalog rules are already cache-backed
                 // in getActiveCatalogRules(); no N+1 here since the cache is populated once.
@@ -258,6 +261,7 @@ class CartService
                 'sku'                 => $sku,
                 'price'               => $price,
                 'original_price'      => $originalPrice,
+                'weight'              => max(100, $weight),
                 'quantity'            => $quantity,
                 'subtotal'            => $price * $quantity,
                 'is_flash_sale'       => $isFlashSale,

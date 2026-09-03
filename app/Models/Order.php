@@ -32,14 +32,22 @@ class Order extends Model
         'total_amount',
         'utm_source',
         'landing_page_id',
+        'payment_status',
+        'payment_transaction_id',
+        'paid_at',
+        'payment_expires_at',
+        'payment_details',
     ];
 
     protected $casts = [
-        'status'          => OrderStatus::class,
-        'subtotal'        => 'integer',
-        'discount_amount' => 'integer',
-        'shipping_fee'    => 'integer',
-        'total_amount'    => 'integer',
+        'status'             => OrderStatus::class,
+        'subtotal'           => 'integer',
+        'discount_amount'    => 'integer',
+        'shipping_fee'       => 'integer',
+        'total_amount'       => 'integer',
+        'paid_at'            => 'datetime',
+        'payment_expires_at' => 'datetime',
+        'payment_details'    => 'array',
     ];
 
     public function customer()
@@ -132,6 +140,40 @@ class Order extends Model
         $status = $this->status instanceof OrderStatus ? $this->status : OrderStatus::tryFrom((string) $this->status);
 
         return in_array($status, [OrderStatus::Pending, OrderStatus::Confirmed]);
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    public function isUnpaid(): bool
+    {
+        return $this->payment_status === 'unpaid';
+    }
+
+    public function getPaymentStatusLabelAttribute(): string
+    {
+        return match ($this->payment_status) {
+            'paid'           => 'Đã thanh toán',
+            'partially_paid' => 'Thanh toán một phần',
+            'failed'         => 'Thanh toán thất bại',
+            'refunded'       => 'Đã hoàn tiền',
+            'expired'        => 'Hết hạn thanh toán',
+            default          => 'Chờ thanh toán',
+        };
+    }
+
+    public function getPaymentStatusBadgeClassesAttribute(): string
+    {
+        return match ($this->payment_status) {
+            'paid'           => 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+            'partially_paid' => 'bg-amber-50 text-amber-700 border border-amber-200',
+            'failed'         => 'bg-rose-50 text-rose-700 border border-rose-200',
+            'refunded'       => 'bg-purple-50 text-purple-700 border border-purple-200',
+            'expired'        => 'bg-gray-50 text-gray-700 border border-gray-200',
+            default          => 'bg-amber-50 text-amber-700 border border-amber-200',
+        };
     }
 
 

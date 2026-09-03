@@ -48,8 +48,11 @@
                     </div>
                     <div>
                         <dt class="text-[10px] tracking-[0.15em] uppercase text-muted-text mb-1">Thanh toán</dt>
-                        <dd class="text-sm font-light text-primary-dark">
-                            {{ $order->payment_method === 'cod' ? 'COD — Thanh toán khi nhận hàng' : strtoupper($order->payment_method) }}
+                        <dd class="text-sm font-light text-primary-dark flex items-center gap-2">
+                            <span>{{ $order->payment_method === 'cod' ? 'COD — Thanh toán khi nhận hàng' : strtoupper($order->payment_method) }}</span>
+                            <span class="text-[11px] font-medium px-2 py-0.5 {{ $order->payment_status_badge_classes }}">
+                                {{ $order->payment_status_label }}
+                            </span>
                         </dd>
                     </div>
                     @if($order->address)
@@ -65,6 +68,29 @@
                         </div>
                     @endif
                 </dl>
+
+                {{-- VietQR Transfer Section if payment is online/banking --}}
+                @if(($order->payment_method === 'vietqr' || $order->payment_method === 'banking') && !empty($order->payment_details['qr_url']))
+                    <div class="p-6 bg-surface-light border-b border-border-subtle">
+                        <div class="flex flex-col sm:flex-row items-center gap-6">
+                            <div class="shrink-0 bg-white p-2 border border-border-subtle shadow-sm">
+                                <img src="{{ $order->payment_details['qr_url'] }}" alt="VietQR Payment" class="w-44 h-44 object-contain">
+                            </div>
+                            <div class="text-left space-y-2 text-xs">
+                                <h4 class="text-sm font-semibold text-primary-dark uppercase tracking-wide">Quét Mã VietQR Để Thanh Toán</h4>
+                                <p class="text-muted-text">Mở ứng dụng ngân hàng hoặc ví điện tử để quét mã thanh toán tự động.</p>
+                                <div class="bg-white p-3 border border-border-subtle space-y-1 font-mono text-[11px]">
+                                    <div>Ngân hàng: <strong>{{ $order->payment_details['bank_code'] ?? 'MB' }}</strong></div>
+                                    <div>Số tài khoản: <strong>{{ $order->payment_details['bank_account_no'] ?? '' }}</strong></div>
+                                    <div>Chủ tài khoản: <strong>{{ $order->payment_details['account_name'] ?? '' }}</strong></div>
+                                    <div>Số tiền: <strong class="text-badge-hot">{{ $order->formatted_total_amount }}</strong></div>
+                                    <div>Nội dung CK: <strong class="text-primary-dark bg-amber-50 px-1.5 py-0.5 border border-amber-200">{{ $order->payment_details['transfer_syntax'] ?? "ORD {$order->order_number}" }}</strong></div>
+                                </div>
+                                <p class="text-[10px] text-muted-text italic">* Vui lòng giữ nguyên nội dung chuyển khoản để hệ thống tự động xác nhận.</p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 {{-- Purchased Items --}}
                 <div class="p-6">

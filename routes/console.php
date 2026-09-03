@@ -11,3 +11,8 @@ Artisan::command('inspire', function () {
 \Illuminate\Support\Facades\Schedule::command('carts:process-abandoned')
     ->everyFifteenMinutes()
     ->withoutOverlapping();
+
+// Schedule automated cancellation of expired unpaid orders every 5 minutes
+\Illuminate\Support\Facades\Schedule::command('orders:cancel-expired-unpaid')
+    ->everyFiveMinutes()
+    ->withoutOverlapping();
